@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Local study, document, productivity, and preparation tools for the Govexa academic prototype.">
+  <title>Study Workspace | Govexa — Student Career Guidance & Government Exam Preparation</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspaceMain">Skip to main content</a>
+  <div class="tricolor-stripe" aria-hidden="true"></div>
+  <aside class="gov-topbar" aria-label="Portal utilities">
+    <div class="gov-container topbar-wrapper">
+      <div class="topbar-left">
+        <span class="topbar-tag">Academic Prototype</span>
+        <span class="topbar-date" id="currentGovDate"></span>
+        <span class="academic-notice-pill">Student project — not an official government website</span>
+      </div>
+      <div class="topbar-right">
+        <div class="accessibility-tools" aria-label="Accessibility settings">
+          <button type="button" id="btnFontSmall" class="accessibility-btn" aria-label="Decrease font size">A-</button>
+          <button type="button" id="btnFontNormal" class="accessibility-btn" aria-label="Default font size">A</button>
+          <button type="button" id="btnFontLarge" class="accessibility-btn" aria-label="Increase font size">A+</button>
+          <button type="button" id="btnContrast" class="accessibility-btn">Contrast</button>
+        </div>
+        <label class="sr-only" for="govLangSelect">Interface language preference</label>
+        <select id="govLangSelect" class="lang-select">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+  <header class="gov-main-header">
+    <div class="gov-container header-inner">
+      <a href="index.html" class="gov-branding">
+        <span class="gov-emblem-badge" aria-hidden="true"><span>ग</span><span class="sub-char">GOVEXA</span></span>
+        <span class="gov-brand-text">
+          <span class="brand-hindi">मार्गदर्शक | छात्र कैरियर एवं परीक्षा सहायता</span>
+          <span class="brand-title">Govexa <span class="brand-acronym">Student Workspace</span></span>
+          <span class="brand-subtitle">Study tools run locally in this browser; AI and live services are not connected.</span>
+        </span>
+      </a>
+      <div class="header-right-actions">
+        <a href="dashboard.html" class="gov-btn gov-btn-outline gov-btn-sm">Dashboard</a>
+        <a href="profile.html" class="gov-btn gov-btn-primary gov-btn-sm">Profile & Eligibility</a>
+      </div>
+    </div>
+  </header>
+  <nav class="gov-navbar" aria-label="Primary navigation">
+    <div class="gov-container nav-wrapper">
+      <button type="button" class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li class="nav-item"><a href="exams.html" class="nav-link">Exams & Jobs</a></li>
+        <li class="nav-item"><a href="applications.html" class="nav-link">Applications</a></li>
+        <li class="nav-item"><a href="preparation.html" class="nav-link">Preparation</a></li>
+        <li class="nav-item"><a href="workspace.html" class="nav-link active" aria-current="page">Study Workspace</a></li>
+        <li class="nav-item"><a href="workspace.html#community" class="nav-link">Community & Mentors</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="workspaceMain" class="gov-container workspace-main">
+    <section class="gov-card workspace-intro">
+      <div>
+        <span class="gov-badge badge-tech">Learning, productivity & support</span>
+        <h1 class="workspace-title">Your study workspace</h1>
+        <p>Organize preparation, practice sample questions, and review progress. Saved checklists and plans stay in this browser only.</p>
+      </div>
+      <div class="workspace-demo-callout" role="note">
+        <strong>Demo boundary</strong>
+        <span>Uploaded PDFs are not processed. AI answers, live current affairs, official notices, cloud sync, and push alerts require services that are not connected.</span>
+      </div>
+    </section>
+
+    <nav class="workspace-tabs" aria-label="Workspace sections">
+      <a href="#documents">Documents</a><a href="#learning">Learning & practice</a>
+      <a href="#analytics">Performance</a><a href="#productivity">Productivity</a>
+      <a href="#kset-net">KSET / UGC-NET</a><a href="#settings">Community & settings</a>
+    </nav>
+
+    <section class="workspace-section" id="documents">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-central">Module E · 38–47</span><h2>Document & study-material workspace</h2></div>
+        <span class="gov-badge badge-state">Text helpers are local demonstrations</span>
+      </div>
+      <div class="workspace-grid workspace-grid-two">
+        <article class="gov-card">
+          <h3 class="gov-card-title">Add study text or a PDF</h3>
+          <label class="gov-form-label" for="documentUpload">Choose a PDF (metadata preview only)</label>
+          <input class="gov-form-control" id="documentUpload" type="file" accept="application/pdf,.pdf">
+          <p id="documentFileStatus" class="gov-form-help" aria-live="polite">No file selected. The PDF will not be uploaded or parsed.</p>
+          <label class="gov-form-label" for="documentText">Or paste a short excerpt for local demo tools</label>
+          <textarea class="gov-form-control" id="documentText" rows="7" placeholder="Paste text from a syllabus or notice here. Avoid personal or sensitive information."></textarea>
+          <div class="workspace-actions">
+            <button class="gov-btn gov-btn-primary" id="summarizeText" type="button">Create sample summary</button>
+            <button class="gov-btn gov-btn-outline" id="extractQuestions" type="button">Find question prompts</button>
+          </div>
+          <div class="workspace-output" id="documentOutput" aria-live="polite">Add text to begin. PDF analysis needs a document-processing service.</div>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Generate revision aids</h3>
+          <p class="gov-form-help">The following outputs are heuristic formatting of pasted text, not AI analysis or verified syllabus extraction.</p>
+          <div class="workspace-actions">
+            <button class="gov-btn gov-btn-outline" id="makeNotes" type="button">Make notes</button>
+            <button class="gov-btn gov-btn-outline" id="makeFlashcards" type="button">Make flashcards</button>
+            <button class="gov-btn gov-btn-outline" id="makeMindMap" type="button">Build mind map</button>
+            <button class="gov-btn gov-btn-outline" id="makeQuiz" type="button">Create sample quiz</button>
+          </div>
+          <div class="workspace-output" id="revisionOutput" aria-live="polite">Generated study aids will appear here.</div>
+          <h3 class="workspace-subheading">Material library</h3>
+          <ul class="workspace-list">
+            <li><strong>NCERT textbooks</strong> — foundational history, polity, geography and science. <a href="https://ncert.nic.in/textbook.php" target="_blank" rel="noopener noreferrer">NCERT textbook portal ↗</a></li>
+            <li><strong>UGC-NET information</strong> — use the NTA site for current bulletins and syllabus notices. <a href="https://ugcnet.nta.ac.in/" target="_blank" rel="noopener noreferrer">NTA UGC-NET ↗</a></li>
+            <li><strong>Computer science references</strong> — use your course texts and the applicable examination syllabus.</li>
+          </ul>
+          <p class="gov-form-help">Suggestions are generic examples, not endorsed or personalized live recommendations.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="learning">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-central">Module F · 48–59</span><h2>Study plans, doubts & practice</h2></div>
+        <a href="preparation.html" class="gov-btn gov-btn-outline gov-btn-sm">Open syllabus hub</a>
+      </div>
+      <div class="workspace-grid workspace-grid-two">
+        <article class="gov-card">
+          <h3 class="gov-card-title">Weekly study plan</h3>
+          <p>Set a daily study target. Completion and topic selections are saved locally; adaptive changes are simple rule-based suggestions.</p>
+          <form id="studyPlanForm" class="workspace-inline-form">
+            <label for="dailyStudyHours" class="gov-form-label">Target hours per day</label>
+            <input id="dailyStudyHours" class="gov-form-control" type="number" min="1" max="16" value="4" required>
+            <button type="submit" class="gov-btn gov-btn-primary">Save plan</button>
+          </form>
+          <div class="workspace-progress"><div id="studyPlanProgress" class="workspace-progress-fill"></div></div>
+          <p id="studyPlanStatus" class="gov-form-help" aria-live="polite"></p>
+          <button id="adaptPlan" type="button" class="gov-btn gov-btn-outline gov-btn-sm">Adjust plan from progress</button>
+          <h3 class="workspace-subheading">Practice by topic</h3>
+          <label for="practiceTopic" class="gov-form-label">Topic</label>
+          <select id="practiceTopic" class="gov-form-control">
+            <option>Indian Polity</option><option>Quantitative Aptitude</option><option>Computer Science</option><option>Reasoning</option><option>Teaching Aptitude</option>
+          </select>
+          <div id="practiceQuestion" class="workspace-question"></div>
+          <div id="practiceOptions" class="workspace-options"></div>
+          <div class="workspace-actions">
+            <button id="checkPracticeAnswer" type="button" class="gov-btn gov-btn-primary">Check answer</button>
+            <button id="nextPracticeQuestion" type="button" class="gov-btn gov-btn-outline">Next sample question</button>
+            <button type="button" class="gov-btn gov-btn-green" onclick="startMockTestSession()">Start timed sample test</button>
+          </div>
+          <p id="practiceFeedback" class="workspace-output" aria-live="polite"></p>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Doubt & concept desk</h3>
+          <p>There is no connected AI model. Browse a short sample explanation or record a question for your own notes.</p>
+          <label for="doubtTopic" class="gov-form-label">Choose a sample concept</label>
+          <select id="doubtTopic" class="gov-form-control">
+            <option value="binary-search">Binary search</option><option value="constitution">Directive Principles</option><option value="percentages">Percentage change</option>
+          </select>
+          <button id="showConcept" class="gov-btn gov-btn-outline" type="button">Show concept explanation</button>
+          <div id="conceptExplanation" class="workspace-output" aria-live="polite"></div>
+          <label for="doubtText" class="gov-form-label">Your doubt / question</label>
+          <textarea id="doubtText" class="gov-form-control" rows="3" placeholder="Write a question to save for later"></textarea>
+          <button id="saveDoubt" class="gov-btn gov-btn-primary" type="button">Save doubt locally</button>
+          <div id="savedDoubts" class="workspace-list" aria-live="polite"></div>
+          <h3 class="workspace-subheading">Current affairs</h3>
+          <p><span class="gov-badge badge-state">Static study prompt</span> No live news feed is connected. Check a newspaper and verify important facts from official sources.</p>
+          <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" id="showCurrentAffairs">Show sample revision prompts</button>
+          <div id="currentAffairsPrompts" class="workspace-output" aria-live="polite"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="analytics">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-central">Module G · 60–70</span><h2>Performance, revision & backlog</h2></div>
+        <span class="gov-badge badge-state">Based on this browser's demo activity</span>
+      </div>
+      <div class="workspace-grid workspace-grid-two">
+        <article class="gov-card">
+          <h3 class="gov-card-title">Practice analysis</h3>
+          <div id="performanceSummary" class="workspace-output" aria-live="polite"></div>
+          <div id="performanceBars" class="performance-bars"></div>
+          <h3 class="workspace-subheading">Mistake notebook</h3>
+          <form id="mistakeForm" class="workspace-inline-form">
+            <label class="gov-form-label" for="mistakeText">Mistake or lesson learned</label>
+            <input id="mistakeText" class="gov-form-control" required maxlength="240" placeholder="e.g. Recheck units in percentage questions">
+            <button class="gov-btn gov-btn-primary" type="submit">Add note</button>
+          </form>
+          <ul id="mistakeList" class="workspace-list"></ul>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Revision queue & backlog</h3>
+          <p class="gov-form-help">Rule-based queue; no personal knowledge graph or AI inference is running.</p>
+          <form id="backlogForm" class="workspace-inline-form">
+            <label class="gov-form-label" for="backlogTopic">Topic to revisit</label>
+            <input id="backlogTopic" class="gov-form-control" required maxlength="100" placeholder="Add a topic">
+            <button class="gov-btn gov-btn-primary" type="submit">Add to backlog</button>
+          </form>
+          <ul id="backlogList" class="workspace-list"></ul>
+          <h3 class="workspace-subheading">Knowledge map</h3>
+          <p id="knowledgeMap" class="workspace-output">Complete local practice or mark topics in the Preparation hub to build a simple topic summary.</p>
+          <button id="makeRecoveryPlan" type="button" class="gov-btn gov-btn-saffron">Plan recovery after missed days</button>
+          <div id="recoveryPlan" class="workspace-output" aria-live="polite"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="productivity">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-central">Module H · 71–78</span><h2>Daily goals & focus tools</h2></div>
+        <span class="gov-badge badge-active">Timer runs in this browser</span>
+      </div>
+      <div class="workspace-grid workspace-grid-three">
+        <article class="gov-card">
+          <h3 class="gov-card-title">Daily goal & habit tracker</h3>
+          <label class="gov-form-label" for="todayGoal">Today's study goal (minutes)</label>
+          <input id="todayGoal" class="gov-form-control" type="number" min="10" max="1440" value="120">
+          <button id="saveGoal" class="gov-btn gov-btn-primary" type="button">Save daily goal</button>
+          <button id="logStudySession" class="gov-btn gov-btn-outline" type="button">Log 25-minute study session</button>
+          <div id="goalSummary" class="workspace-output" aria-live="polite"></div>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Pomodoro timer</h3>
+          <label class="gov-form-label" for="pomodoroMinutes">Focus duration</label>
+          <select id="pomodoroMinutes" class="gov-form-control"><option value="25">25 minutes</option><option value="45">45 minutes</option><option value="5">5-minute test</option></select>
+          <div id="timerDisplay" class="timer-display" role="timer" aria-live="off">25:00</div>
+          <div class="workspace-actions">
+            <button id="timerStart" class="gov-btn gov-btn-green" type="button">Start</button>
+            <button id="timerPause" class="gov-btn gov-btn-outline" type="button">Pause</button>
+            <button id="timerReset" class="gov-btn gov-btn-outline" type="button">Reset</button>
+          </div>
+          <button id="focusMode" class="gov-btn gov-btn-primary" type="button" aria-pressed="false">Enter focus mode</button>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Exam countdown preparation modes</h3>
+          <p>Plans are generic checklists, not predictions about an exam date or guaranteed outcomes.</p>
+          <div class="workspace-actions">
+            <button class="gov-btn gov-btn-outline" data-plan="30" type="button">Last 30 days</button>
+            <button class="gov-btn gov-btn-outline" data-plan="7" type="button">Last 7 days</button>
+            <button class="gov-btn gov-btn-saffron" data-plan="3" type="button">Short-time plan</button>
+          </div>
+          <div id="shortPlan" class="workspace-output" aria-live="polite">Choose a plan to see a practical outline.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="kset-net">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-state">Module I · 79–83</span><h2>KSET & UGC-NET preparation cell</h2></div>
+        <a class="gov-btn gov-btn-outline gov-btn-sm" href="exams.html?category=Teaching">View sample exam entries</a>
+      </div>
+      <article class="gov-card">
+        <div class="workspace-actions" role="group" aria-label="Select preparation paper">
+          <button class="gov-btn gov-btn-primary" type="button" data-net-paper="paper1" aria-pressed="true">Paper I · General</button>
+          <button class="gov-btn gov-btn-outline" type="button" data-net-paper="paper2" aria-pressed="false">Paper II · Computer Science</button>
+        </div>
+        <div id="netPaperContent" class="workspace-output" aria-live="polite"></div>
+        <p><span class="gov-badge badge-state">Sample practice only</span> The question bank is small and illustrative. Verify current exam scheme, subject eligibility, and syllabus with KEA/NTA.</p>
+        <div class="workspace-actions">
+          <button type="button" class="gov-btn gov-btn-green" onclick="startMockTestSession()">Try sample timed test</button>
+          <a class="gov-btn gov-btn-outline" href="exam-compare.html">Compare exam patterns</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="workspace-section" id="community">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-central">Module J · 84–89</span><h2>Career assistant, community & mentor view</h2></div>
+        <span class="gov-badge badge-deadline">No AI, speech service, or shared server connected</span>
+      </div>
+      <div class="workspace-grid workspace-grid-two">
+        <article class="gov-card">
+          <h3 class="gov-card-title">Career guidance assistant</h3>
+          <label class="gov-form-label" for="assistantQuestion">What would you like to explore?</label>
+          <textarea id="assistantQuestion" class="gov-form-control" rows="3" placeholder="Ask about exam pathways or preparation priorities"></textarea>
+          <div class="workspace-actions">
+            <button id="askAssistant" class="gov-btn gov-btn-primary" type="button">Show sample guidance</button>
+            <button id="speechInput" class="gov-btn gov-btn-outline" type="button">🎙 Start voice input</button>
+            <button id="speakGuidance" class="gov-btn gov-btn-outline" type="button">🔊 Read response</button>
+          </div>
+          <div id="assistantResponse" class="workspace-output" aria-live="polite"></div>
+          <p class="gov-form-help">Voice input/output, when available, uses browser speech APIs. Language preference does not translate this prototype's interface.</p>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Study group discussion board</h3>
+          <p>Posts are stored locally on this device; they are not shared with other students.</p>
+          <form id="communityForm" class="workspace-inline-form">
+            <label class="gov-form-label" for="communityPost">Discussion prompt</label>
+            <input id="communityPost" class="gov-form-control" required maxlength="180" placeholder="Share a study topic or question">
+            <button class="gov-btn gov-btn-primary" type="submit">Post locally</button>
+          </form>
+          <ul id="communityPosts" class="workspace-list"></ul>
+          <h3 class="workspace-subheading">Mentor / teacher dashboard preview</h3>
+          <label class="gov-form-label" for="mentorView">View as</label>
+          <select id="mentorView" class="gov-form-control"><option value="student">Student</option><option value="mentor">Mentor / teacher (demo)</option></select>
+          <div id="mentorDashboard" class="workspace-output" aria-live="polite"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="workspace-section" id="settings">
+      <div class="workspace-section-heading">
+        <div><span class="gov-badge badge-central">Settings & help</span><h2>Preferences, privacy & help</h2></div>
+        <a href="profile.html" class="gov-btn gov-btn-outline gov-btn-sm">Edit student profile</a>
+      </div>
+      <div class="workspace-grid workspace-grid-two">
+        <article class="gov-card">
+          <h3 class="gov-card-title">Your demo data</h3>
+          <p>Profile, preferences, study activity, checklists and application records are stored in localStorage. This is not a secure account system and does not sync across devices.</p>
+          <div class="workspace-actions">
+            <button id="exportDemoData" type="button" class="gov-btn gov-btn-primary">Export local data</button>
+            <button id="clearWorkspaceData" type="button" class="gov-btn gov-btn-outline">Clear workspace-only data</button>
+          </div>
+          <div id="settingsFeedback" class="workspace-output" aria-live="polite"></div>
+        </article>
+        <article class="gov-card">
+          <h3 class="gov-card-title">Help & service status</h3>
+          <details><summary>Are notifications and deadlines live?</summary><p>No. Listings are sample records. Check the linked commission portal directly for current dates and notices.</p></details>
+          <details><summary>Does this page read my PDF?</summary><p>No. Selecting a file only displays its name and size. PDF extraction requires a document service that is not configured.</p></details>
+          <details><summary>Does the career assistant use AI?</summary><p>No. It shows a local demonstration response. No prompt is sent to an AI service.</p></details>
+          <details><summary>Where is my data stored?</summary><p>In this browser's localStorage. Do not save passwords, identity documents, or sensitive personal information in this prototype.</p></details>
+          <p><a href="https://upsc.gov.in/" target="_blank" rel="noopener noreferrer">UPSC official website ↗</a> · <a href="https://ssc.gov.in/" target="_blank" rel="noopener noreferrer">SSC official website ↗</a></p>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer class="gov-portal-footer">
+    <div class="footer-bottom-bar"><div class="gov-container footer-bottom-inner">
+      <span>Govexa · B.Tech CSE academic project · Demo interface only</span>
+      <span><a href="index.html">Portal home</a> · <a href="profile.html">Profile</a> · <a href="applications.html">Applications</a></span>
+    </div></div>
+  </footer>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/workspace.js"></script>
+</body>
+</html>

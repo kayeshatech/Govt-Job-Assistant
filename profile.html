@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile & Academic Career Configuration | MARGDARSHAK (SCG-GEP Portal)</title>
+  <meta name="description" content="Manage candidate credentials, academic profile, reservation relaxation parameters, target exam preferences, and automated eligibility rule matrix.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a2540'/><path d='M20 75 L50 25 L80 75 Z' fill='%23d9531e'/><circle cx='50' cy='55' r='10' fill='%23ffffff'/></svg>">
+  <style>
+    .pref-checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.65rem;
+      margin-top: 0.4rem;
+    }
+    .pref-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--gov-navy-dark);
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pref-checkbox-label:hover {
+      background: #f1f5f9;
+      border-color: var(--gov-navy);
+    }
+    .pref-checkbox-label input[type="checkbox"] {
+      accent-color: var(--gov-navy);
+      transform: scale(1.1);
+    }
+    .section-header-box {
+      border-bottom: 2px solid var(--gov-navy);
+      padding-bottom: 0.35rem;
+      margin: 1.5rem 0 1rem 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gov-navy-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .guidance-notice-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 3px solid #16a34a;
+      border-radius: 4px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.78rem;
+      color: #14532d;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#profileContent" class="skip-link">Skip to main content</a>
+
+  <!-- Tricolor Ribbon -->
+  <div class="tricolor-stripe" aria-hidden="true"></div>
+
+  <!-- Top Accessibility Bar -->
+  <aside class="gov-topbar" aria-label="Portal Accessibility">
+    <div class="gov-container topbar-wrapper">
+      <div class="topbar-left">
+        <span class="topbar-tag">Academic Capstone Initiative</span>
+        <span class="topbar-date" id="currentGovDate">Loading date...</span>
+        <span class="academic-notice-pill">⚠️ Student Project — Not an Official Government Website</span>
+      </div>
+      <div class="topbar-right">
+        <div class="accessibility-tools">
+          <button type="button" id="btnFontSmall" class="accessibility-btn" aria-label="Decrease font">A-</button>
+          <button type="button" id="btnFontNormal" class="accessibility-btn" aria-label="Default font">A</button>
+          <button type="button" id="btnFontLarge" class="accessibility-btn" aria-label="Enlarge font">A+</button>
+          <button type="button" id="btnContrast" class="accessibility-btn">👁️ Contrast</button>
+        </div>
+        <select id="govLangSelect" class="lang-select" aria-label="Language Selector">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Header -->
+  <header class="gov-main-header">
+    <div class="gov-container header-inner">
+      <a href="index.html" class="gov-branding">
+        <div class="gov-emblem-badge" aria-hidden="true">
+          <span>म</span>
+          <span class="sub-char">SCG-GEP</span>
+        </div>
+        <div class="gov-brand-text">
+          <span class="brand-hindi">मार्गदर्शक | छात्र प्रोफाइल एवं पात्रता विन्यास</span>
+          <span class="brand-title">MARGDARSHAK <span class="brand-acronym">(SCG-GEP)</span></span>
+          <span class="brand-subtitle">Student Profile & Automated Eligibility Rule Verification Matrix</span>
+        </div>
+      </a>
+      <div class="header-right-actions">
+        <a href="dashboard.html" class="gov-btn gov-btn-outline gov-btn-sm">Dashboard</a>
+        <button type="button" onclick="MargDarshakState.logout()" class="gov-btn gov-btn-primary gov-btn-sm">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="gov-navbar" aria-label="Primary Navigation">
+    <div class="gov-container nav-wrapper">
+      <button type="button" class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="exams.html" class="nav-link">Government Exams</a></li>
+        <li class="nav-item"><a href="exam-compare.html" class="nav-link">Pattern & Syllabus Compare</a></li>
+        <li class="nav-item"><a href="intelligence.html" class="nav-link">Govt Info Intelligence</a></li>
+        <li class="nav-item"><a href="calendar.html" class="nav-link">Exam Calendar</a></li>
+        <li class="nav-item"><a href="applications.html" class="nav-link">Application Assistance</a></li>
+        <li class="nav-item"><a href="career-guidance.html" class="nav-link">Career Pathways</a></li>
+        <li class="nav-item"><a href="preparation.html" class="nav-link">Preparation</a></li>
+        <li class="nav-item"><a href="notifications.html" class="nav-link">Notifications <span class="nav-badge-pill">7</span></a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link" style="color: #fed7aa;">Dashboard ↗</a></li>
+      </ul>
+      <div class="nav-auth-actions">
+        <a href="profile.html" class="btn-nav-login" style="background-color: rgba(255,255,255,0.15); border-color: #fff;">
+          <span>👤</span> <span class="header-user-name">Sachin K. Rao</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-container" aria-label="Breadcrumb">
+    <div class="gov-container">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-separator">/</li>
+        <li class="breadcrumb-item active" aria-current="page">Student Profile & Career Preferences (Module A)</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="profileContent" class="gov-container" style="padding-top: 1.5rem; padding-bottom: 3.5rem;">
+    
+    <!-- Profile Top Badge Strip -->
+    <section class="gov-card" style="border-top: 4px solid var(--gov-navy); background: #ffffff;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div class="user-avatar-circle" id="profilePageAvatar" style="width: 58px; height: 58px; font-size: 1.35rem;">
+            SR
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2px;">
+              <h1 id="profilePageName" style="font-size: 1.4rem; font-weight: 800; color: var(--gov-navy-dark); margin: 0;">
+                Sachin K. Rao
+              </h1>
+              <span class="gov-badge badge-active">Active Aspirant</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">
+              Roll No: <span id="profilePageRoll" style="font-family: var(--font-mono); font-weight: 700; color: var(--gov-navy);">4CB22CS098</span> | 
+              <span id="profilePageDegree">B.Tech in Computer Science & Engineering</span> |
+              <span id="profilePageCatBadge" class="gov-badge badge-state">OBC-NCL</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="exams.html?tab=eligibility" class="gov-btn gov-btn-saffron gov-btn-sm" style="text-decoration: none;">
+            ⚖️ Check Exam Eligibility
+          </a>
+          <a href="exam-compare.html" class="gov-btn gov-btn-outline gov-btn-sm" style="text-decoration: none;">
+            📊 Compare Target Exams
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Management Tabs -->
+    <div style="display: flex; gap: 0.35rem; border-bottom: 2px solid var(--border-medium); margin-bottom: 1.5rem; overflow-x: auto;">
+      <button type="button" id="tabBtnDetails" class="gov-btn gov-btn-primary" onclick="switchProfileTab('details')">
+        👤 Personal, Academic & Career Profile (Features 3–6)
+      </button>
+      <button type="button" id="tabBtnMatrix" class="gov-btn gov-btn-outline" onclick="switchProfileTab('matrix')">
+        📊 Automated Eligibility Matrix
+      </button>
+      <button type="button" id="tabBtnBookmarks" class="gov-btn gov-btn-outline" onclick="switchProfileTab('bookmarks')">
+        ⭐ Saved Exam Targets (<span id="profileBookmarksCount">4</span>)
+      </button>
+      <button type="button" id="tabBtnDocs" class="gov-btn gov-btn-outline" onclick="switchProfileTab('docs')">
+        📑 Document Verification (DV) Readiness
+      </button>
+    </div>
+
+    <!-- TAB 1: Personal, Academic & Career Profile Edit Form (Features 3, 4, 5, 6) -->
+    <section id="tabContentDetails" class="gov-card" style="margin-bottom: 0;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>⚙️</span> Aspirant Parameters & Career Configuration (Features 3, 4, 5, 6)
+        </h2>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Synchronized with browser localStorage</span>
+      </div>
+
+      <form id="profileEditForm">
+
+        <!-- SUBSECTION 1: PERSONAL & BASIC DETAILS -->
+        <div class="section-header-box">
+          <span>1. Personal & Contact Information (Feature 3)</span>
+          <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">Standard Candidate Record</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div class="gov-form-group">
+            <label for="editFullName" class="gov-form-label">Full Name (as per Matriculation Certificate):</label>
+            <input type="text" id="editFullName" class="gov-form-control" required>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editEmail" class="gov-form-label">Email ID (saved in this browser only):</label>
+            <input type="email" id="editEmail" class="gov-form-control" required>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editMobile" class="gov-form-label">Mobile Number (SMS OTP Alerts):</label>
+            <input type="tel" id="editMobile" class="gov-form-control" required>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editDob" class="gov-form-label">Date of Birth (DOB):</label>
+            <input type="date" id="editDob" class="gov-form-control" required>
+            <div class="gov-form-help">Current Age: <strong id="calculatedAge">23 Years</strong> (No age restriction for registration)</div>
+          </div>
+        </div>
+
+        <!-- SUBSECTION 2: CATEGORY, STATE & LOCATION (Feature 5) -->
+        <div class="section-header-box">
+          <span>2. Category, State & Location Profile (Feature 5)</span>
+          <span class="gov-badge badge-central">Optional For Eligibility Guidance</span>
+        </div>
+
+        <div class="guidance-notice-box">
+          <strong>ℹ️ Why does MARGDARSHAK request Category and Location?</strong><br>
+          These fields are <strong>strictly optional</strong>. They are collected solely to calculate statutory reservation age relaxations (e.g., +3 years for OBC-NCL, +5 years for SC/ST, +10 years for PwD) and state-specific domicile eligibility (e.g., KPSC KAS, UPPSC, MPSC). Your details remain local to this browser session.
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div class="gov-form-group">
+            <label for="editCategory" class="gov-form-label">Social Reservation Category (Optional):</label>
+            <select id="editCategory" class="gov-form-control">
+              <option value="General">General / UR (Standard Age Limit)</option>
+              <option value="OBC-NCL">OBC (Non-Creamy Layer) - +3 Yrs Statutory Relaxation</option>
+              <option value="SC">Scheduled Caste (SC) - +5 Yrs Statutory Relaxation</option>
+              <option value="ST">Scheduled Tribe (ST) - +5 Yrs Statutory Relaxation</option>
+              <option value="EWS">Economically Weaker Section (EWS - Income Criteria)</option>
+              <option value="PwD">Persons with Benchmark Disabilities (PwD) - +10 Yrs</option>
+            </select>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editDomicile" class="gov-form-label">State of Domicile (Optional):</label>
+            <select id="editDomicile" class="gov-form-control">
+              <option value="Karnataka">Karnataka (Eligible for KPSC KAS & KSET)</option>
+              <option value="Maharashtra">Maharashtra (MPSC Eligible)</option>
+              <option value="Uttar Pradesh">Uttar Pradesh (UPPSC Eligible)</option>
+              <option value="Tamil Nadu">Tamil Nadu (TNPSC Eligible)</option>
+              <option value="Kerala">Kerala (Kerala PSC)</option>
+              <option value="Delhi">Delhi (NCT)</option>
+              <option value="Other State">Other Indian State / UT</option>
+            </select>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editDistrict" class="gov-form-label">District / City of Residence (Optional):</label>
+            <input type="text" id="editDistrict" class="gov-form-control" placeholder="e.g. Mangaluru, Bengaluru, Mysuru" value="Dakshina Kannada / Mangaluru">
+          </div>
+        </div>
+
+        <!-- SUBSECTION 3: EDUCATIONAL QUALIFICATION & ACADEMIC PROFILE (Feature 4) -->
+        <div class="section-header-box">
+          <span>3. Educational Qualification & Academic Profile (Feature 4)</span>
+          <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">Academic Credentials</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div class="gov-form-group">
+            <label for="editQualLevel" class="gov-form-label">Highest Qualification Level:</label>
+            <select id="editQualLevel" class="gov-form-control">
+              <option value="Undergraduate" selected>Undergraduate / Bachelor's Degree (B.Tech / B.E / B.Sc / B.Com / B.A)</option>
+              <option value="Postgraduate">Postgraduate / Master's Degree (M.Tech / M.Sc / MCA / M.A)</option>
+              <option value="Diploma">Polytechnic Diploma in Engineering</option>
+              <option value="HigherSecondary">Higher Secondary (10+2 / Pre-University)</option>
+            </select>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editDegree" class="gov-form-label">Degree Name:</label>
+            <input type="text" id="editDegree" class="gov-form-control" value="B.Tech in Computer Science & Engineering" required>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editBranch" class="gov-form-label">Branch / Specialization:</label>
+            <input type="text" id="editBranch" class="gov-form-control" value="Computer Science & Engineering" required>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editGradYear" class="gov-form-label">Year of Passing / Final Year:</label>
+            <input type="number" id="editGradYear" class="gov-form-control" value="2026" min="1990" max="2035">
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editCgpa" class="gov-form-label">Marks / Aggregate Percentage / CGPA:</label>
+            <input type="text" id="editCgpa" class="gov-form-control" value="8.42 CGPA (79.2%)" required>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editInstitution" class="gov-form-label">College / University Name:</label>
+            <input type="text" id="editInstitution" class="gov-form-control" value="Canara Engineering College / VTU Belagavi">
+          </div>
+        </div>
+
+        <!-- SUBSECTION 4: PREFERRED CAREER / JOB / EXAM PREFERENCES (Feature 6) -->
+        <div class="section-header-box">
+          <span>4. Preferred Career, Job & Exam Preferences (Feature 6)</span>
+          <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">Target Aspirations</span>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label class="gov-form-label" style="font-weight: 700;">Target Public Sector Examinations (Select All That Apply):</label>
+          <div class="pref-checkbox-grid" id="prefExamsContainer">
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="ISRO-SC" checked> ISRO Scientist 'SC' (CS)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="SSC-CGL" checked> SSC Combined Graduate Level
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="UPSC-CSE" checked> UPSC Civil Services (IAS/IPS)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="NIC-TECH" checked> NIC Scientist 'B' (MeitY)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="RRB-NTPC"> Railway RRB NTPC (Station Master)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="IBPS-PO"> IBPS / SBI Bank PO
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="UGC-NET"> UGC-NET / JRF (Lectureship)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="KPSC-KAS"> KPSC KAS (Karnataka Civil Services)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="IB-ACIO"> IB ACIO-II (Intelligence Bureau)
+            </label>
+            <label class="pref-checkbox-label">
+              <input type="checkbox" name="prefExam" value="GATE-PSU"> GATE PSU (IOCL, NTPC, ONGC)
+            </label>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div class="gov-form-group">
+            <label for="editPreferredRoles" class="gov-form-label">Preferred Job Roles & Cadres:</label>
+            <select id="editPreferredRoles" class="gov-form-control">
+              <option value="Scientific & Technical">Scientific & Technical Cadres (Scientist, Engineer, S&T)</option>
+              <option value="Civil Services & Governance">Civil Services & Administration (IAS, KAS, ASO)</option>
+              <option value="Banking & Financial Operations">Banking & Financial Operations (PO, RBI Officer)</option>
+              <option value="Defense & Security">Defense, Police & Intelligence (IB, Police, Defense)</option>
+              <option value="Teaching & Research">Higher Education & Research (Assistant Professor, JRF)</option>
+            </select>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editPreferredMinistry" class="gov-form-label">Preferred Government Department / Ministry:</label>
+            <select id="editPreferredMinistry" class="gov-form-control">
+              <option value="Department of Space (ISRO)">Department of Space (ISRO / IN-SPACe)</option>
+              <option value="Ministry of Electronics & IT (MeitY)">Ministry of Electronics & IT (MeitY / NIC)</option>
+              <option value="Ministry of Personnel (DoPT)">Ministry of Personnel / Central Secretariat (DoPT)</option>
+              <option value="Ministry of Railways">Ministry of Railways</option>
+              <option value="Ministry of Finance">Ministry of Finance / Banking</option>
+              <option value="Ministry of Education (UGC)">Ministry of Education / UGC / Universities</option>
+              <option value="Ministry of Home Affairs">Ministry of Home Affairs / Security</option>
+              <option value="State Civil Secretariats">State Civil Secretariats (Karnataka, etc.)</option>
+            </select>
+          </div>
+
+          <div class="gov-form-group">
+            <label for="editCareerInterest" class="gov-form-label">Primary Career Motivation & Work Interest:</label>
+            <select id="editCareerInterest" class="gov-form-control">
+              <option value="National R&D & Sovereign Tech">National R&D, Space Software & Sovereign Cloud</option>
+              <option value="Public Policy & District Administration">Public Policy, District Administration & Grassroots Governance</option>
+              <option value="Economic Development & Monetary Policy">Economic Development, Banking & Monetary Management</option>
+              <option value="National Intelligence & Cybersecurity">National Intelligence, Cybersecurity & Counter-Espionage</option>
+              <option value="Academic Instruction & University Research">Academic Instruction, Pedagogy & University Research</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+          <button type="button" class="gov-btn gov-btn-outline" onclick="loadProfileData()">Reset to Saved</button>
+          <button type="submit" class="gov-btn gov-btn-primary">
+            💾 Save Profile & Update Eligibility Rules
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- TAB 2: Automated Eligibility Matrix -->
+    <section id="tabContentMatrix" class="gov-card" style="display: none; margin-bottom: 0;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>📊</span> Real-Time Automated Eligibility Screener Matrix
+        </h2>
+        <span class="gov-badge badge-state">Illustrative comparison — not official</span>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+        This matrix compares profile inputs with sample criteria only. It is not a legal or official eligibility decision; confirm current age, category, qualification, domicile, and cutoff-date rules in each commission's notice.
+      </p>
+
+      <div class="gov-table-wrapper">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>Examination</th>
+              <th>Conducting Body</th>
+              <th>Prescribed Age Limit</th>
+              <th>Your Relaxed Max Age</th>
+              <th>Qualification Match</th>
+              <th>Eligibility Verdict</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="eligibilityMatrixTableBody">
+            <!-- Dynamically calculated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: Saved / Bookmarked Exams -->
+    <section id="tabContentBookmarks" class="gov-card" style="display: none; margin-bottom: 0;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>⭐</span> Bookmarked Target Examinations
+        </h2>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Pinned for quick preparation tracking</span>
+      </div>
+
+      <div id="savedExamsListContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Injected -->
+      </div>
+    </section>
+
+    <!-- TAB 4: Academic Verification Documents Checklist -->
+    <section id="tabContentDocs" class="gov-card" style="display: none; margin-bottom: 0;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>📑</span> Document Verification (DV) Readiness Checklist
+        </h2>
+        <span class="gov-badge badge-central">Public Service DV Standard</span>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Keep the following original documents and self-attested copies ready for Commission Document Verification stages:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem;">
+        <label style="display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer;">
+          <input type="checkbox" checked style="accent-color: var(--gov-green); transform: scale(1.15); margin-top: 2px;">
+          <div>
+            <strong>10th / Matriculation Certificate:</strong> Commonly used to support date-of-birth and name details; confirm the commission's current document rules.
+          </div>
+        </label>
+
+        <label style="display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer;">
+          <input type="checkbox" checked style="accent-color: var(--gov-green); transform: scale(1.15); margin-top: 2px;">
+          <div>
+            <strong>12th / Pre-University Certificate:</strong> Proof of Senior Secondary Education with Science subjects.
+          </div>
+        </label>
+
+        <label style="display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer;">
+          <input type="checkbox" style="accent-color: var(--gov-green); transform: scale(1.15); margin-top: 2px;">
+          <div>
+            <strong>B.Tech / B.E Degree Certificate / Consolidated Marks Card:</strong> Final degree or bonafide study certificate from College Principal for final year candidates.
+          </div>
+        </label>
+
+        <label style="display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer;">
+          <input type="checkbox" checked style="accent-color: var(--gov-green); transform: scale(1.15); margin-top: 2px;">
+          <div>
+            <strong>Category / Caste / Income Certificate (OBC-NCL / SC / ST / EWS):</strong> Issued in Government of India prescribed format by competent revenue authority (Tahsildar / Sub-Divisional Magistrate).
+          </div>
+        </label>
+
+        <label style="display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.65rem 0.85rem; background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer;">
+          <input type="checkbox" checked style="accent-color: var(--gov-green); transform: scale(1.15); margin-top: 2px;">
+          <div>
+            <strong>Government Photo Identity Proof:</strong> Aadhaar Card / Voter ID / Passport with matching demographic details.
+          </div>
+        </label>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Professional Footer -->
+  <footer class="gov-portal-footer">
+    <div class="footer-bottom-bar">
+      <div class="gov-container footer-bottom-inner">
+        <div>© 2026 MARGDARSHAK (SCG-GEP). B.Tech CSE Academic Major Project.</div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="index.html" style="color: #64748b; text-decoration: none;">Portal Home</a>
+          <a href="dashboard.html" style="color: #64748b; text-decoration: none;">Dashboard</a>
+          <a href="exams.html" style="color: #64748b; text-decoration: none;">Exam Directory</a>
+          <a href="applications.html" style="color: #64748b; text-decoration: none;">Application Tracker</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    function switchProfileTab(tabKey) {
+      ['details', 'matrix', 'bookmarks', 'docs'].forEach(k => {
+        const btn = document.getElementById('tabBtn' + k.charAt(0).toUpperCase() + k.slice(1));
+        const content = document.getElementById('tabContent' + k.charAt(0).toUpperCase() + k.slice(1));
+        if (btn) btn.className = k === tabKey ? 'gov-btn gov-btn-primary' : 'gov-btn gov-btn-outline';
+        if (content) content.style.display = k === tabKey ? 'block' : 'none';
+      });
+
+      if (tabKey === 'matrix') renderEligibilityMatrix();
+      if (tabKey === 'bookmarks') renderSavedBookmarks();
+    }
+
+    function calculateAgeFromDob(dobString) {
+      return MargDarshakState.calculateAge(dobString);
+    }
+
+    function loadProfileData() {
+      const p = MargDarshakState.getProfile();
+      document.getElementById('editFullName').value = p.fullName || '';
+      document.getElementById('editEmail').value = p.email || '';
+      document.getElementById('editMobile').value = p.mobile || '';
+      document.getElementById('editDob').value = p.dob || '2002-08-15';
+      document.getElementById('editCategory').value = p.category || 'OBC-NCL';
+      document.getElementById('editDomicile').value = p.domicileState || 'Karnataka';
+      document.getElementById('editDistrict').value = p.district || 'Dakshina Kannada / Mangaluru';
+
+      if (p.qualifications && p.qualifications[0]) {
+        const q = p.qualifications[0];
+        document.getElementById('editDegree').value = q.degree || 'B.Tech in Computer Science & Engineering';
+        document.getElementById('editBranch').value = q.branch || 'Computer Science & Engineering';
+        document.getElementById('editCgpa').value = q.cgpa ? `${q.cgpa} CGPA (79.2%)` : '8.42 CGPA (79.2%)';
+        document.getElementById('editGradYear').value = q.year || q.yearOfPassing || 2026;
+        document.getElementById('editInstitution').value = q.institution || 'Canara Engineering College / VTU Belagavi';
+        if (q.level) document.getElementById('editQualLevel').value = q.level;
+      }
+
+      if (p.preferredRoles) document.getElementById('editPreferredRoles').value = Array.isArray(p.preferredRoles) ? p.preferredRoles[0] : p.preferredRoles;
+      if (p.preferredMinistry) document.getElementById('editPreferredMinistry').value = p.preferredMinistry;
+      if (p.careerInterest) document.getElementById('editCareerInterest').value = p.careerInterest;
+
+      // Checkboxes for target exams
+      const targetExams = p.targetExams || ["ISRO-SC", "SSC-CGL", "UPSC-CSE", "NIC-TECH"];
+      document.querySelectorAll('input[name="prefExam"]').forEach(cb => {
+        cb.checked = targetExams.includes(cb.value);
+      });
+
+      const age = calculateAgeFromDob(p.dob || '2002-08-15');
+      document.getElementById('calculatedAge').textContent = age === null ? 'Not set' : `${age} Years`;
+
+      // Header elements
+      document.getElementById('profilePageName').textContent = p.fullName || 'Sachin K. Rao';
+      document.getElementById('profilePageRoll').textContent = p.rollNumber || '4CB22CS098';
+      if (p.qualifications && p.qualifications[0]) {
+        document.getElementById('profilePageDegree').textContent = p.qualifications[0].degree || 'B.Tech in Computer Science & Engineering';
+      }
+      document.getElementById('profilePageCatBadge').textContent = p.category || 'OBC-NCL';
+
+      const avatar = document.getElementById('profilePageAvatar');
+      if (avatar && p.fullName) {
+        const parts = p.fullName.trim().split(' ');
+        avatar.textContent = parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
+      }
+
+      const savedCount = MargDarshakState.getSavedExamIds().length;
+      document.getElementById('profileBookmarksCount').textContent = savedCount;
+    }
+
+    function renderEligibilityMatrix() {
+      const p = MargDarshakState.getProfile();
+      const userAge = calculateAgeFromDob(p.dob || '2002-08-15');
+      const tableBody = document.getElementById('eligibilityMatrixTableBody');
+      if (!tableBody || typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      tableBody.innerHTML = GOV_EXAMS_DATA.map(exam => {
+        let maxAge = exam.ageLimit.maxGeneral;
+        let isEligible = true;
+
+        if (p.category === 'OBC-NCL') maxAge = exam.ageLimit.maxOBC || (typeof maxAge === 'number' ? maxAge + 3 : maxAge);
+        else if (p.category === 'SC' || p.category === 'ST') maxAge = exam.ageLimit.maxSCST || (typeof maxAge === 'number' ? maxAge + 5 : maxAge);
+        else if (p.category === 'PwD') maxAge = exam.ageLimit.maxPwD || (typeof maxAge === 'number' ? maxAge + 10 : maxAge);
+
+        const ageOk = userAge >= exam.ageLimit.min && (maxAge === 'No limit' || userAge <= maxAge);
+        const qualOk = exam.eligibleStreams && exam.eligibleStreams.includes("Engineering/B.Tech");
+        isEligible = ageOk && qualOk;
+
+        return `
+          <tr>
+            <td>
+              <strong>${exam.code}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">${exam.title.substring(0, 35)}...</div>
+            </td>
+            <td><span class="gov-badge badge-central">${exam.conductingBody.split('(')[0]}</span></td>
+            <td>${exam.ageLimit.min} - ${exam.ageLimit.maxGeneral} Yrs</td>
+            <td><strong style="color: var(--gov-navy);">${maxAge} Yrs</strong></td>
+            <td><span class="gov-badge ${qualOk ? 'badge-active' : 'badge-state'}">${qualOk ? '✓ Stream Match' : 'Review Criteria'}</span></td>
+            <td>
+              <span class="gov-badge ${isEligible ? 'badge-active' : 'badge-deadline'}">
+                ${isEligible ? 'Sample criteria match — verify' : userAge === null ? 'DOB needed' : 'Review official criteria'}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${exam.id}')">
+                Details
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderSavedBookmarks() {
+      const container = document.getElementById('savedExamsListContainer');
+      if (!container || typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      const savedIds = MargDarshakState.getSavedExamIds();
+      document.getElementById('profileBookmarksCount').textContent = savedIds.length;
+
+      if (savedIds.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; background: #f8fafc; border: 1px dashed var(--border-medium); border-radius: 4px;">
+            <p style="font-size: 0.85rem; color: var(--text-muted);">No bookmarked examinations currently saved.</p>
+            <a href="exams.html" class="gov-btn gov-btn-saffron gov-btn-sm" style="margin-top: 0.5rem; text-decoration: none;">Browse Exams Directory</a>
+          </div>
+        `;
+        return;
+      }
+
+      const savedExams = GOV_EXAMS_DATA.filter(e => savedIds.includes(e.id));
+      container.innerHTML = savedExams.map(exam => `
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid var(--border-light); border-left: 4px solid var(--gov-navy); padding: 0.75rem 1rem; border-radius: var(--radius-sm); flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div style="font-weight: 700; color: var(--gov-navy-dark);">${exam.title}</div>
+            <div style="font-size: 0.75rem; color: var(--text-light);">
+              ${exam.conductingBody} | Last Date: <strong style="color: var(--status-danger-text);">${exam.lastDateToApply}</strong>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.35rem;">
+            <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${exam.id}')">View Details</button>
+            <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="removeBookmark('${exam.id}')">Remove ✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removeBookmark(examId) {
+      MargDarshakState.toggleSaveExam(examId);
+      renderSavedBookmarks();
+      showToast("Exam removed from saved targets.", "info");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProfileData();
+
+      // DOB change handler
+      const dobEl = document.getElementById('editDob');
+      if (dobEl) {
+        dobEl.addEventListener('change', () => {
+          const age = calculateAgeFromDob(dobEl.value);
+          document.getElementById('calculatedAge').textContent = age === null ? 'Not set' : `${age} Years`;
+        });
+      }
+
+      const form = document.getElementById('profileEditForm');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const p = MargDarshakState.getProfile();
+
+        p.fullName = document.getElementById('editFullName').value.trim();
+        p.email = document.getElementById('editEmail').value.trim();
+        p.mobile = document.getElementById('editMobile').value.trim();
+        p.dob = document.getElementById('editDob').value;
+        p.category = document.getElementById('editCategory').value;
+        p.domicileState = document.getElementById('editDomicile').value;
+        p.district = document.getElementById('editDistrict').value.trim();
+
+        if (!p.qualifications || !p.qualifications[0]) {
+          p.qualifications = [{}];
+        }
+
+        p.qualifications[0].level = document.getElementById('editQualLevel').value;
+        p.qualifications[0].degree = document.getElementById('editDegree').value.trim();
+        p.qualifications[0].branch = document.getElementById('editBranch').value.trim();
+        p.qualifications[0].year = parseInt(document.getElementById('editGradYear').value, 10);
+        p.qualifications[0].institution = document.getElementById('editInstitution').value.trim();
+
+        const cgpaStr = document.getElementById('editCgpa').value.trim();
+        const cgpaMatch = cgpaStr.match(/([0-9.]+)/);
+        p.qualifications[0].cgpa = cgpaMatch ? parseFloat(cgpaMatch[1]) : 8.42;
+
+        p.preferredRoles = document.getElementById('editPreferredRoles').value;
+        p.preferredMinistry = document.getElementById('editPreferredMinistry').value;
+        p.careerInterest = document.getElementById('editCareerInterest').value;
+
+        // Target exams checkboxes
+        const selectedExams = [];
+        document.querySelectorAll('input[name="prefExam"]:checked').forEach(cb => {
+          selectedExams.push(cb.value);
+        });
+        p.targetExams = selectedExams;
+
+        MargDarshakState.saveProfile(p);
+        loadProfileData();
+        showToast("Profile parameters successfully saved and synchronized!", "success", 2500);
+      });
+    });
+  </script>
+</body>
+</html>

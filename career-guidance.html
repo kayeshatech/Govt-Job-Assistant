@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Guidance & Pathways | MARGDARSHAK (SCG-GEP Portal)</title>
+  <meta name="description" content="Multi-agent AI career guidance system for Indian undergraduate students and engineering aspirants mapping academic degrees to gazetted government careers.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a2540'/><path d='M20 75 L50 25 L80 75 Z' fill='%23d9531e'/><circle cx='50' cy='55' r='10' fill='%23ffffff'/></svg>">
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#guidanceContent" class="skip-link">Skip to main content</a>
+
+  <!-- Tricolor Ribbon -->
+  <div class="tricolor-stripe" aria-hidden="true"></div>
+
+  <!-- Top Accessibility Bar -->
+  <aside class="gov-topbar" aria-label="Portal Accessibility">
+    <div class="gov-container topbar-wrapper">
+      <div class="topbar-left">
+        <span class="topbar-tag">Academic Capstone Initiative</span>
+        <span class="topbar-date" id="currentGovDate">Loading date...</span>
+        <span class="academic-notice-pill">⚠️ Student Project — Not an Official Government Website</span>
+      </div>
+      <div class="topbar-right">
+        <div class="accessibility-tools">
+          <button type="button" id="btnFontSmall" class="accessibility-btn" aria-label="Decrease font">A-</button>
+          <button type="button" id="btnFontNormal" class="accessibility-btn" aria-label="Default font">A</button>
+          <button type="button" id="btnFontLarge" class="accessibility-btn" aria-label="Enlarge font">A+</button>
+          <button type="button" id="btnContrast" class="accessibility-btn">👁️ Contrast</button>
+        </div>
+        <select id="govLangSelect" class="lang-select" aria-label="Language Selector">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Header -->
+  <header class="gov-main-header">
+    <div class="gov-container header-inner">
+      <a href="index.html" class="gov-branding">
+        <div class="gov-emblem-badge" aria-hidden="true">
+          <span>म</span>
+          <span class="sub-char">SCG-GEP</span>
+        </div>
+        <div class="gov-brand-text">
+          <span class="brand-hindi">मार्गदर्शक | कृत्रिम बुद्धिमत्ता कैरियर मार्गदर्शन</span>
+          <span class="brand-title">MARGDARSHAK <span class="brand-acronym">(SCG-GEP)</span></span>
+          <span class="brand-subtitle">AI-Powered Academic & Public Service Career Guidance System</span>
+        </div>
+      </a>
+      <div class="header-right-actions">
+        <a href="dashboard.html" class="gov-btn gov-btn-outline gov-btn-sm">Dashboard</a>
+        <a href="exams.html" class="gov-btn gov-btn-primary gov-btn-sm">Browse Exams</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="gov-navbar" aria-label="Primary Navigation">
+    <div class="gov-container nav-wrapper">
+      <button type="button" class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="exams.html" class="nav-link">Government Exams</a></li>
+        <li class="nav-item"><a href="exam-compare.html" class="nav-link">Pattern & Syllabus Compare</a></li>
+        <li class="nav-item"><a href="intelligence.html" class="nav-link">Govt Info Intelligence</a></li>
+        <li class="nav-item"><a href="calendar.html" class="nav-link">Exam Calendar</a></li>
+        <li class="nav-item"><a href="applications.html" class="nav-link">Application Assistance</a></li>
+        <li class="nav-item"><a href="career-guidance.html" class="nav-link active">Career Pathways</a></li>
+        <li class="nav-item"><a href="preparation.html" class="nav-link">Preparation</a></li>
+        <li class="nav-item"><a href="notifications.html" class="nav-link">Notifications <span class="nav-badge-pill">7</span></a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link" style="color: #fed7aa;">Dashboard ↗</a></li>
+      </ul>
+      <div class="nav-auth-actions">
+        <a href="dashboard.html" class="btn-nav-login">
+          <span>👤</span> <span class="header-user-name">Sachin K. Rao</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-container" aria-label="Breadcrumb">
+    <div class="gov-container">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-separator">/</li>
+        <li class="breadcrumb-item active" aria-current="page">AI Career Guidance & Pathways</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="guidanceContent" class="gov-container" style="padding-top: 1.5rem; padding-bottom: 3rem;">
+    
+    <!-- Header Banner -->
+    <section class="gov-card" style="border-top: 4px solid var(--gov-saffron); background: #ffffff;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="gov-badge badge-state">Career guidance demo</span>
+          <h1 style="font-size: var(--h1-size); color: var(--gov-navy-dark); font-weight: 800; margin-top: 4px;">
+            Intelligent Public Sector Career Guidance & Degree Alignment
+          </h1>
+          <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 820px; margin-top: 0.35rem;">
+            Explore sample career pathways and a deterministic quiz. Recommendations are illustrative, not AI-generated, and are not checked against current recruitment syllabi.
+          </p>
+        </div>
+        <div>
+          <button type="button" class="gov-btn gov-btn-saffron gov-btn-lg" onclick="document.getElementById('aiQuizSection').scrollIntoView({behavior:'smooth'})">
+            Take 2-Min Career Quiz 🧭
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stream Selector Tabs -->
+    <section style="margin-bottom: 2rem;">
+      <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border-medium); padding-bottom: 0; margin-bottom: 1.5rem; overflow-x: auto;">
+        <button type="button" id="tabStreamBtech" class="gov-btn gov-btn-primary" style="border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom: none;">
+          💻 Computer Science & IT (B.Tech / B.E)
+        </button>
+        <button type="button" id="tabStreamGeneral" class="gov-btn gov-btn-outline" style="border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom: none;">
+          🎓 Any Graduate (B.A / B.Sc / B.Com)
+        </button>
+      </div>
+
+      <!-- Pathways Container -->
+      <div id="pathwaysDisplayList" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <!-- Dynamically injected -->
+      </div>
+    </section>
+
+    <!-- Interactive AI Career Aptitude Assessment Quiz Section -->
+    <section id="aiQuizSection" class="gov-card card-green" style="padding: 1.75rem 2rem; margin-bottom: 2.5rem;">
+      <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+        <span class="gov-badge badge-active">Diagnostic Assessment</span>
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--gov-navy-dark); margin-top: 2px;">
+          Multi-Agent Career Alignment Screener (5 Questions)
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+          Select your preferences to see a deterministic demonstration career recommendation and illustrative examination roadmap.
+        </p>
+      </div>
+
+      <form id="careerQuizForm">
+        <!-- Question 1 -->
+        <div style="margin-bottom: 1.25rem; background: #fff; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">
+            1. Which work environment excites your intellectual drive the most?
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q1" value="research" checked style="accent-color: var(--gov-navy);">
+              <span>High-technology R&D labs, satellite software, defense telemetry, and cryptographic algorithms.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q1" value="admin" style="accent-color: var(--gov-navy);">
+              <span>District administration, public grievance redressal, law and order, and large-scale governance leadership.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q1" value="teaching" style="accent-color: var(--gov-navy);">
+              <span>University academic lectureship, student mentoring, and publishing scientific papers.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q1" value="corporate_gov" style="accent-color: var(--gov-navy);">
+              <span>Maharatna PSU industrial automation, high commercial CTC (₹18-24 Lakhs), and executive quarters.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div style="margin-bottom: 1.25rem; background: #fff; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">
+            2. What is your preparation timeline and tolerance for multi-stage exam cycles?
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q2" value="quick" checked style="accent-color: var(--gov-navy);">
+              <span>Single-phase / Swift recruitment: 3 to 6 months intensive written CBT focus (ISRO / SSC CGL / KSET).</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q2" value="long" style="accent-color: var(--gov-navy);">
+              <span>Ready for comprehensive 1-year marathon with Prelims, Descriptive Mains, and Personality Test (UPSC CSE / KAS).</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q2" value="gate" style="accent-color: var(--gov-navy);">
+              <span>GATE-centric preparation to unlock both PSU recruitment and premier IIT M.Tech seats concurrently.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div style="margin-bottom: 1.25rem; background: #fff; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">
+            3. How do you assess your quantitative and analytical problem-solving skills?
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q3" value="high_quant" checked style="accent-color: var(--gov-navy);">
+              <span>Very strong: Enjoy fast arithmetic, algorithms, discrete mathematics, and logical puzzles.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q3" value="high_gs" style="accent-color: var(--gov-navy);">
+              <span>Strong in qualitative analysis: Indian polity, international relations, socio-economics, and essay writing.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q3" value="balanced" style="accent-color: var(--gov-navy);">
+              <span>Balanced generalist: comfortable balancing elementary math, general awareness, and English comprehension.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div style="margin-bottom: 1.25rem; background: #fff; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">
+            4. What geographic posting and mobility pattern do you prefer?
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q4" value="state" checked style="accent-color: var(--gov-navy);">
+              <span>State-specific or South India focused (e.g. ISRO Bengaluru/Trivandrum, KPSC KAS, KSET Karnataka).</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q4" value="delhi" style="accent-color: var(--gov-navy);">
+              <span>New Delhi Central Ministries & Secretariats (SSC CGL ASO in MEA/CSS).</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q4" value="all_india" style="accent-color: var(--gov-navy);">
+              <span>All-India posting with rural and district immersion (IAS/IPS, IBPS Banking, Indian Railways).</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div style="margin-bottom: 1.5rem; background: #fff; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">
+            5. What is your primary career aspiration motivator?
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q5" value="tech_prestige" checked style="accent-color: var(--gov-navy);">
+              <span>Technological pride: Working on Chandrayaan missions, cyber defense, or building Digital India stacks.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q5" value="power_impact" style="accent-color: var(--gov-navy);">
+              <span>Constitutional authority: Driving welfare delivery and policy reforms as a District Collector or SP.</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="radio" name="q5" value="financial_stability" style="accent-color: var(--gov-navy);">
+              <span>Highest starting compensation, township amenities, medical healthcare, and post-retirement pension security.</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="gov-btn gov-btn-primary gov-btn-lg">
+          🤖 Synthesize AI Recommendation Report
+        </button>
+      </form>
+
+      <!-- Quiz Results Container (Initially Hidden) -->
+      <div id="quizResultDisplay" style="display: none; margin-top: 1.5rem; background: #ffffff; border: 2px solid var(--gov-green); border-radius: var(--radius-sm); padding: 1.5rem; box-shadow: var(--shadow-md);">
+        <!-- Injected via script below -->
+      </div>
+    </section>
+
+    <!-- Multi-Agent AI System Collaboration Architecture -->
+    <section class="gov-card" style="border-top: 4px solid var(--gov-navy);">
+      <div class="gov-card-header">
+        <h3 class="gov-card-title">
+          <span>🧠</span> How the Multi-Agent System Generates Personalized Guidance
+        </h3>
+        <span class="gov-badge badge-tech">Academic Framework</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <div style="background: #f8fafc; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.85rem; margin-bottom: 0.35rem;">
+            Step 1: Profile Tokenization
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
+            The <strong>Eligibility Screener Agent</strong> extracts age relaxation thresholds, degree equivalencies (e.g. B.Tech CSE vs MCA vs B.Sc), and state domicile reservation quotas.
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.85rem; margin-bottom: 0.35rem;">
+            Step 2: Semantic Syllabi Graphing
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
+            The <strong>Syllabus Planner Agent</strong> computes Jaccard similarity across technical subjects (Algorithms, DBMS, OS, Networks) and general awareness to highlight syllabus overlaps.
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 1rem; border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
+          <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.85rem; margin-bottom: 0.35rem;">
+            Step 3: Watchdog Verification
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
+            Sample advisory flow only. This page does not check active gazette windows or verify exam eligibility.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Professional Footer -->
+  <footer class="gov-portal-footer">
+    <div class="footer-bottom-bar">
+      <div class="gov-container footer-bottom-inner">
+        <div>© 2026 MARGDARSHAK (SCG-GEP). B.Tech CSE Academic Major Project.</div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="index.html" style="color: #64748b; text-decoration: none;">Portal Home</a>
+          <a href="exams.html" style="color: #64748b; text-decoration: none;">Exams Directory</a>
+          <a href="preparation.html" style="color: #64748b; text-decoration: none;">Preparation</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    let activeStreamKey = 'btech-cse';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabBtech = document.getElementById('tabStreamBtech');
+      const tabGeneral = document.getElementById('tabStreamGeneral');
+
+      tabBtech.addEventListener('click', () => {
+        activeStreamKey = 'btech-cse';
+        tabBtech.className = 'gov-btn gov-btn-primary';
+        tabGeneral.className = 'gov-btn gov-btn-outline';
+        renderPathways();
+      });
+
+      tabGeneral.addEventListener('click', () => {
+        activeStreamKey = 'general-graduate';
+        tabGeneral.className = 'gov-btn gov-btn-primary';
+        tabBtech.className = 'gov-btn gov-btn-outline';
+        renderPathways();
+      });
+
+      renderPathways();
+
+      // Quiz Handler
+      const quizForm = document.getElementById('careerQuizForm');
+      quizForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        showToast("Preparing a local demonstration recommendation...", "info", 1800);
+
+        setTimeout(() => {
+          const q1 = document.querySelector('input[name="q1"]:checked').value;
+          const q2 = document.querySelector('input[name="q2"]:checked').value;
+          const q4 = document.querySelector('input[name="q4"]:checked').value;
+
+          let topRecommendation = "";
+          let matchPercentage = 96;
+          let suggestedExams = [];
+          let payEstimate = "Level 10 (₹56,100 - ₹1,77,500)";
+
+          if (q1 === 'research' || q1 === 'corporate_gov') {
+            topRecommendation = "Premier Space & Defense R&D Organizations (ISRO & DRDO)";
+            suggestedExams = ["ISRO ICRB Scientist 'SC' (Computer Science)", "DRDO CEPTAM-11", "NIC Scientist 'B'"];
+            payEstimate = "Pay Level 10 (Gross ~₹95,000/month) + Research Allowances";
+            matchPercentage = 98;
+          } else if (q1 === 'admin') {
+            topRecommendation = "Civil Services & State Administrative Leadership";
+            suggestedExams = ["UPSC Civil Services Examination (CSE)", "KPSC KAS Gazetted Probationers", "SSC CGL (ASO in CSS/MEA)"];
+            payEstimate = "Level 10 (₹56,100) or Level 7 (₹44,900) + Official Residence";
+            matchPercentage = 94;
+          } else if (q1 === 'teaching') {
+            topRecommendation = "University Academia & Sponsored Research (NEP 2020 Direct Ph.D)";
+            suggestedExams = ["UGC-NET / JRF in Computer Science", "Karnataka State Eligibility Test (KSET)"];
+            payEstimate = "UGC Academic Level 10 (₹57,700 - ₹1,82,400) / JRF ₹37,000/mo";
+            matchPercentage = 92;
+          }
+
+          const resultBox = document.getElementById('quizResultDisplay');
+          resultBox.style.display = 'block';
+          resultBox.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+              <div>
+                <span class="gov-badge badge-active">Recommended Career Trajectory</span>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--gov-navy-dark); margin-top: 4px;">
+                  ${topRecommendation}
+                </h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">
+                  Diagnostic Profile Fit based on your quantitative aptitude and timeline preference.
+                </span>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 1.75rem; font-weight: 800; color: var(--gov-green); line-height: 1;">
+                  ${matchPercentage}%
+                </div>
+                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Aptitude Compatibility</span>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+              <div style="background: #f8fafc; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border-light);">
+                <span style="font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; font-weight: 700;">Starting Pay Level (INR)</span>
+                <div style="font-weight: 700; color: var(--gov-green); font-size: 0.85rem; margin-top: 2px;">${payEstimate}</div>
+              </div>
+              <div style="background: #f8fafc; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border-light);">
+                <span style="font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; font-weight: 700;">Suggested Priority Target Exams</span>
+                <div style="font-weight: 700; color: var(--gov-navy-dark); font-size: 0.85rem; margin-top: 2px;">${suggestedExams.join(', ')}</div>
+              </div>
+            </div>
+
+            <div style="background: #fefce8; border: 1px solid #fef08a; padding: 0.75rem; border-radius: 4px; font-size: 0.82rem; color: #854d0e; line-height: 1.5; margin-bottom: 1rem;">
+              💡 <strong>Multi-Agent Guidance Note:</strong> As a final-year student with strong analytical skills, your highest immediate probability of selection lies in technical objective tests where computer science core syllabus accounts for >70% of total score weightage.
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <a href="preparation.html" class="gov-btn gov-btn-green gov-btn-sm">Open Recommended Study Plan →</a>
+              <a href="exams.html" class="gov-btn gov-btn-primary gov-btn-sm">View Target Exam Notices</a>
+            </div>
+          `;
+
+          resultBox.scrollIntoView({ behavior: 'smooth' });
+          showToast("Demonstration career profile prepared.", "success", 2500);
+        }, 800);
+      });
+    });
+
+    function renderPathways() {
+      const container = document.getElementById('pathwaysDisplayList');
+      if (!container || typeof CAREER_PATHWAYS_DATA === 'undefined') return;
+
+      const data = CAREER_PATHWAYS_DATA.find(p => p.streamId === activeStreamKey);
+      if (!data) return;
+
+      container.innerHTML = data.pathways.map((pw, idx) => `
+        <div class="gov-card" style="border-left: 5px solid ${idx === 0 ? 'var(--gov-saffron)' : 'var(--gov-navy)'}; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <span class="gov-badge badge-central">Pathway ${idx + 1}</span>
+              <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--gov-navy-dark); margin-top: 2px;">
+                ${pw.title}
+              </h2>
+            </div>
+            <div style="text-align: right;">
+              <span class="gov-badge badge-pay">${pw.startingPay.split('(')[0]}</span>
+            </div>
+          </div>
+
+          <div style="font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.5;">
+            <strong>Work Profile & Responsibilities:</strong> ${pw.workProfile}
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; font-size: 0.8rem; background: #f8fafc; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border-light); margin-bottom: 0.75rem;">
+            <div>
+              <span style="font-weight: 700; color: var(--gov-navy); display: block; margin-bottom: 2px;">Target Recruitment Examinations:</span>
+              <ul style="padding-left: 1.1rem; margin: 0; color: var(--text-muted);">
+                ${pw.targetExams.map(e => `<li>${e}</li>`).join('')}
+              </ul>
+            </div>
+            <div>
+              <span style="font-weight: 700; color: var(--gov-navy); display: block; margin-bottom: 2px;">Key Academic Competencies:</span>
+              <ul style="padding-left: 1.1rem; margin: 0; color: var(--text-muted);">
+                ${pw.keySkills.map(s => `<li>${s}</li>`).join('')}
+              </ul>
+            </div>
+            <div>
+              <span style="font-weight: 700; color: var(--gov-green); display: block; margin-bottom: 2px;">Service Perks & Security:</span>
+              <ul style="padding-left: 1.1rem; margin: 0; color: var(--text-muted);">
+                ${pw.pros.map(pr => `<li>${pr}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+            <a href="exams.html" class="gov-btn gov-btn-outline gov-btn-sm">View Matching Exam Notices →</a>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

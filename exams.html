@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Examinations & Job Posts Directory | MARGDARSHAK (SCG-GEP Portal)</title>
+  <meta name="description" content="Central and State Government Examinations and Job Cadres Repository. Filter by degree stream, pay matrix levels, eligibility rules, and automated syllabus comparison.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a2540'/><path d='M20 75 L50 25 L80 75 Z' fill='%23d9531e'/><circle cx='50' cy='55' r='10' fill='%23ffffff'/></svg>">
+  <style>
+    .module-tab-btn {
+      padding: 0.65rem 1.15rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--border-medium);
+      background: #ffffff;
+      color: var(--gov-navy-dark);
+      cursor: pointer;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .module-tab-btn.active {
+      background: var(--gov-navy);
+      color: #ffffff;
+      border-color: var(--gov-navy);
+    }
+    .module-tab-btn:hover:not(.active) {
+      background: #f1f5f9;
+    }
+    .job-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+    }
+    .job-card {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      border-top: 4px solid var(--gov-navy);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .job-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(10,37,64,0.08);
+    }
+    .salary-highlight-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 4px;
+      padding: 0.65rem 0.85rem;
+      margin: 0.75rem 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#examsContent" class="skip-link">Skip to main content</a>
+
+  <!-- Tricolor Ribbon -->
+  <div class="tricolor-stripe" aria-hidden="true"></div>
+
+  <!-- Top Accessibility Bar -->
+  <aside class="gov-topbar" aria-label="Portal Accessibility">
+    <div class="gov-container topbar-wrapper">
+      <div class="topbar-left">
+        <span class="topbar-tag">Academic Capstone Initiative</span>
+        <span class="topbar-date" id="currentGovDate">Loading date...</span>
+        <span class="academic-notice-pill">⚠️ Student Project — Not an Official Government Website</span>
+      </div>
+      <div class="topbar-right">
+        <div class="accessibility-tools">
+          <button type="button" id="btnFontSmall" class="accessibility-btn" aria-label="Decrease font">A-</button>
+          <button type="button" id="btnFontNormal" class="accessibility-btn" aria-label="Default font">A</button>
+          <button type="button" id="btnFontLarge" class="accessibility-btn" aria-label="Enlarge font">A+</button>
+          <button type="button" id="btnContrast" class="accessibility-btn">👁️ Contrast</button>
+        </div>
+        <select id="govLangSelect" class="lang-select" aria-label="Language Selector">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Header -->
+  <header class="gov-main-header">
+    <div class="gov-container header-inner">
+      <a href="index.html" class="gov-branding">
+        <div class="gov-emblem-badge" aria-hidden="true">
+          <span>म</span>
+          <span class="sub-char">SCG-GEP</span>
+        </div>
+        <div class="gov-brand-text">
+          <span class="brand-hindi">मार्गदर्शक | अखिल भारतीय एवं राज्य परीक्षा निर्देशिका</span>
+          <span class="brand-title">MARGDARSHAK <span class="brand-acronym">(SCG-GEP)</span></span>
+          <span class="brand-subtitle">Central & State Government Examinations & Job Cadres Repository</span>
+        </div>
+      </a>
+      <div class="header-right-actions">
+        <a href="dashboard.html" class="gov-btn gov-btn-outline gov-btn-sm">Student Dashboard</a>
+        <button type="button" onclick="switchExamsTab('eligibility')" class="gov-btn gov-btn-saffron gov-btn-sm">
+          ⚖️ Eligibility Screener
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="gov-navbar" aria-label="Primary Navigation">
+    <div class="gov-container nav-wrapper">
+      <button type="button" class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="exams.html" class="nav-link active">Government Exams</a></li>
+        <li class="nav-item"><a href="exam-compare.html" class="nav-link">Pattern & Syllabus Compare</a></li>
+        <li class="nav-item"><a href="intelligence.html" class="nav-link">Govt Info Intelligence</a></li>
+        <li class="nav-item"><a href="calendar.html" class="nav-link">Exam Calendar</a></li>
+        <li class="nav-item"><a href="applications.html" class="nav-link">Application Assistance</a></li>
+        <li class="nav-item"><a href="career-guidance.html" class="nav-link">Career Pathways</a></li>
+        <li class="nav-item"><a href="preparation.html" class="nav-link">Preparation</a></li>
+        <li class="nav-item"><a href="notifications.html" class="nav-link">Notifications <span class="nav-badge-pill">7</span></a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link" style="color: #fed7aa;">Dashboard ↗</a></li>
+      </ul>
+      <div class="nav-auth-actions">
+        <a href="profile.html" class="btn-nav-login">
+          <span>👤</span> <span class="header-user-name">Sachin K. Rao</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-container" aria-label="Breadcrumb">
+    <div class="gov-container">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-separator">/</li>
+        <li class="breadcrumb-item active" aria-current="page">Government Examinations & Job Directory (Module B)</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="examsContent" class="gov-container" style="padding-top: 1.5rem; padding-bottom: 3.5rem;">
+    
+    <!-- Title & Navigation Bar -->
+    <div style="border-bottom: 2px solid var(--gov-navy); padding-bottom: 0.75rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 0.75rem;">
+      <div>
+        <span class="gov-badge badge-central">National Repository</span>
+        <h1 style="font-size: var(--h1-size); color: var(--gov-navy-dark); font-weight: 800; margin-top: 2px;">
+          Government Examinations & Public Sector Job Cadres
+        </h1>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+          Sample examination and job reference entries for UPSC, SSC, banking, railways, technical services, state PSCs, KSET, and UGC-NET.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="exam-compare.html" class="gov-btn gov-btn-saffron gov-btn-sm" style="text-decoration: none;">
+          📊 Pattern & Syllabus Overlap Analyzer ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Multi-Module Mode Switcher Tabs -->
+    <div style="display: flex; gap: 0.35rem; border-bottom: 2px solid var(--gov-navy); margin-bottom: 1.5rem; overflow-x: auto;">
+      <button type="button" id="tabExams" class="module-tab-btn active" onclick="switchExamsTab('exams')">
+        <span>🎯</span> Examinations Catalogue (Feature 7 & 9)
+      </button>
+      <button type="button" id="tabJobs" class="module-tab-btn" onclick="switchExamsTab('jobs')">
+        <span>💼</span> Government Posts & 7th CPC Pay (Feature 8 & 16)
+      </button>
+      <button type="button" id="tabRecs" class="module-tab-btn" onclick="switchExamsTab('recs')">
+        <span>🤖</span> Personalized AI Recommendations (Feature 10)
+      </button>
+      <button type="button" id="tabEligibility" class="module-tab-btn" onclick="switchExamsTab('eligibility')">
+        <span>⚖️</span> Exam Eligibility Checker (Feature 11)
+      </button>
+    </div>
+
+    <!-- COMPARISON NOTICE CALLOUT -->
+    <div style="background: #eff6ff; border-left: 4px solid #1d4ed8; padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+      <div style="font-size: 0.82rem; color: #1e3a8a;">
+        💡 <strong>Preparing for multiple exams?</strong> Analyze shared syllabus topics and calculate estimated preparation overlap across UPSC, SSC, RRB, and ISRO in our dedicated comparator.
+      </div>
+      <a href="exam-compare.html" class="gov-btn gov-btn-outline gov-btn-sm" style="font-size: 0.78rem; text-decoration: none;">
+        Launch Overlap Analyzer
+      </a>
+    </div>
+
+    <!-- ==================== TAB 1: EXAMINATIONS DIRECTORY ==================== -->
+    <div id="sectionExamsCatalogue">
+      <!-- Multi-Faceted Filter Panel (Feature 9) -->
+      <section class="exam-filter-panel" aria-label="Filter Options">
+        <div style="font-size: 0.82rem; font-weight: 700; color: var(--gov-navy-dark); margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+          <span>🔍 Search & Multi-Faceted Filters (Feature 9)</span>
+          <button type="button" id="btnResetFilters" style="background: none; border: none; color: var(--gov-saffron); font-size: 0.78rem; font-weight: 600; cursor: pointer;">
+            Reset All Filters
+          </button>
+        </div>
+
+        <div class="filter-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+          <!-- Search Keyword -->
+          <div class="gov-form-group" style="margin-bottom: 0;">
+            <label for="filterSearch" class="gov-form-label" style="font-size: 0.75rem;">Keyword / Conducting Body:</label>
+            <input type="text" id="filterSearch" class="gov-form-control" placeholder="Search UPSC, ISRO, CSE..." style="font-size: 0.82rem; padding: 0.45rem;">
+          </div>
+
+          <!-- Sector Category -->
+          <div class="gov-form-group" style="margin-bottom: 0;">
+            <label for="filterCategory" class="gov-form-label" style="font-size: 0.75rem;">Recruitment Sector:</label>
+            <select id="filterCategory" class="gov-form-control" style="font-size: 0.82rem; padding: 0.45rem;">
+              <option value="All">All Sectors (All Exams)</option>
+              <option value="Civil Services">Civil Services (UPSC CSE, KPSC KAS)</option>
+              <option value="Engineering & Technical">Engineering & Technical (ISRO, NIC, GATE PSU)</option>
+              <option value="Teaching & Research">Teaching & Research (UGC-NET, KSET)</option>
+              <option value="Staff Selection">Staff Selection (SSC CGL)</option>
+              <option value="Defense & Police">Defense & Police (DRDO, IB ACIO)</option>
+              <option value="Railways">Indian Railways (RRB NTPC)</option>
+              <option value="Banking & Financial Services">Banking & Finance (IBPS PO)</option>
+            </select>
+          </div>
+
+          <!-- Stream / Degree -->
+          <div class="gov-form-group" style="margin-bottom: 0;">
+            <label for="filterStream" class="gov-form-label" style="font-size: 0.75rem;">Your Qualification Stream:</label>
+            <select id="filterStream" class="gov-form-control" style="font-size: 0.82rem; padding: 0.45rem;">
+              <option value="All">All Qualifications</option>
+              <option value="Engineering/B.Tech">Engineering / B.Tech (Highest Tech Match)</option>
+              <option value="Science/B.Sc">Science (B.Sc / BCA)</option>
+              <option value="Commerce/B.Com">Commerce (B.Com / BBA)</option>
+              <option value="Arts/Humanities">Arts / Humanities (B.A)</option>
+            </select>
+          </div>
+
+          <!-- Commission Level / State -->
+          <div class="gov-form-group" style="margin-bottom: 0;">
+            <label for="filterLevel" class="gov-form-label" style="font-size: 0.75rem;">Jurisdiction / Level:</label>
+            <select id="filterLevel" class="gov-form-control" style="font-size: 0.82rem; padding: 0.45rem;">
+              <option value="All">All Jurisdictions</option>
+              <option value="Central">Union / Central Government</option>
+              <option value="State">State Commissions (Karnataka KPSC, etc.)</option>
+              <option value="National">National Level (NTA / IBPS)</option>
+            </select>
+          </div>
+
+          <!-- Sort By -->
+          <div class="gov-form-group" style="margin-bottom: 0;">
+            <label for="filterSort" class="gov-form-label" style="font-size: 0.75rem;">Sort Results By:</label>
+            <select id="filterSort" class="gov-form-control" style="font-size: 0.82rem; padding: 0.45rem;">
+              <option value="aiMatch">Sample profile relevance (highest)</option>
+              <option value="vacancies">Vacancies (Highest First)</option>
+              <option value="deadline">Approaching Deadline</option>
+              <option value="title">Alphabetical (A - Z)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- View Controls & Counter -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 0.82rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          Showing <strong id="examResultCount" style="color: var(--gov-navy-dark);">0</strong> examinations matching your criteria
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button type="button" id="btnViewCards" class="gov-btn gov-btn-primary gov-btn-sm" title="Detailed Cards View">🗂️ Cards</button>
+          <button type="button" id="btnViewTable" class="gov-btn gov-btn-outline gov-btn-sm" title="Compact Table View">📄 Table</button>
+        </div>
+      </div>
+
+      <!-- Cards Container -->
+      <div id="examsCardsContainer" class="exam-cards-list"></div>
+
+      <!-- Table Container (Initially Hidden) -->
+      <div id="examsTableContainer" class="gov-table-wrapper" style="display: none;">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>Conducting Body & Examination</th>
+              <th>Level</th>
+              <th>Target Posts</th>
+              <th>Vacancies</th>
+              <th>Age Limit</th>
+              <th>Pay Matrix</th>
+              <th>Last Date</th>
+              <th>Sample match</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="examsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div id="examsEmptyState" style="display: none; text-align: center; padding: 3rem 1rem; background: #ffffff; border: 1px dashed var(--border-medium); border-radius: var(--radius-sm);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔍</div>
+        <h3 style="font-size: 1.15rem; color: var(--gov-navy-dark); font-weight: 700;">No Examinations Found</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+          No active examinations match your selected criteria.
+        </p>
+        <button type="button" class="gov-btn gov-btn-saffron gov-btn-sm" style="margin-top: 1rem;" onclick="resetAllFilters()">
+          Reset All Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: GOVERNMENT JOBS & POSTS DATABASE (Feature 8 & 16) ==================== -->
+    <div id="sectionGovJobs" style="display: none;">
+      <section class="gov-card">
+        <div class="gov-card-header">
+          <div>
+            <h2 class="gov-card-title">
+              <span>💼</span> Public Sector Job Roles, Cadres & 7th CPC Pay Scale Matrix
+            </h2>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Features 8 & 16: Illustrative job roles, qualifications, and indicative pay references; not verified against live notices.
+            </div>
+          </div>
+          <span class="gov-badge badge-central">7th Central Pay Commission Data</span>
+        </div>
+
+        <!-- Filter for Jobs -->
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+          <input type="text" id="jobFilterSearch" class="gov-form-control" placeholder="Search post name, ministry, or department..." style="flex: 1; min-width: 240px; font-size: 0.82rem;">
+          <select id="jobFilterCadre" class="gov-form-control" style="width: auto; font-size: 0.82rem;">
+            <option value="All">All Cadres</option>
+            <option value="Group 'A'">Group 'A' (Gazetted / Executive)</option>
+            <option value="Group 'B'">Group 'B' (Central Secretariat / Non-Gazetted)</option>
+            <option value="Group 'C'">Group 'C' (Railways / Intelligence)</option>
+            <option value="Academic">Academic (University Teaching)</option>
+          </select>
+        </div>
+
+        <div id="jobsListContainer" class="job-card-grid">
+          <!-- Dynamically populated from GOV_JOBS_DATABASE -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== TAB 3: PERSONALIZED RECOMMENDATIONS (Feature 10) ==================== -->
+    <div id="sectionAiRecommendations" style="display: none;">
+      <section class="gov-card">
+        <div class="gov-card-header">
+          <div>
+            <h2 class="gov-card-title">
+              <span>🤖</span> Personalized Government Exam Recommendations
+            </h2>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Feature 10: Tailored to your active profile (<strong id="recProfileDegree">B.Tech CSE</strong>, <strong id="recProfileCat">OBC-NCL</strong>, Age ~23).
+            </div>
+          </div>
+          <span class="gov-badge badge-state">Sample profile matching</span>
+        </div>
+
+        <div id="aiRecommendationsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem;">
+          <!-- Populated from Profile synergy -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== TAB 4: EXAM ELIGIBILITY CHECKER (Feature 11) ==================== -->
+    <div id="sectionEligibilityChecker" style="display: none;">
+      <section class="gov-card">
+        <div class="gov-card-header">
+          <div>
+            <h2 class="gov-card-title">
+              <span>⚖️</span> Form-Based Government Exam Eligibility Screener
+            </h2>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Feature 11: Demo comparison of profile inputs with illustrative criteria. Confirm every rule in the current official notice.
+            </div>
+          </div>
+          <span class="gov-badge badge-state">Illustrative rules — not official</span>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem;">
+          <form id="checkerForm" onsubmit="event.preventDefault(); evaluateInteractiveEligibility();">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+              
+              <div class="gov-form-group">
+                <label for="checkerExamSelect" class="gov-form-label">Target Examination:</label>
+                <select id="checkerExamSelect" class="gov-form-control" required></select>
+              </div>
+
+              <div class="gov-form-group">
+                <label for="checkerDob" class="gov-form-label">Date of Birth (DOB):</label>
+                <input type="date" id="checkerDob" class="gov-form-control" value="2002-08-15" required>
+                <div class="gov-form-help">Calculated Age: <strong id="checkerCalculatedAge">23 Yrs</strong></div>
+              </div>
+
+              <div class="gov-form-group">
+                <label for="checkerCategory" class="gov-form-label">Social Reservation Category:</label>
+                <select id="checkerCategory" class="gov-form-control">
+                  <option value="General">General / Unreserved (No Age Relaxation)</option>
+                  <option value="OBC-NCL" selected>OBC (Non-Creamy Layer) - +3 Years</option>
+                  <option value="SC">Scheduled Caste (SC) - +5 Years</option>
+                  <option value="ST">Scheduled Tribe (ST) - +5 Years</option>
+                  <option value="EWS">Economically Weaker Section (EWS)</option>
+                  <option value="PwD">Persons with Benchmark Disabilities (PwD) - +10 Years</option>
+                </select>
+                <div class="gov-form-help">Optional field for statutory age relaxation calculation.</div>
+              </div>
+
+              <div class="gov-form-group">
+                <label for="checkerQualification" class="gov-form-label">Degree Stream:</label>
+                <select id="checkerQualification" class="gov-form-control">
+                  <option value="Engineering/B.Tech" selected>B.E / B.Tech (Computer Science / Any)</option>
+                  <option value="Science/B.Sc">B.Sc / BCA (Science & Computing)</option>
+                  <option value="Commerce/B.Com">B.Com / BBA (Commerce & Accounts)</option>
+                  <option value="Arts/Humanities">B.A / Humanities</option>
+                  <option value="PostGraduation">Master's Degree (M.Tech / M.Sc / MCA / M.A)</option>
+                </select>
+              </div>
+
+              <div class="gov-form-group">
+                <label for="checkerDomicile" class="gov-form-label">State of Domicile:</label>
+                <select id="checkerDomicile" class="gov-form-control">
+                  <option value="Karnataka" selected>Karnataka (Eligible for KPSC KAS)</option>
+                  <option value="Other State">Other Indian State / UT</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+              <button type="button" class="gov-btn gov-btn-outline" onclick="prefillCheckerFromProfile()">
+                Use Stored Profile Details
+              </button>
+              <button type="submit" class="gov-btn gov-btn-primary">
+                ⚖️ Check Detailed Eligibility
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Verification Results Output Box -->
+        <div id="eligibilityResultBox" style="display: none;"></div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Professional Footer -->
+  <footer class="gov-portal-footer">
+    <div class="footer-bottom-bar">
+      <div class="gov-container footer-bottom-inner">
+        <div>© 2026 MARGDARSHAK (SCG-GEP). B.Tech CSE Academic Major Project.</div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="index.html" style="color: #64748b; text-decoration: none;">Portal Home</a>
+          <a href="exam-compare.html" style="color: #64748b; text-decoration: none;">Pattern Comparator</a>
+          <a href="intelligence.html" style="color: #64748b; text-decoration: none;">Govt Intelligence</a>
+          <a href="calendar.html" style="color: #64748b; text-decoration: none;">Calendar</a>
+          <a href="dashboard.html" style="color: #64748b; text-decoration: none;">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    let currentViewMode = 'cards'; // 'cards' or 'table'
+    let currentTab = 'exams';
+
+    function switchExamsTab(tab) {
+      currentTab = tab;
+      ['exams', 'jobs', 'recs', 'eligibility'].forEach(t => {
+        const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) btn.className = t === tab ? 'module-tab-btn active' : 'module-tab-btn';
+      });
+
+      document.getElementById('sectionExamsCatalogue').style.display = tab === 'exams' ? 'block' : 'none';
+      document.getElementById('sectionGovJobs').style.display = tab === 'jobs' ? 'block' : 'none';
+      document.getElementById('sectionAiRecommendations').style.display = tab === 'recs' ? 'block' : 'none';
+      document.getElementById('sectionEligibilityChecker').style.display = tab === 'eligibility' ? 'block' : 'none';
+
+      if (tab === 'jobs') renderGovJobs();
+      if (tab === 'recs') renderPersonalizedRecommendations();
+      if (tab === 'eligibility') populateCheckerExams();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check URL search parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTab = urlParams.get('tab');
+      const urlSearch = urlParams.get('search');
+      const urlCat = urlParams.get('category');
+      const urlStream = urlParams.get('stream');
+
+      if (urlSearch) document.getElementById('filterSearch').value = urlSearch;
+      if (urlCat) {
+        const catSelect = document.getElementById('filterCategory');
+        for (let i = 0; i < catSelect.options.length; i++) {
+          if (catSelect.options[i].value.toLowerCase().includes(urlCat.toLowerCase())) {
+            catSelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+      if (urlStream) {
+        document.getElementById('filterStream').value = urlStream;
+      }
+
+      // View toggle buttons
+      const btnCards = document.getElementById('btnViewCards');
+      const btnTable = document.getElementById('btnViewTable');
+
+      if (btnCards && btnTable) {
+        btnCards.addEventListener('click', () => {
+          currentViewMode = 'cards';
+          btnCards.className = 'gov-btn gov-btn-primary gov-btn-sm';
+          btnTable.className = 'gov-btn gov-btn-outline gov-btn-sm';
+          document.getElementById('examsCardsContainer').style.display = 'flex';
+          document.getElementById('examsTableContainer').style.display = 'none';
+          renderExams();
+        });
+
+        btnTable.addEventListener('click', () => {
+          currentViewMode = 'table';
+          btnTable.className = 'gov-btn gov-btn-primary gov-btn-sm';
+          btnCards.className = 'gov-btn gov-btn-outline gov-btn-sm';
+          document.getElementById('examsCardsContainer').style.display = 'none';
+          document.getElementById('examsTableContainer').style.display = 'block';
+          renderExams();
+        });
+      }
+
+      // Filter events
+      ['filterSearch', 'filterCategory', 'filterStream', 'filterLevel', 'filterSort'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', renderExams);
+          el.addEventListener('change', renderExams);
+        }
+      });
+
+      const resetBtn = document.getElementById('btnResetFilters');
+      if (resetBtn) resetBtn.addEventListener('click', resetAllFilters);
+
+      // Job Filter events
+      const jSearch = document.getElementById('jobFilterSearch');
+      const jCadre = document.getElementById('jobFilterCadre');
+      if (jSearch) jSearch.addEventListener('input', renderGovJobs);
+      if (jCadre) jCadre.addEventListener('change', renderGovJobs);
+
+      // DOB change in checker
+      const dobInput = document.getElementById('checkerDob');
+      if (dobInput) {
+        dobInput.addEventListener('change', () => {
+          const age = MargDarshakState.calculateAge(dobInput.value);
+          document.getElementById('checkerCalculatedAge').textContent = age === null ? 'Not set' : `${age} Yrs`;
+        });
+      }
+
+      if (urlTab) {
+        switchExamsTab(urlTab);
+      } else {
+        renderExams();
+      }
+    });
+
+    function resetAllFilters() {
+      document.getElementById('filterSearch').value = '';
+      document.getElementById('filterCategory').value = 'All';
+      document.getElementById('filterStream').value = 'All';
+      document.getElementById('filterLevel').value = 'All';
+      document.getElementById('filterSort').value = 'aiMatch';
+      renderExams();
+      showToast("All filters reset to default view.", "info", 1500);
+    }
+
+    // ================== RENDER EXAMINATIONS CATALOGUE ==================
+    function renderExams() {
+      if (typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      const searchVal = document.getElementById('filterSearch').value.toLowerCase().trim();
+      const catVal = document.getElementById('filterCategory').value;
+      const streamVal = document.getElementById('filterStream').value;
+      const levelVal = document.getElementById('filterLevel').value;
+      const sortVal = document.getElementById('filterSort').value;
+
+      let filtered = GOV_EXAMS_DATA.filter(exam => {
+        if (searchVal) {
+          const matchTitle = exam.title.toLowerCase().includes(searchVal);
+          const matchBody = exam.conductingBody.toLowerCase().includes(searchVal);
+          const matchPosts = exam.posts.toLowerCase().includes(searchVal);
+          const matchCode = exam.code.toLowerCase().includes(searchVal);
+          if (!matchTitle && !matchBody && !matchPosts && !matchCode) return false;
+        }
+
+        if (catVal !== 'All' && exam.category !== catVal) return false;
+        if (levelVal !== 'All' && !exam.level.toLowerCase().includes(levelVal.toLowerCase())) return false;
+        if (streamVal !== 'All' && (!exam.eligibleStreams || !exam.eligibleStreams.includes(streamVal))) return false;
+
+        return true;
+      });
+
+      if (sortVal === 'aiMatch') {
+        filtered.sort((a, b) => b.aiMatchScore - a.aiMatchScore);
+      } else if (sortVal === 'vacancies') {
+        filtered.sort((a, b) => (typeof b.vacancies === 'number' ? b.vacancies : 0) - (typeof a.vacancies === 'number' ? a.vacancies : 0));
+      } else if (sortVal === 'title') {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      const countEl = document.getElementById('examResultCount');
+      if (countEl) countEl.textContent = filtered.length;
+
+      const emptyEl = document.getElementById('examsEmptyState');
+      const cardsContainer = document.getElementById('examsCardsContainer');
+      const tableBody = document.getElementById('examsTableBody');
+
+      if (filtered.length === 0) {
+        if (emptyEl) emptyEl.style.display = 'block';
+        if (cardsContainer) cardsContainer.style.display = 'none';
+        if (document.getElementById('examsTableContainer')) document.getElementById('examsTableContainer').style.display = 'none';
+        return;
+      } else {
+        if (emptyEl) emptyEl.style.display = 'none';
+        if (currentViewMode === 'cards') {
+          if (cardsContainer) cardsContainer.style.display = 'flex';
+        } else {
+          if (document.getElementById('examsTableContainer')) document.getElementById('examsTableContainer').style.display = 'block';
+        }
+      }
+
+      // Render Cards
+      if (cardsContainer) {
+        cardsContainer.innerHTML = filtered.map(exam => {
+          const isSaved = MargDarshakState.isExamSaved(exam.id);
+          const countdown = MargDarshakState.getCountdown ? MargDarshakState.getCountdown(exam.prelimsDate) : null;
+          return `
+            <div class="exam-card-item">
+              <div class="exam-card-top">
+                <div class="exam-main-titles">
+                  <div class="exam-conducting-body">${exam.conductingBody}</div>
+                  <h2 class="exam-title-text" style="font-size: 1.15rem;">${exam.title}</h2>
+                  <div style="display: flex; gap: 0.4rem; margin-top: 0.35rem; flex-wrap: wrap;">
+                    <span class="gov-badge badge-central">${exam.level}</span>
+                    <span class="gov-badge badge-tech">${exam.category}</span>
+                    <span class="gov-badge badge-pay">${exam.payLevel || exam.payScale.split('(')[0]}</span>
+                    <span class="gov-badge ${exam.status === 'Active' ? 'badge-active' : 'badge-state'}">${exam.status}</span>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+                  <div class="exam-ai-match-pill">
+                    <span>Sample match</span> ${exam.aiMatchScore}%
+                  </div>
+                  ${countdown && !countdown.expired ? `
+                    <span style="font-size: 0.72rem; color: #b45309; font-weight: 700; background: #fef3c7; padding: 2px 6px; border-radius: 3px;">
+                      ⏳ ${countdown.days} Days to Prelims
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="exam-meta-grid">
+                <div class="meta-item">
+                  <span class="meta-item-label">Total Vacancies</span>
+                  <span class="meta-item-value">${exam.vacancies} Posts</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-item-label">Age Limit (General)</span>
+                  <span class="meta-item-value">${exam.ageLimit.min} to ${exam.ageLimit.maxGeneral} Yrs</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-item-label">Application Last Date</span>
+                  <span class="meta-item-value" style="color: var(--status-danger-text); font-weight: 700;">${exam.lastDateToApply}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-item-label">Indicative Salary</span>
+                  <span class="meta-item-value" style="color: var(--gov-green); font-weight: 700;">${exam.salaryGross || exam.payScale.split('(')[0]}</span>
+                </div>
+              </div>
+
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; background: #f8fafc; padding: 0.5rem; border-radius: 3px; border-left: 3px solid var(--gov-navy);">
+                <strong>Prescribed Qualification:</strong> ${exam.minQualification}
+              </div>
+
+              <div class="exam-card-footer">
+                <div style="font-size: 0.75rem; color: var(--gov-navy); font-weight: 600;">
+                  💡 <strong>Agent Synergy:</strong> ${exam.relevanceForTech.substring(0, 85)}...
+                </div>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                  <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${exam.id}')">
+                    Full Details & Syllabus
+                  </button>
+                  <button type="button" class="gov-btn ${isSaved ? 'gov-btn-green' : 'gov-btn-primary'} gov-btn-sm" onclick="toggleExamBookmark(this, '${exam.id}')">
+                    ${isSaved ? '✓ Bookmarked' : '☆ Bookmark'}
+                  </button>
+                  <a href="${exam.officialWebsite}" target="_blank" rel="noopener noreferrer" class="gov-btn gov-btn-saffron gov-btn-sm" title="Open Official Commission Portal">
+                    Official Portal ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Table
+      if (tableBody) {
+        tableBody.innerHTML = filtered.map(exam => {
+          const isSaved = MargDarshakState.isExamSaved(exam.id);
+          return `
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: var(--gov-navy-dark);">${exam.title}</div>
+                <div style="font-size: 0.72rem; color: var(--text-light);">${exam.conductingBody}</div>
+              </td>
+              <td><span class="gov-badge badge-central">${exam.level}</span></td>
+              <td>${exam.posts.substring(0, 30)}...</td>
+              <td><strong>${exam.vacancies}</strong></td>
+              <td>${exam.ageLimit.min}-${exam.ageLimit.maxGeneral} Yrs</td>
+              <td><span class="gov-badge badge-pay">${exam.payLevel || exam.payScale.split('(')[0]}</span></td>
+              <td style="color: var(--status-danger-text); font-weight: 700;">${exam.lastDateToApply}</td>
+              <td><span class="gov-badge badge-active">${exam.aiMatchScore}%</span></td>
+              <td>
+                <div style="display: flex; gap: 0.25rem;">
+                  <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${exam.id}')">View</button>
+                  <button type="button" class="gov-btn ${isSaved ? 'gov-btn-green' : 'gov-btn-primary'} gov-btn-sm" onclick="toggleExamBookmark(this, '${exam.id}')">${isSaved ? '✓' : '☆'}</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // ================== RENDER GOVERNMENT JOBS (Feature 8 & 16) ==================
+    function renderGovJobs() {
+      if (typeof GOV_JOBS_DATABASE === 'undefined') return;
+
+      const searchVal = (document.getElementById('jobFilterSearch')?.value || '').toLowerCase().trim();
+      const cadreVal = document.getElementById('jobFilterCadre')?.value || 'All';
+      const container = document.getElementById('jobsListContainer');
+      if (!container) return;
+
+      let filtered = GOV_JOBS_DATABASE.filter(job => {
+        if (searchVal) {
+          const matchTitle = job.postTitle.toLowerCase().includes(searchVal);
+          const matchDept = job.department.toLowerCase().includes(searchVal);
+          const matchPay = job.payMatrixLevel.toLowerCase().includes(searchVal);
+          if (!matchTitle && !matchDept && !matchPay) return false;
+        }
+        if (cadreVal !== 'All' && !job.cadre.toLowerCase().includes(cadreVal.toLowerCase())) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 2.5rem; background: #ffffff; border: 1px dashed var(--border-medium); border-radius: 4px;">
+            <p style="color: var(--text-muted); font-size: 0.85rem;">No job posts match your query. Try resetting search filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(job => `
+        <div class="job-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.4rem;">
+              <span class="gov-badge badge-central">${job.cadre}</span>
+              <span class="gov-badge badge-pay">${job.payMatrixLevel}</span>
+            </div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--gov-navy-dark); margin: 0 0 0.35rem 0;">
+              ${job.postTitle}
+            </h3>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+              🏢 <strong>${job.department}</strong>
+            </div>
+
+            <!-- Salary Box (Feature 16) -->
+            <div class="salary-highlight-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 0.75rem; color: #166534; font-weight: 600;">Indicative Gross Emoluments:</span>
+                <strong style="font-size: 1.05rem; color: #15803d;">${job.grossMonthlySalary}</strong>
+              </div>
+              <div style="font-size: 0.72rem; color: #14532d; margin-top: 0.25rem;">
+                Basic Pay: <strong>${job.basicPay}</strong> | In-Hand Approx: <strong>${job.inHandApprox}</strong>
+              </div>
+              <div style="font-size: 0.7rem; color: #166534; margin-top: 0.2rem;">
+                Allowances: ${job.allowances}
+              </div>
+            </div>
+
+            <div style="font-size: 0.78rem; color: var(--text-dark); margin-bottom: 0.5rem;">
+              <strong>Prescribed Qualification:</strong> ${job.minQualification}
+            </div>
+
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; background: #f8fafc; padding: 0.45rem; border-radius: 4px;">
+              <strong>Work Profile:</strong> ${job.workProfile}
+            </div>
+
+            <div style="font-size: 0.72rem; color: #475569; margin-bottom: 0.75rem;">
+              📍 <strong>Postings:</strong> ${job.postingLocations}
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-light); padding-top: 0.65rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="font-size: 0.7rem; color: var(--text-light);">
+              📜 Sample source description: <em>${job.officialSource}</em> (not independently verified)
+            </div>
+            <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${job.examId}')">
+              Recruitment Exam Details ↗
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ================== RENDER AI RECOMMENDATIONS (Feature 10) ==================
+    function renderPersonalizedRecommendations() {
+      const p = MargDarshakState.getProfile();
+      const deg = p.qualifications && p.qualifications[0] ? p.qualifications[0].degree : 'B.Tech CSE';
+      const cat = p.category || 'OBC-NCL';
+      document.getElementById('recProfileDegree').textContent = deg;
+      document.getElementById('recProfileCat').textContent = cat;
+
+      const container = document.getElementById('aiRecommendationsGrid');
+      if (!container || typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      // Filter and score based on profile
+      const recs = GOV_EXAMS_DATA.slice().sort((a, b) => b.aiMatchScore - a.aiMatchScore).slice(0, 6);
+
+      container.innerHTML = recs.map((exam, idx) => `
+        <div style="background: #ffffff; border: 1px solid var(--border-light); border-top: 4px solid ${idx === 0 ? 'var(--gov-saffron)' : 'var(--gov-navy)'}; border-radius: var(--radius-sm); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <span class="gov-badge ${idx === 0 ? 'badge-deadline' : 'badge-central'}">#${idx + 1} Best Synergy Match</span>
+              <div class="exam-ai-match-pill"><span>🤖</span> ${exam.aiMatchScore}% Synergy</div>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--gov-navy-dark); margin: 0 0 0.25rem 0;">
+              ${exam.title}
+            </h3>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+              ${exam.conductingBody} | Level: ${exam.level}
+            </div>
+
+            <div style="background: #f0fdf4; border-left: 3px solid #16a34a; padding: 0.5rem; font-size: 0.78rem; color: #166534; margin-bottom: 0.75rem; border-radius: 2px;">
+              <strong>Why Recommended for You:</strong>
+              <div>${exam.relevanceForTech}</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.75rem; color: var(--text-dark); margin-bottom: 0.75rem;">
+              <div><strong>Pay Level:</strong> ${exam.payLevel || 'Level 10'}</div>
+              <div><strong>Gross Salary:</strong> ${exam.salaryGross || '₹95,000/mo'}</div>
+              <div><strong>Application Last Date:</strong> <span style="color: var(--status-danger-text); font-weight: 700;">${exam.lastDateToApply}</span></div>
+              <div><strong>Prelims Exam:</strong> ${exam.prelimsDate}</div>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-light); padding-top: 0.75rem; display: flex; gap: 0.4rem; justify-content: flex-end;">
+            <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${exam.id}')">
+              Examine Syllabus
+            </button>
+            <button type="button" class="gov-btn gov-btn-primary gov-btn-sm" onclick="toggleExamBookmark(this, '${exam.id}')">
+              ${MargDarshakState.isExamSaved(exam.id) ? '✓ Bookmarked' : '☆ Target'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ================== ELIGIBILITY CHECKER (Feature 11) ==================
+    function populateCheckerExams() {
+      const select = document.getElementById('checkerExamSelect');
+      if (!select || select.options.length > 0 || typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      select.innerHTML = GOV_EXAMS_DATA.map(e => `
+        <option value="${e.id}">${e.code} — ${e.title}</option>
+      `).join('');
+    }
+
+    function prefillCheckerFromProfile() {
+      const p = MargDarshakState.getProfile();
+      if (p.dob) document.getElementById('checkerDob').value = p.dob;
+      if (p.category) document.getElementById('checkerCategory').value = p.category;
+      if (p.domicileState) document.getElementById('checkerDomicile').value = p.domicileState;
+      const age = MargDarshakState.calculateAge(p.dob || '2002-08-15');
+      document.getElementById('checkerCalculatedAge').textContent = age === null ? 'Not set' : `${age} Yrs`;
+      showToast("Checker prefilled with your stored profile data.", "info");
+    }
+
+    function evaluateInteractiveEligibility() {
+      const examId = document.getElementById('checkerExamSelect').value;
+      const dobVal = document.getElementById('checkerDob').value;
+      const catVal = document.getElementById('checkerCategory').value;
+      const qualVal = document.getElementById('checkerQualification').value;
+      const domVal = document.getElementById('checkerDomicile').value;
+
+      const exam = GOV_EXAMS_DATA.find(e => e.id === examId);
+      if (!exam) return;
+
+      const age = MargDarshakState.calculateAge(dobVal);
+
+      // Statutory age calculation
+      let maxAllowedAge = exam.ageLimit.maxGeneral;
+      let relaxationClause = "Compare category-specific rules with the current official notification.";
+
+      if (catVal === 'OBC-NCL') {
+        maxAllowedAge = exam.ageLimit.maxOBC || (typeof maxAllowedAge === 'number' ? maxAllowedAge + 3 : maxAllowedAge);
+        relaxationClause = "OBC-NCL example only; relaxation varies by examination and notification.";
+      } else if (catVal === 'SC' || catVal === 'ST') {
+        maxAllowedAge = exam.ageLimit.maxSCST || (typeof maxAllowedAge === 'number' ? maxAllowedAge + 5 : maxAllowedAge);
+        relaxationClause = "SC/ST example only; relaxation varies by examination and notification.";
+      } else if (catVal === 'PwD') {
+        maxAllowedAge = exam.ageLimit.maxPwD || (typeof maxAllowedAge === 'number' ? maxAllowedAge + 10 : maxAllowedAge);
+        relaxationClause = "PwD example only; applicable rules vary by examination and notification.";
+      }
+
+      const ageOk = age !== null && age >= exam.ageLimit.min &&
+        (maxAllowedAge === 'No limit' || maxAllowedAge === 'No upper age limit for Assistant Professor eligibility' ||
+          (typeof maxAllowedAge === 'number' && age <= maxAllowedAge));
+      const qualOk = exam.eligibleStreams ? exam.eligibleStreams.includes(qualVal) : true;
+      const domicileOk = exam.id !== 'kpsc-kas-2026' || domVal === 'Karnataka';
+
+      const isFullyEligible = ageOk && qualOk && domicileOk;
+
+      const out = document.getElementById('eligibilityResultBox');
+      out.style.display = 'block';
+
+      out.innerHTML = `
+        <div style="background: ${isFullyEligible ? '#f0fdf4' : '#fff1f2'}; border: 2px solid ${isFullyEligible ? '#86efac' : '#fecdd3'}; border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <span class="gov-badge ${isFullyEligible ? 'badge-active' : 'badge-deadline'}" style="font-size: 0.85rem; padding: 4px 10px;">
+                ${age === null ? 'DOB NEEDED TO CHECK SAMPLE RULES' : isFullyEligible ? 'SAMPLE CRITERIA MATCH — VERIFY' : 'REVIEW SAMPLE CRITERIA'}
+              </span>
+              <h3 style="font-size: 1.15rem; color: var(--gov-navy-dark); font-weight: 800; margin: 0.35rem 0 0 0;">
+                Demo criteria comparison for ${exam.title}
+              </h3>
+            </div>
+            <button type="button" class="gov-btn gov-btn-outline gov-btn-sm" onclick="viewExamDetails('${exam.id}')">
+              Review sample exam entry
+            </button>
+          </div>
+
+          <div class="gov-table-wrapper" style="margin-bottom: 1rem;">
+            <table class="gov-table" style="background: #ffffff;">
+              <thead>
+                <tr>
+                  <th>Eligibility input</th>
+                  <th>Illustrative criteria (not verified)</th>
+                  <th>Candidate-entered data</th>
+                  <th>Demo comparison</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Candidate Age Bracket</strong></td>
+                  <td>${exam.ageLimit.min} to ${exam.ageLimit.maxGeneral} Yrs (General)</td>
+                  <td><strong>${age === null ? 'Not provided' : `${age} Years`}</strong> (DOB: ${dobVal || 'not provided'})</td>
+                  <td>
+                    <span class="gov-badge ${ageOk ? 'badge-active' : 'badge-deadline'}">
+                      ${age === null ? 'DOB required for age comparison' : ageOk ? `Matches sample upper age (${maxAllowedAge})` : `Does not match sample upper age (${maxAllowedAge})`}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Reservation Relaxation Clause</strong></td>
+                  <td>Category specific relaxation rules</td>
+                  <td>Category: <strong>${catVal}</strong></td>
+                  <td><span style="font-size: 0.75rem; color: #475569;">${relaxationClause}</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Educational Qualification</strong></td>
+                  <td>${exam.minQualification}</td>
+                  <td>Selected Stream: <strong>${qualVal}</strong></td>
+                  <td>
+                    <span class="gov-badge ${qualOk ? 'badge-active' : 'badge-state'}">
+                      ${qualOk ? '✓ Stream Meets Criteria' : '⚠️ Stream Review Needed'}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Domicile / Residency Requirements</strong></td>
+                  <td>${exam.level === 'State' ? 'Check state-specific rules in the current notice' : 'Check the current notification'}</td>
+                  <td>Domicile: <strong>${domVal}</strong></td>
+                  <td>
+                    <span class="gov-badge ${domicileOk ? 'badge-active' : 'badge-deadline'}">
+                      ${domicileOk ? '✓ Domicile Satisfied' : '✕ State Domicile Mismatch'}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="font-size: 0.78rem; color: #475569; border-top: 1px solid var(--border-light); padding-top: 0.5rem;">
+            ℹ️ <em>Demo notice:</em> These sample fields may be incomplete or outdated. They do not establish eligibility and are not sourced from a current verified notice.
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleExamBookmark(btn, examId) {
+      const nowSaved = MargDarshakState.toggleSaveExam(examId);
+      btn.className = nowSaved ? 'gov-btn gov-btn-green gov-btn-sm' : 'gov-btn gov-btn-primary gov-btn-sm';
+      btn.textContent = nowSaved ? '✓ Bookmarked' : '☆ Bookmark';
+      showToast(nowSaved ? 'Added to saved targets' : 'Removed from bookmarks', nowSaved ? 'success' : 'info');
+    }
+  </script>
+</body>
+</html>

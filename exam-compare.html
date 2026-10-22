@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Pattern Comparison & Overlap Analyzer | MARGDARSHAK (SCG-GEP Portal)</title>
+  <meta name="description" content="Sample side-by-side government examination patterns, illustrative syllabus overlap comparisons, and local countdown tools.">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a2540'/><path d='M20 75 L50 25 L80 75 Z' fill='%23d9531e'/><circle cx='50' cy='55' r='10' fill='%23ffffff'/></svg>">
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#compareContent" class="skip-link">Skip to main content</a>
+
+  <!-- Tricolor Ribbon -->
+  <div class="tricolor-stripe" aria-hidden="true"></div>
+
+  <!-- Top Accessibility Bar -->
+  <aside class="gov-topbar" aria-label="Portal Accessibility">
+    <div class="gov-container topbar-wrapper">
+      <div class="topbar-left">
+        <span class="topbar-tag">Academic Capstone Initiative</span>
+        <span class="topbar-date" id="currentGovDate">Loading date...</span>
+        <span class="academic-notice-pill">⚠️ Student Project — Not an Official Government Website</span>
+      </div>
+      <div class="topbar-right">
+        <div class="accessibility-tools">
+          <button type="button" id="btnFontSmall" class="accessibility-btn" aria-label="Decrease font">A-</button>
+          <button type="button" id="btnFontNormal" class="accessibility-btn" aria-label="Default font">A</button>
+          <button type="button" id="btnFontLarge" class="accessibility-btn" aria-label="Enlarge font">A+</button>
+          <button type="button" id="btnContrast" class="accessibility-btn">👁️ Contrast</button>
+        </div>
+        <select id="govLangSelect" class="lang-select" aria-label="Language Selector">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Header -->
+  <header class="gov-main-header">
+    <div class="gov-container header-inner">
+      <a href="index.html" class="gov-branding">
+        <div class="gov-emblem-badge" aria-hidden="true">
+          <span>म</span>
+          <span class="sub-char">SCG-GEP</span>
+        </div>
+        <div class="gov-brand-text">
+          <span class="brand-hindi">मार्गदर्शक | परीक्षा पैटर्न तुलना एवं पाठ्यक्रम अतिव्यापन विश्लेषक</span>
+          <span class="brand-title">MARGDARSHAK <span class="brand-acronym">(SCG-GEP)</span></span>
+          <span class="brand-subtitle">Exam Pattern Comparison, Common Syllabus Finder & Overlap Analyzer</span>
+        </div>
+      </a>
+      <div class="header-right-actions">
+        <a href="dashboard.html" class="gov-btn gov-btn-outline gov-btn-sm">Dashboard</a>
+        <a href="exams.html" class="gov-btn gov-btn-primary gov-btn-sm">Exams Directory</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="gov-navbar" aria-label="Primary Navigation">
+    <div class="gov-container nav-wrapper">
+      <button type="button" class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <ul class="nav-links">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="exams.html" class="nav-link">Government Exams</a></li>
+        <li class="nav-item"><a href="exam-compare.html" class="nav-link active">Pattern & Syllabus Compare</a></li>
+        <li class="nav-item"><a href="intelligence.html" class="nav-link">Govt Info Intelligence</a></li>
+        <li class="nav-item"><a href="calendar.html" class="nav-link">Exam Calendar</a></li>
+        <li class="nav-item"><a href="applications.html" class="nav-link">Application Assistance</a></li>
+        <li class="nav-item"><a href="career-guidance.html" class="nav-link">Career Pathways</a></li>
+        <li class="nav-item"><a href="preparation.html" class="nav-link">Preparation</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link" style="color: #fed7aa;">Dashboard ↗</a></li>
+      </ul>
+      <div class="nav-auth-actions">
+        <a href="dashboard.html" class="btn-nav-login">
+          <span>👤</span> <span class="header-user-name">Sachin K. Rao</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-container" aria-label="Breadcrumb">
+    <div class="gov-container">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-separator">/</li>
+        <li class="breadcrumb-item"><a href="exams.html">Exams</a></li>
+        <li class="breadcrumb-separator">/</li>
+        <li class="breadcrumb-item active" aria-current="page">Pattern Comparison & Syllabus Overlap</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="compareContent" class="gov-container" style="padding-top: 1.5rem; padding-bottom: 3.5rem;">
+    
+    <!-- Top Information Banner -->
+    <section class="gov-card" style="border-top: 4px solid var(--gov-saffron); background: #ffffff;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="gov-badge badge-central">Features 13, 14, 15 & 17</span>
+          <h1 style="font-size: var(--h1-size); color: var(--gov-navy-dark); font-weight: 800; margin-top: 2px;">
+            Examination Pattern Comparison & Syllabus Overlap Analyzer
+          </h1>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem; max-width: 860px; line-height: 1.55;">
+            Avoid fragmented study by analyzing the preparation synergy between multiple government examinations. Compare selection stages, negative marking penalties, and identify common subjects to prepare for 2 or more exams concurrently.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Selector Controls -->
+    <section class="exam-filter-panel" style="padding: 1.25rem;">
+      <div style="font-size: 0.85rem; font-weight: 700; color: var(--gov-navy-dark); margin-bottom: 0.75rem;">
+        Select Two or Three Examinations to Compare Side-by-Side:
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; align-items: end;">
+        <div>
+          <label for="selectExamA" class="gov-form-label" style="font-size: 0.78rem;">Primary Examination (Exam A):</label>
+          <select id="selectExamA" class="gov-form-control" style="font-size: 0.85rem;">
+            <!-- Populated from data.js -->
+          </select>
+        </div>
+
+        <div>
+          <label for="selectExamB" class="gov-form-label" style="font-size: 0.78rem;">Secondary Examination (Exam B):</label>
+          <select id="selectExamB" class="gov-form-control" style="font-size: 0.85rem;">
+            <!-- Populated from data.js -->
+          </select>
+        </div>
+
+        <div>
+          <label for="selectExamC" class="gov-form-label" style="font-size: 0.78rem;">Optional Third Examination (Exam C):</label>
+          <select id="selectExamC" class="gov-form-control" style="font-size: 0.85rem;">
+            <option value="none">-- None (2-Way Compare) --</option>
+            <!-- Populated from data.js -->
+          </select>
+        </div>
+
+        <div>
+          <button type="button" id="btnRunComparison" class="gov-btn gov-btn-primary gov-btn-block" onclick="runComparison()">
+            📊 Run Comparative Analysis
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preparation Overlap Gauge & Common Syllabus Finder (Features 14 & 15) -->
+    <section class="gov-card card-green" id="overlapSection" style="margin-bottom: 1.5rem;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>🧠</span> Common Syllabus Finder & Preparation Overlap Metric (Features 14 & 15)
+        </h2>
+        <span class="gov-badge badge-active" id="overlapPercentageBadge">84% Overlap</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem;" id="overlapScoreGrid">
+        <!-- Visual Circular Gauge Representation -->
+        <div style="text-align: center; background: #f8fafc; border: 1px solid var(--border-light); padding: 1.5rem; border-radius: var(--radius-sm);">
+          <div id="overlapGaugeValue" style="font-size: 3rem; font-weight: 800; color: var(--gov-green); line-height: 1;">
+            84%
+          </div>
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--gov-navy-dark); margin-top: 0.5rem;">
+            Preparation Synergy
+          </div>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
+            Estimated content overlap across common topics. Preparing for both simultaneously yields maximum return on investment.
+          </p>
+        </div>
+
+        <!-- Shared Common Topics Box (Feature 14) -->
+        <div style="background: #ffffff; border: 1px solid var(--border-light); padding: 1.25rem; border-radius: var(--radius-sm);">
+          <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--gov-navy-dark); margin-bottom: 0.5rem;">
+            Identified Shared / Common Syllabus Competencies:
+          </h3>
+          <ul id="sharedTopicsList" style="padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-main); line-height: 1.6; margin-bottom: 1rem;">
+            <!-- Populated dynamically -->
+          </ul>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-top: 1px dashed var(--border-light); padding-top: 0.75rem;">
+            <div>
+              <span id="uniqueTitleA" style="font-weight: 700; font-size: 0.78rem; color: var(--gov-navy); display: block; margin-bottom: 2px;">
+                Unique Focus Areas for Exam A:
+              </span>
+              <ul id="uniqueTopicsAList" style="padding-left: 1.1rem; font-size: 0.78rem; color: var(--text-muted); margin: 0;">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+            <div>
+              <span id="uniqueTitleB" style="font-weight: 700; font-size: 0.78rem; color: var(--gov-saffron); display: block; margin-bottom: 2px;">
+                Unique Focus Areas for Exam B:
+              </span>
+              <ul id="uniqueTopicsBList" style="padding-left: 1.1rem; font-size: 0.78rem; color: var(--text-muted); margin: 0;">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Side-by-Side Exam Pattern Comparison Table (Feature 13) -->
+    <section class="gov-card" style="margin-bottom: 1.5rem;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>⚖️</span> Side-by-Side Examination Pattern & Rule Matrix (Feature 13)
+        </h2>
+        <span class="gov-badge badge-central">Deterministic Parameters</span>
+      </div>
+
+      <div class="gov-table-wrapper">
+        <table class="gov-table" id="comparisonTable">
+          <thead>
+            <tr id="compareTableHeadRow">
+              <th style="width: 20%;">Attribute / Parameter</th>
+              <th id="thExamA" style="width: 40%; font-size: 0.95rem;">Exam A</th>
+              <th id="thExamB" style="width: 40%; font-size: 0.95rem;">Exam B</th>
+              <th id="thExamC" style="display: none; width: 26%; font-size: 0.95rem;">Exam C</th>
+            </tr>
+          </thead>
+          <tbody id="compareTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Exam Countdown Section (Feature 17) -->
+    <section class="gov-card card-saffron" style="margin-bottom: 0;">
+      <div class="gov-card-header">
+        <h2 class="gov-card-title">
+          <span>⏳</span> Live Examination Countdown Clocks (Feature 17)
+        </h2>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Calculates exact remaining time</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;" id="countdownCardsGrid">
+        <!-- Injected via script -->
+      </div>
+
+      <!-- Custom Date Countdown Calculator (Feature 17 requirement) -->
+      <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 1rem; border-radius: var(--radius-sm);">
+        <div style="font-weight: 700; font-size: 0.85rem; color: var(--gov-navy-dark); margin-bottom: 0.5rem;">
+          Calculate Remaining Days from a User-Selected Exam Date:
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <label for="customExamDateInput" class="sr-only" style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Target Date</label>
+          <input type="date" id="customExamDateInput" class="gov-form-control" style="width: 200px;" value="2026-06-15">
+          <input type="text" id="customExamTitleInput" class="gov-form-control" placeholder="Exam Name (e.g. State Sub-Inspector)" style="width: 240px;" value="State Police Sub-Inspector Test">
+          <button type="button" class="gov-btn gov-btn-saffron gov-btn-sm" onclick="calculateCustomCountdown()">
+            Start Custom Countdown
+          </button>
+          <div id="customCountdownResult" style="font-weight: 700; font-size: 0.95rem; color: var(--gov-navy); margin-left: 0.5rem;"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Professional Footer -->
+  <footer class="gov-portal-footer">
+    <div class="footer-bottom-bar">
+      <div class="gov-container footer-bottom-inner">
+        <div>© 2026 MARGDARSHAK (SCG-GEP). B.Tech CSE Academic Major Project.</div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="index.html" style="color: #64748b; text-decoration: none;">Portal Home</a>
+          <a href="exams.html" style="color: #64748b; text-decoration: none;">Exams Directory</a>
+          <a href="dashboard.html" style="color: #64748b; text-decoration: none;">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      populateDropdowns();
+      runComparison();
+      renderCountdowns();
+      setInterval(updateCountdowns, 1000);
+    });
+
+    function populateDropdowns() {
+      if (typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      const selA = document.getElementById('selectExamA');
+      const selB = document.getElementById('selectExamB');
+      const selC = document.getElementById('selectExamC');
+
+      const options = GOV_EXAMS_DATA.map(e => `
+        <option value="${e.id}">${e.title} (${e.conductingBody.split('(')[0].trim()})</option>
+      `).join('');
+
+      selA.innerHTML = options;
+      selB.innerHTML = options;
+
+      // Set default pair
+      selA.value = "ssc-cgl-2026";
+      selB.value = "ibps-po-2026";
+
+      // Add options to C
+      selC.innerHTML = `<option value="none">-- None (2-Way Compare) --</option>` + options;
+    }
+
+    function runComparison() {
+      if (typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      const examAId = document.getElementById('selectExamA').value;
+      const examBId = document.getElementById('selectExamB').value;
+      const examCId = document.getElementById('selectExamC').value;
+
+      const examA = GOV_EXAMS_DATA.find(e => e.id === examAId);
+      const examB = GOV_EXAMS_DATA.find(e => e.id === examBId);
+      const examC = examCId !== 'none' ? GOV_EXAMS_DATA.find(e => e.id === examCId) : null;
+
+      if (!examA || !examB) return;
+
+      // Update Table Headers
+      document.getElementById('thExamA').textContent = examA.title;
+      document.getElementById('thExamB').textContent = examB.title;
+      
+      const thC = document.getElementById('thExamC');
+      if (examC) {
+        thC.style.display = 'table-cell';
+        thC.textContent = examC.title;
+      } else {
+        thC.style.display = 'none';
+      }
+
+      // Attributes to compare
+      const attributes = [
+        { label: "Conducting Commission", get: e => `<strong>${e.conductingBody}</strong>` },
+        { label: "Recruitment Category", get: e => `<span class="gov-badge badge-central">${e.category}</span>` },
+        { label: "Jurisdiction Level", get: e => e.level },
+        { label: "Total Monitored Vacancies", get: e => `<strong>${e.vacancies} Posts</strong>` },
+        { label: "Prescribed Pay Matrix / Salary", get: e => `<span class="gov-badge badge-pay">${e.payScale}</span>` },
+        { label: "Indicative Monthly Gross (INR)", get: e => `<strong>${e.salaryGross || '₹65,000/mo approx'}</strong>` },
+        { label: "Minimum Age Limit", get: e => `${e.ageLimit.min} Years` },
+        { label: "General Upper Age Limit", get: e => `${e.ageLimit.maxGeneral} Years` },
+        { label: "OBC / SC-ST Relaxed Age", get: e => `+3 Yrs (OBC) / +5 Yrs (SC/ST)` },
+        { label: "Minimum Educational Qualification", get: e => e.minQualification },
+        { label: "Exam Format / Mode", get: e => e.stages && e.stages[0] ? e.stages[0].details.substring(0, 50) + '...' : 'Computer Based Test' },
+        { label: "Negative Marking Penalty", get: e => `<strong style="color:var(--status-danger-text);">${e.negativeMarking || '-0.33 per wrong'}</strong>` },
+        { label: "Test Duration", get: e => e.duration || '120 Minutes' },
+        { label: "Application Last Date", get: e => `<span style="color:var(--status-danger-text); font-weight:700;">${e.lastDateToApply}</span>` },
+        { label: "Official Commission Portal", get: e => `<a href="${e.officialWebsite}" target="_blank" rel="noopener noreferrer">Visit ${e.conductingBody.split('(')[0]} ↗</a>` }
+      ];
+
+      const tbody = document.getElementById('compareTableBody');
+      tbody.innerHTML = attributes.map(attr => `
+        <tr>
+          <td style="font-weight: 700; color: var(--gov-navy-dark);">${attr.label}</td>
+          <td>${attr.get(examA)}</td>
+          <td>${attr.get(examB)}</td>
+          ${examC ? `<td>${attr.get(examC)}</td>` : ''}
+        </tr>
+      `).join('');
+
+      // Overlap Analysis between A and B
+      const analysis = analyzeSyllabusOverlap(examA.id, examB.id);
+      if (analysis) {
+        document.getElementById('overlapPercentageBadge').textContent = `${analysis.overlapPercentage}% Preparation Overlap`;
+        document.getElementById('overlapGaugeValue').textContent = `${analysis.overlapPercentage}%`;
+        
+        document.getElementById('sharedTopicsList').innerHTML = analysis.sharedTopics.map(t => `
+          <li><strong>${t}</strong> — Applicable directly in both examination syllabi.</li>
+        `).join('');
+
+        document.getElementById('uniqueTitleA').textContent = `Distinct Focus for ${examA.code}:`;
+        document.getElementById('uniqueTopicsAList').innerHTML = analysis.distinctTopicsExamA.map(t => `<li>${t}</li>`).join('');
+
+        document.getElementById('uniqueTitleB').textContent = `Distinct Focus for ${examB.code}:`;
+        document.getElementById('uniqueTopicsBList').innerHTML = analysis.distinctTopicsExamB.map(t => `<li>${t}</li>`).join('');
+      }
+
+      showToast(`Compared ${examA.code} vs ${examB.code} successfully!`, "info", 1800);
+    }
+
+    function renderCountdowns() {
+      const grid = document.getElementById('countdownCardsGrid');
+      if (!grid || typeof GOV_EXAMS_DATA === 'undefined') return;
+
+      const targetList = GOV_EXAMS_DATA.slice(0, 4);
+      grid.innerHTML = targetList.map(exam => {
+        const cd = getCountdown(exam.prelimsDate);
+        return `
+          <div style="background: #ffffff; border: 1px solid var(--border-light); border-left: 4px solid var(--gov-saffron); padding: 1rem; border-radius: var(--radius-sm);" data-exam-date="${exam.prelimsDate}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <span class="gov-badge badge-central">${exam.code}</span>
+              <span style="font-size: 0.72rem; color: var(--text-light);">Exam: ${exam.prelimsDate}</span>
+            </div>
+            <div style="font-weight: 800; font-size: 0.95rem; color: var(--gov-navy-dark); margin-top: 0.35rem;">
+              ${exam.title.substring(0, 36)}...
+            </div>
+            <div class="exam-countdown-timer-value" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.15rem; color: var(--gov-navy); margin-top: 0.5rem; background: #f8fafc; padding: 0.35rem 0.5rem; border-radius: 3px;">
+              ${cd.text}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateCountdowns() {
+      const cards = document.querySelectorAll('#countdownCardsGrid [data-exam-date]');
+      cards.forEach(card => {
+        const d = card.getAttribute('data-exam-date');
+        const cd = getCountdown(d);
+        const timerEl = card.querySelector('.exam-countdown-timer-value');
+        if (timerEl) timerEl.textContent = cd.text;
+      });
+    }
+
+    function calculateCustomCountdown() {
+      const dateVal = document.getElementById('customExamDateInput').value;
+      const titleVal = document.getElementById('customExamTitleInput').value.trim() || 'Selected Exam';
+      const resultEl = document.getElementById('customCountdownResult');
+
+      const cd = getCountdown(dateVal);
+      resultEl.innerHTML = `⏱️ <strong>${titleVal}:</strong> <span style="color:var(--gov-green);">${cd.text}</span>`;
+      showToast(`Countdown calculated for ${titleVal}: ${cd.text}`, "success", 2500);
+    }
+  </script>
+</body>
+</html>
