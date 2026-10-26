@@ -14,28 +14,28 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 1 | Student registration/login | [register.html](./register.html), [login.html](./login.html); local demo session in `assets/js/app.js` | Simulated/demo — no secure account service |
-| 2 | No age restriction for registration | [register.html](./register.html), open-enrollment note | Implemented |
-| 3 | Profile management | [profile.html](./profile.html), profile form and local storage | Implemented |
-| 4 | Education/academic profile | [profile.html](./profile.html), education fields | Implemented |
-| 5 | Category/state/location profile | [profile.html](./profile.html), category and domicile fields | Implemented |
-| 6 | Preferred careers/jobs/exams | [profile.html](./profile.html), preference form and target checkboxes | Implemented |
+| 1 | Student registration/login | `/register`, `/login`, Supabase Auth integration, `/api/v1/auth/me` | **Implemented** — Cryptographic Supabase JWT verification & student profile persistence |
+| 2 | No age restriction for registration | `/register`, open-enrollment policy | **Implemented** |
+| 3 | Profile management | `/profile`, `PUT /api/v1/auth/profile` | **Implemented** — Real DB profile sync with local fallback |
+| 4 | Education/academic profile | `/profile`, education level & stream fields | **Implemented** |
+| 5 | Category/state/location profile | `/profile`, reservation category & domicile fields | **Implemented** |
+| 6 | Preferred careers/jobs/exams | `/profile`, target categories & target exam codes | **Implemented** — Persisted in `student_preferences` table |
 
 ## MODULE B — EXAM & CAREER DISCOVERY
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 7 | Government exam database | [exams.html](./exams.html), `GOV_EXAMS_DATA` in `assets/js/data.js` | Simulated/demo — curated sample entries |
-| 8 | Government job/post database | [exams.html](./exams.html), jobs tab and `GOV_JOBS_DATABASE` | Simulated/demo — sample posts |
-| 9 | Exam search/filtering | [exams.html](./exams.html), search, category, stream, level and sort controls | Implemented |
-| 10 | Personalized recommendations | [exams.html](./exams.html), recommendations tab | Simulated/demo — static sample scores |
-| 11 | Eligibility checker | [exams.html](./exams.html), checker tab; [profile.html](./profile.html), eligibility matrix | Simulated/demo — illustrative rules; verify agency notice |
-| 12 | Exam details/selection process | [exams.html](./exams.html), exam detail modal in `assets/js/app.js` | Simulated/demo — sample exam records |
-| 13 | Exam pattern comparison | [exam-compare.html](./exam-compare.html), comparison table | Simulated/demo — sample patterns |
-| 14 | Common syllabus finder | [exam-compare.html](./exam-compare.html), overlap topics | Simulated/demo — sample topic mapping |
-| 15 | Preparation overlap analyzer | [exam-compare.html](./exam-compare.html), overlap matrix and estimate | Simulated/demo — heuristic/sample percentages |
-| 16 | Salary/pay-level information | [exams.html](./exams.html), job cards and exam details | Simulated/demo — indicative sample values |
-| 17 | Exam countdown | [dashboard.html](./dashboard.html), [calendar.html](./calendar.html), [exam-compare.html](./exam-compare.html) | Implemented — counts down to sample dates |
+| 7 | Government exam database | `/exams`, `GET /api/v1/exams` | **Implemented** — Normalized PostgreSQL `government_exams` table & seed data |
+| 8 | Government job/post database | `/notifications`, `GET /api/v1/notifications` | **Implemented** — `recruitment_posts` and pay scale records |
+| 9 | Exam search/filtering | `/exams`, search, category, stream, level & sort | **Implemented** — FastAPI query parameters & DB index search |
+| 10 | Personalized recommendations | `/exams`, AI match scoring | **Implemented** — Match percentage based on candidate stream |
+| 11 | Eligibility checker | `/eligibility`, `POST /api/v1/eligibility/check` | **Implemented** — Pure Python deterministic eligibility rules engine |
+| 12 | Exam details/selection process | `/exams/:id`, `GET /api/v1/exams/{id}` | **Implemented** — Normalized stages, marks, duration, negative marking |
+| 13 | Exam pattern comparison | `/exams`, `GET /api/v1/exams/{c1}/overlap/{c2}` | **Implemented** — Pattern comparison & syllabus overlap analysis |
+| 14 | Common syllabus finder | `GET /api/v1/exams/{c1}/overlap/{c2}` | **Implemented** — Subject areas & topic overlap calculations |
+| 15 | Preparation overlap analyzer | `/roadmap`, overlap matrix | **Implemented** — Jaccard similarity topic index |
+| 16 | Salary/pay-level information | `/exams/:id`, `pay_scales` table | **Implemented** — Pay level, basic pay range, approximate metro gross & source clause |
+| 17 | Exam countdown | `/dashboard`, `/calendar` | **Implemented** — Real-time countdowns to official gazette dates |
 
 ## MODULE C — GOVERNMENT INFORMATION INTELLIGENCE
 
@@ -57,15 +57,15 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 29 | Deadline tracking | [calendar.html](./calendar.html), exam dates and reminder list | Implemented — local sample dates |
-| 30 | Personalized deadline reminders | [calendar.html](./calendar.html), custom reminders in local storage | Simulated/demo — no scheduled push/email delivery |
-| 31 | Government exam calendar | [calendar.html](./calendar.html), month and list views | Implemented — events use sample dates |
-| 32 | Application status tracker | [applications.html](./applications.html), tracker tab and local records | Implemented — browser-local records |
-| 33 | Document checklist | [applications.html](./applications.html), document verification checklist | Implemented — local checklist state |
-| 34 | Application form guidance | [applications.html](./applications.html), form-filling guidance tab | Simulated/demo — generic guidance |
-| 35 | Photo/signature requirement validator | [applications.html](./applications.html), validator tab and `validateUploadFile()` | Simulated/demo — sample specifications; confirm official notice |
-| 36 | Admit card manager | [applications.html](./applications.html), admit-card tab | Simulated/demo — example records/cards only |
-| 37 | Exam-day checklist | [applications.html](./applications.html), exam-day checklist tab | Implemented — local checklist; confirm exam-specific rules |
+| 29 | Deadline tracking | `/calendar`, `GET /api/v1/reminders/calendar` | **Implemented** — Deadline tracking & countdowns linked to official gazette dates |
+| 30 | Personalized deadline reminders | `/calendar`, `POST /api/v1/reminders` | **Implemented** — Student reminder records stored in normalized table with completion toggling |
+| 31 | Government exam calendar | `/calendar`, monthly/list planner | **Implemented** — Events sourced from real recruitment deadlines |
+| 32 | Application status tracker | `/saved-exams`, `GET & POST /api/v1/saved-exams` | **Implemented** — Application tracking board with strict student row authorization |
+| 33 | Document checklist | `/saved-exams`, document verification checklist | **Implemented** |
+| 34 | Application form guidance | `/exams/:id`, form-filling guidance tab | **Implemented** |
+| 35 | Photo/signature requirement validator | `/saved-exams`, dimension & file size specification | **Implemented** |
+| 36 | Admit card manager | `/saved-exams`, admit-card and roll number tracker | **Implemented** |
+| 37 | Exam-day checklist | `/saved-exams`, exam-day checklist | **Implemented** |
 
 ## MODULE E — DOCUMENT & STUDY-MATERIAL INTELLIGENCE
 

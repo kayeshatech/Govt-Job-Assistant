@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* The Mandatory Six-Color Palette */
+  --starlight: #F3EEF8;
+  --opaline: #CDC4DC;
+  --aurora: #8EA4C4;
+  --wisteria: #6E5A88;
+  --nocturne: #2A2550;
+  --eclipse: #0C0A16;
+
+  /* RGB equivalents for alpha transparency blending */
+  --rgb-starlight: 243, 238, 248;
+  --rgb-opaline: 205, 196, 220;
+  --rgb-aurora: 142, 164, 196;
+  --rgb-wisteria: 110, 90, 136;
+  --rgb-nocturne: 42, 37, 80;
+  --rgb-eclipse: 12, 10, 22;
+}
+
+.dark {
+  --starlight: #0C0A16;
+  --opaline: #2A2550;
+  --aurora: #6E5A88;
+  --wisteria: #8EA4C4;
+  --nocturne: #CDC4DC;
+  --eclipse: #F3EEF8;
+}
+
+@layer base {
+  * {
+    border-color: rgba(205, 196, 220, 0.4);
+  }
+
+  body {
+    background-color: var(--starlight);
+    color: var(--eclipse);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbar matching the six-color system */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(243, 238, 248, 0.8);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CDC4DC;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6E5A88;
+  }
+}
+
+/* Accessibility Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #2A2550;
+  color: #F3EEF8;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.2s;
+  font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Subtle Card Glow within approved colors */
+.gov-card-glow {
+  box-shadow: 0 4px 20px -2px rgba(42, 37, 80, 0.08);
+  border: 1px solid rgba(205, 196, 220, 0.7);
+}
+
+.gov-card-glow:hover {
+  border-color: rgba(110, 90, 136, 0.6);
+  box-shadow: 0 8px 28px -4px rgba(42, 37, 80, 0.14);
+}
