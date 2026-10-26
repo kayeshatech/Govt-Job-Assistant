@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Govexa Government Exam Intelligence API"
-    VERSION: str = "2.0.0"
+    VERSION: str = "3.0.0"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
     
@@ -28,6 +28,41 @@ class Settings(BaseSettings):
 
     # Admin verification token / override for testing
     ADMIN_EMAILS: List[str] = ["admin@govexa.gov.in", "officer@govexa.gov.in"]
+
+    # ==========================================
+    # Part 3: AI & LLM Provider Configuration
+    # ==========================================
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+    LLM_PROVIDER: str = "gemini"  # "gemini" | "synthetic_fallback"
+
+    # ==========================================
+    # Part 3: Storage & Scraper Safety Config
+    # ==========================================
+    SUPABASE_STORAGE_BUCKET: str = "recruitment-documents"
+    STORAGE_LOCAL_FALLBACK_DIR: str = "./storage_docs"
+    SCRAPER_USER_AGENT: str = "Govexa-Watchdog/3.0 (+https://govexa.vercel.app/bot-info)"
+    SCRAPER_REQUEST_TIMEOUT_SECONDS: int = 15
+    SCRAPER_MAX_RETRIES: int = 3
+    SCRAPER_MAX_PDF_SIZE_MB: int = 15
+    SCRAPER_RATE_LIMIT_DELAY_SECONDS: float = 2.0
+
+    # ==========================================
+    # Part 3: Notification & Email Delivery Config
+    # ==========================================
+    EMAIL_PROVIDER: str = "console"  # "console" | "smtp" | "sendgrid" | "resend"
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: Optional[int] = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    EMAILS_FROM_EMAIL: str = "alerts@govexa.gov.in"
+    EMAILS_FROM_NAME: str = "Govexa Official Watchdog"
+
+    # ==========================================
+    # Part 3: Automated Review & Validation Policies
+    # ==========================================
+    AUTO_APPROVE_CONFIDENCE_THRESHOLD: float = 0.92
+    AUTO_APPROVE_HIGH_IMPACT_ALLOWED: bool = False  # High impact changes require review
 
     model_config = SettingsConfigDict(
         case_sensitive=True,

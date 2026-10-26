@@ -24,6 +24,12 @@ export function mapBackendNotification(raw: any): RecruitmentNotification {
     sourcePortalName: raw.source_portal_name || raw.sourcePortalName || 'Official Gazette',
     tags: raw.tags || [],
     examDateTentative: raw.tentative_exam_date || raw.examDateTentative,
+    verificationStatus: raw.verification_status || raw.verificationStatus || (raw.is_verified_official ? 'VERIFIED' : 'PENDING_REVIEW'),
+    lastCheckedAt: raw.last_checked_at || raw.lastCheckedAt || new Date().toISOString(),
+    contentHash: raw.content_hash || raw.contentHash || 'sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
+    isSuperseded: Boolean(raw.is_superseded || raw.isSuperseded),
+    supersededByNoticeId: raw.superseded_by_notice_id || raw.supersededByNoticeId,
+    versionHistory: raw.version_history || raw.versionHistory || [],
   };
 }
 

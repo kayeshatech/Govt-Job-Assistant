@@ -171,6 +171,127 @@ export const NotificationDetailPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Verification Status & Provenance Strip */}
+        <div className={`p-4 rounded-xl border text-xs ${
+          notification.verificationStatus === 'PENDING_REVIEW'
+            ? 'bg-starlight border-wisteria/60 text-eclipse'
+            : 'bg-opaline/20 border-opaline/70 text-eclipse'
+        }`}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className={`w-5 h-5 shrink-0 ${
+                notification.verificationStatus === 'PENDING_REVIEW' ? 'text-wisteria' : 'text-nocturne'
+              }`} />
+              <div>
+                <span className="font-bold text-nocturne block">
+                  {notification.verificationStatus === 'PENDING_REVIEW'
+                    ? 'Staged Extraction — Pending Official Review'
+                    : 'Watchdog Source Verified'}
+                </span>
+                <span className="text-[11px] text-wisteria block">
+                  Source: {notification.sourcePortalName} • Last checked:{' '}
+                  {notification.lastCheckedAt ? new Date(notification.lastCheckedAt).toLocaleDateString() : 'Active Watchdog'}
+                </span>
+              </div>
+            </div>
+
+            {notification.contentHash && (
+              <div className="font-mono text-[10px] bg-starlight px-2.5 py-1 rounded border border-opaline/80 text-wisteria max-w-full truncate">
+                SHA-256: {notification.contentHash.substring(0, 24)}...
+              </div>
+            )}
+          </div>
+
+          {notification.verificationStatus === 'PENDING_REVIEW' && (
+            <div className="mt-3 pt-3 border-t border-wisteria/20 flex items-center gap-2 text-[11px] text-wisteria">
+              <AlertCircle className="w-4 h-4 shrink-0 text-wisteria" />
+              <span>
+                <strong>Notice:</strong> This record was parsed automatically by the official portal crawler. Deadlines and vacancy counts are awaiting final operator verification. Always refer to the official PDF before submitting applications.
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Change History & Version Timeline */}
+        {notification.versionHistory && notification.versionHistory.length > 0 && (
+          <div className="space-y-3 pt-4 border-t border-opaline/60">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-bold text-nocturne uppercase tracking-wider">
+                Official Gazetted Change History & Corrigenda Log
+              </h2>
+              <span className="text-[11px] text-wisteria font-mono">
+                {notification.versionHistory.length} Version{notification.versionHistory.length > 1 ? 's' : ''} Documented
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {notification.versionHistory.map((ver) => (
+                <div
+                  key={ver.id}
+                  className="p-3.5 rounded-lg bg-starlight border border-opaline/70 text-xs space-y-2 hover:border-aurora transition-colors"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded font-mono font-bold text-[10px] bg-nocturne text-starlight">
+                        v{ver.versionNumber}.0
+                      </span>
+                      <span className="font-bold text-nocturne">
+                        {ver.changeType.replace('_', ' ')}
+                      </span>
+                      <span className="text-[11px] text-wisteria">
+                        {new Date(ver.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    {ver.pdfUrl && (
+                      <a
+                        href={ver.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-wisteria hover:text-nocturne underline"
+                      >
+                        <Download className="w-3 h-3" />
+                        Corrigendum Notice PDF
+                      </a>
+                    )}
+                  </div>
+
+                  <p className="text-eclipse/90 font-medium">{ver.changeSummary}</p>
+
+                  {ver.diffSummary && (
+                    <div className="p-2 rounded bg-opaline/20 border border-opaline/60 font-mono text-[11px] text-nocturne">
+                      {ver.diffSummary}
+                    </div>
+                  )}
+
+                  {(ver.newDeadline || ver.newVacancies) && (
+                    <div className="flex flex-wrap gap-4 text-[11px] text-wisteria pt-1">
+                      {ver.newDeadline && (
+                        <span>
+                          Deadline:{' '}
+                          <strong className="text-nocturne">
+                            {ver.previousDeadline ? `${ver.previousDeadline} → ` : ''}
+                            {ver.newDeadline}
+                          </strong>
+                        </span>
+                      )}
+                      {ver.newVacancies && (
+                        <span>
+                          Vacancies:{' '}
+                          <strong className="text-nocturne">
+                            {ver.previousVacancies ? `${ver.previousVacancies.toLocaleString()} → ` : ''}
+                            {ver.newVacancies.toLocaleString()}
+                          </strong>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* External Official Portal Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-opaline/60">
           <div className="text-xs text-wisteria">

@@ -30,6 +30,8 @@ from app.models.student import (
     DailyStudyTask,
 )
 from app.models.audit import AuditLog
+from app.models.monitoring import OfficialSource, ExtractionReviewItem
+from app.models.alert import StudentAlert
 
 __all__ = [
     "Base",
@@ -54,4 +56,7 @@ __all__ = [
     "StudyPlan",
     "DailyStudyTask",
     "AuditLog",
+    "OfficialSource",
+    "ExtractionReviewItem",
+    "StudentAlert",
 ]

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Compass,
@@ -14,19 +14,47 @@ import {
   X,
   Search,
   ShieldCheck,
+  AlertTriangle,
+  Check,
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config/brand';
 import { ROUTES } from '../../config/routes';
 import { useAuth } from '../../context/AuthContext';
 import { Badge } from '../common/Badge';
+import { alertService, StudentAlertItem } from '../../api/alertService';
 
 export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isAlertsOpen, setIsAlertsOpen] = useState(false);
+  const [alerts, setAlerts] = useState<StudentAlertItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      alertService.getAlerts().then((res) => {
+        if (res.data) {
+          setAlerts(res.data);
+        }
+      });
+    }
+  }, [isAuthenticated]);
+
+  const unreadAlerts = alerts.filter((a) => !a.isRead && !a.isDismissed);
+
+  const handleMarkAllRead = async () => {
+    await alertService.markAsRead(undefined, true);
+    setAlerts(alerts.map((a) => ({ ...a, isRead: true })));
+  };
+
+  const handleDismiss = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    await alertService.dismissAlert(id);
+    setAlerts(alerts.filter((a) => a.id !== id));
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,68 +138,188 @@ export const Navbar: React.FC = () => {
           {/* User Account / Auth Actions */}
           <div className="hidden sm:flex items-center gap-2.5">
             {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-opaline/40 transition-colors border border-transparent hover:border-opaline/60"
-                  aria-expanded={isProfileMenuOpen}
-                  aria-label="Student profile menu"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-wisteria text-starlight flex items-center justify-center font-bold text-xs">
-                    {user?.fullName ? user.fullName[0] : 'A'}
-                  </div>
-                  <div className="text-left hidden xl:block">
-                    <span className="block text-xs font-bold text-nocturne leading-tight">
-                      {user?.fullName?.split(' ')[0]}
-                    </span>
-                    <span className="block text-[10px] text-wisteria">Aspirant Profile</span>
-                  </div>
-                </button>
+              <div className="flex items-center gap-2">
+                {/* Personalized Watchdog Alerts Bell Button */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsAlertsOpen(!isAlertsOpen);
+                      setIsProfileMenuOpen(false);
+                    }}
+                    className="relative p-2 rounded-xl text-nocturne hover:bg-opaline/40 border border-opaline/60 transition-colors"
+                    aria-label="View personalized notifications and corrigendum alerts"
+                  >
+                    <Bell className="w-4 h-4 text-nocturne" />
+                    {unreadAlerts.length > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-wisteria text-starlight text-[10px] font-black rounded-full flex items-center justify-center animate-pulse">
+                        {unreadAlerts.length}
+                      </span>
+                    )}
+                  </button>
 
-                {/* Profile Dropdown */}
-                {isProfileMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-xl bg-starlight border border-opaline/80 shadow-modal py-1.5 z-50 animate-in fade-in-50">
-                    <div className="px-4 py-2 border-b border-opaline/60">
-                      <p className="text-xs font-bold text-nocturne">{user?.fullName}</p>
-                      <p className="text-[11px] text-wisteria truncate">{user?.email}</p>
+                  {/* Alerts Popover */}
+                  {isAlertsOpen && (
+                    <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-starlight border border-opaline/80 shadow-modal py-2 z-50 animate-in fade-in-50">
+                      <div className="px-4 py-2 border-b border-opaline/60 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-bold text-nocturne">Personalized Alerts & Corrigenda</p>
+                          <p className="text-[10px] text-wisteria">
+                            {unreadAlerts.length} unread notification{unreadAlerts.length === 1 ? '' : 's'}
+                          </p>
+                        </div>
+                        {unreadAlerts.length > 0 && (
+                          <button
+                            onClick={handleMarkAllRead}
+                            className="text-[11px] font-bold text-wisteria hover:text-nocturne"
+                          >
+                            Mark all read
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Alert Items List */}
+                      <div className="max-h-80 overflow-y-auto divide-y divide-opaline/40">
+                        {alerts.length > 0 ? (
+                          alerts.map((alert) => (
+                            <div
+                              key={alert.id}
+                              className={`p-3 text-xs transition-colors hover:bg-opaline/20 ${
+                                !alert.isRead ? 'bg-opaline/30' : ''
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <span
+                                  className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                                    alert.priority === 'CRITICAL' || alert.priority === 'HIGH'
+                                      ? 'bg-nocturne text-starlight'
+                                      : 'bg-opaline/50 text-nocturne'
+                                  }`}
+                                >
+                                  {alert.alertType.replace('_', ' ')}
+                                </span>
+                                <button
+                                  onClick={(e) => handleDismiss(alert.id, e)}
+                                  className="text-wisteria hover:text-nocturne p-0.5"
+                                  title="Dismiss alert"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <p className="font-bold text-nocturne mt-1">{alert.title}</p>
+                              <p className="text-[11px] text-eclipse/90 mt-0.5 line-clamp-2">
+                                {alert.message}
+                              </p>
+                              <div className="flex items-center justify-between mt-2 pt-1 text-[10px] text-wisteria">
+                                <span>{new Date(alert.createdAt).toLocaleDateString()}</span>
+                                {alert.emailDispatched && (
+                                  <span className="italic">Email Dispatched</span>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-6 text-center text-xs text-wisteria">
+                            No notifications at this time
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Popover Footer */}
+                      <div className="px-4 py-2 border-t border-opaline/60 flex items-center justify-between text-xs bg-starlight">
+                        <Link
+                          to={ROUTES.NOTIFICATIONS}
+                          onClick={() => setIsAlertsOpen(false)}
+                          className="font-bold text-wisteria hover:text-nocturne text-[11px]"
+                        >
+                          View Official Gazettes →
+                        </Link>
+                        <Link
+                          to={ROUTES.PROFILE}
+                          onClick={() => setIsAlertsOpen(false)}
+                          className="font-bold text-wisteria hover:text-nocturne text-[11px]"
+                        >
+                          Alert Preferences
+                        </Link>
+                      </div>
                     </div>
-                    <Link
-                      to={ROUTES.DASHBOARD}
-                      onClick={() => setIsProfileMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium"
-                    >
-                      <span>Dashboard Workspace</span>
-                    </Link>
-                    <Link
-                      to={ROUTES.SAVED_EXAMS}
-                      onClick={() => setIsProfileMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium"
-                    >
-                      <Bookmark className="w-3.5 h-3.5 text-wisteria" />
-                      <span>Application Tracker</span>
-                    </Link>
-                    <Link
-                      to={ROUTES.PROFILE}
-                      onClick={() => setIsProfileMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium"
-                    >
-                      <User className="w-3.5 h-3.5 text-wisteria" />
-                      <span>Profile & Eligibility Settings</span>
-                    </Link>
-                    <div className="border-t border-opaline/60 my-1" />
-                    <button
-                      onClick={() => {
-                        setIsProfileMenuOpen(false);
-                        logout();
-                        navigate(ROUTES.HOME);
-                      }}
-                      className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-nocturne hover:bg-opaline/30 font-medium"
-                    >
-                      <LogOut className="w-3.5 h-3.5 text-wisteria" />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {/* Profile Avatar / Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsProfileMenuOpen(!isProfileMenuOpen);
+                      setIsAlertsOpen(false);
+                    }}
+                    className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-opaline/40 transition-colors border border-transparent hover:border-opaline/60"
+                    aria-expanded={isProfileMenuOpen}
+                    aria-label="Student profile menu"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-wisteria text-starlight flex items-center justify-center font-bold text-xs">
+                      {user?.fullName ? user.fullName[0] : 'A'}
+                    </div>
+                    <div className="text-left hidden xl:block">
+                      <span className="block text-xs font-bold text-nocturne leading-tight">
+                        {user?.fullName?.split(' ')[0]}
+                      </span>
+                      <span className="block text-[10px] text-wisteria">Aspirant Profile</span>
+                    </div>
+                  </button>
+
+                  {/* Profile Dropdown */}
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-64 rounded-xl bg-starlight border border-opaline/80 shadow-modal py-1.5 z-50 animate-in fade-in-50">
+                      <div className="px-4 py-2 border-b border-opaline/60">
+                        <p className="text-xs font-bold text-nocturne">{user?.fullName}</p>
+                        <p className="text-[11px] text-wisteria truncate">{user?.email}</p>
+                      </div>
+                      <Link
+                        to={ROUTES.DASHBOARD}
+                        onClick={() => setIsProfileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium"
+                      >
+                        <span>Dashboard Workspace</span>
+                      </Link>
+                      <Link
+                        to={ROUTES.SAVED_EXAMS}
+                        onClick={() => setIsProfileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium"
+                      >
+                        <Bookmark className="w-3.5 h-3.5 text-wisteria" />
+                        <span>Application Tracker</span>
+                      </Link>
+                      <Link
+                        to={ROUTES.PROFILE}
+                        onClick={() => setIsProfileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium"
+                      >
+                        <User className="w-3.5 h-3.5 text-wisteria" />
+                        <span>Profile & Eligibility Settings</span>
+                      </Link>
+                      <Link
+                        to={ROUTES.ADMIN_REVIEW}
+                        onClick={() => setIsProfileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs text-eclipse hover:bg-opaline/30 font-medium border-t border-opaline/50"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-wisteria" />
+                        <span>Source Watchdog & Review Queue</span>
+                      </Link>
+                      <div className="border-t border-opaline/60 my-1" />
+                      <button
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);
+                          logout();
+                          navigate(ROUTES.HOME);
+                        }}
+                        className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-nocturne hover:bg-opaline/30 font-medium"
+                      >
+                        <LogOut className="w-3.5 h-3.5 text-wisteria" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-2">

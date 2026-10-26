@@ -26,6 +26,7 @@ import { StudyMaterialLibraryPage } from './pages/StudyMaterialLibraryPage';
 import { StudentProfilePage } from './pages/StudentProfilePage';
 import { AIAssistantPage } from './pages/AIAssistantPage';
 import { KsetUgcNetLandingPage } from './pages/KsetUgcNetLandingPage';
+import { AdminReviewPage } from './pages/AdminReviewPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
@@ -122,7 +123,17 @@ export const App: React.FC = () => {
                 {/* 13. KSET / UGC-NET Specialized Hub */}
                 <Route path={ROUTES.KSET_UGC_NET} element={<KsetUgcNetLandingPage />} />
 
-                {/* 14. Responsive 404 Page */}
+                {/* 14. Admin Source Watchdog & Review Queue (Protected) */}
+                <Route
+                  path={ROUTES.ADMIN_REVIEW}
+                  element={
+                    <ProtectedRoute>
+                      <AdminReviewPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* 15. Responsive 404 Page */}
                 <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
                 <Route path="*" element={<Navigate to={ROUTES.NOT_FOUND} replace />} />
               </Routes>

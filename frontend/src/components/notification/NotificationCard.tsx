@@ -35,12 +35,17 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({ notification
             </Badge>
             <span className="text-xs text-wisteria font-mono">{notification.advertisementNumber}</span>
           </div>
-          {notification.isVerifiedOfficial && (
+          {notification.verificationStatus === 'PENDING_REVIEW' ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-wisteria bg-opaline/40 px-2 py-0.5 rounded-full border border-wisteria/40">
+              <span className="w-1.5 h-1.5 rounded-full bg-wisteria animate-pulse" />
+              <span>Pending Review</span>
+            </span>
+          ) : notification.isVerifiedOfficial ? (
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-nocturne bg-opaline/40 px-2 py-0.5 rounded-full border border-opaline/60">
               <CheckCircle2 className="w-3.5 h-3.5 text-wisteria" />
               <span>Gazetted</span>
             </span>
-          )}
+          ) : null}
         </div>
 
         {/* Title */}

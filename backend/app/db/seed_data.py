@@ -20,6 +20,7 @@ from app.models.notification import (
     NotificationVersion,
     NotificationSource,
 )
+from app.models.monitoring import OfficialSource
 from app.models.student import (
     StudentProfile,
     StudentPreference,
@@ -623,6 +624,61 @@ def seed_database(db: Session) -> None:
                 application_date="2026-02-16",
                 exam_date="2026-05-24",
             ))
+
+        # 7. Seed Official Sources in Administrative Registry
+        official_sources_data = [
+            {
+                "authority_code": "UPSC",
+                "authority_name": "Union Public Service Commission",
+                "official_domain": "upsc.gov.in",
+                "listing_url": "https://upsc.gov.in/examinations/active-examinations",
+                "source_type": "recruitment_listing",
+                "polling_frequency_minutes": 60,
+                "fetch_method": "GET_HTML",
+                "terms_url": "https://upsc.gov.in/terms-and-conditions",
+                "rate_limit_delay_seconds": 2.0,
+            },
+            {
+                "authority_code": "SSC",
+                "authority_name": "Staff Selection Commission",
+                "official_domain": "ssc.gov.in",
+                "listing_url": "https://ssc.gov.in/notice-board",
+                "source_type": "notice_board",
+                "polling_frequency_minutes": 120,
+                "fetch_method": "GET_HTML",
+                "terms_url": "https://ssc.gov.in/terms",
+                "rate_limit_delay_seconds": 2.0,
+            },
+            {
+                "authority_code": "ISRO-ICRB",
+                "authority_name": "Indian Space Research Organisation (ICRB)",
+                "official_domain": "isro.gov.in",
+                "listing_url": "https://www.isro.gov.in/Careers.html",
+                "source_type": "recruitment_listing",
+                "polling_frequency_minutes": 180,
+                "fetch_method": "GET_HTML",
+                "terms_url": "https://www.isro.gov.in/terms.html",
+                "rate_limit_delay_seconds": 3.0,
+            },
+            {
+                "authority_code": "KPSC",
+                "authority_name": "Karnataka Public Service Commission",
+                "official_domain": "kpsc.kar.nic.in",
+                "listing_url": "https://kpsc.kar.nic.in/notifications.html",
+                "source_type": "notice_board",
+                "polling_frequency_minutes": 240,
+                "fetch_method": "GET_HTML",
+                "terms_url": "https://kpsc.kar.nic.in",
+                "rate_limit_delay_seconds": 2.5,
+            },
+        ]
+
+        for s_data in official_sources_data:
+            existing_src = db.query(OfficialSource).filter(
+                OfficialSource.authority_code == s_data["authority_code"]
+            ).first()
+            if not existing_src:
+                db.add(OfficialSource(**s_data))
 
         db.commit()
 

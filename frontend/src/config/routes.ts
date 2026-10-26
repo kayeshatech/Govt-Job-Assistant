@@ -22,6 +22,7 @@ export const ROUTES = {
   PROFILE: '/profile',
   AI_ASSISTANT: '/ai-assistant',
   KSET_UGC_NET: '/kset-ugc-net',
+  ADMIN_REVIEW: '/admin/review-queue',
   NOT_FOUND: '/404',
 } as const;
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, Mail, GraduationCap, Shield, Target, Save, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, GraduationCap, Shield, Target, Save, CheckCircle2, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Card } from '../components/common/Card';
@@ -8,10 +8,27 @@ import { Input } from '../components/common/Input';
 import { Select } from '../components/common/Select';
 import { Badge } from '../components/common/Badge';
 import { ReservationCategory, EducationLevel } from '../types/student';
+import { alertService, AlertPreferences } from '../api/alertService';
 
 export const StudentProfilePage: React.FC = () => {
   const { user, updateProfile } = useAuth();
   const { showToast } = useToast();
+
+  const [alertPrefs, setAlertPrefs] = useState<AlertPreferences>({
+    alertNewExams: true,
+    alertDeadlineReminders: true,
+    alertExamUpdates: true,
+    alertCorrigendum: true,
+    emailNotificationOptIn: true,
+  });
+
+  useEffect(() => {
+    alertService.getPreferences().then((res) => {
+      if (res.data) {
+        setAlertPrefs(res.data);
+      }
+    });
+  }, []);
 
   const [profileData, setProfileData] = useState({
     fullName: user?.fullName || '',
@@ -66,10 +83,15 @@ export const StudentProfilePage: React.FC = () => {
     { label: 'Ph.D / Research Scholar', value: 'Ph.D / Research Scholar' },
   ];
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     updateProfile(profileData);
-    showToast('Profile Updated Successfully', 'Your eligibility parameters and preferences have been saved.', 'success');
+    try {
+      await alertService.updatePreferences(alertPrefs);
+    } catch (err) {
+      console.warn('Could not persist alert preferences to API', err);
+    }
+    showToast('Profile & Alert Preferences Saved', 'Your eligibility parameters and notification preferences have been updated.', 'success');
   };
 
   return (
@@ -227,6 +249,127 @@ export const StudentProfilePage: React.FC = () => {
                 Person with Benchmark Disability (PwD) Candidate
               </span>
             </label>
+          </div>
+        </Card>
+
+        {/* Personalized Alert & Notification Preferences */}
+        <Card variant="default" className="p-6 space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-opaline/60">
+            <Bell className="w-4 h-4 text-wisteria" />
+            <h2 className="text-sm font-bold text-nocturne uppercase tracking-wider">
+              Personalized Watchdog Alerts & Notification Preferences
+            </h2>
+          </div>
+
+          <p className="text-xs text-eclipse/80 leading-relaxed">
+            Configure automated in-app alerts and notifications triggered by government portal updates, corrigendum revisions, and application milestones.
+          </p>
+
+          <div className="space-y-3 pt-2">
+            <div className="p-3.5 rounded-xl bg-starlight border border-opaline/70 hover:border-aurora transition-colors">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={alertPrefs.alertNewExams}
+                  onChange={(e) =>
+                    setAlertPrefs({ ...alertPrefs, alertNewExams: e.target.checked })
+                  }
+                  className="mt-0.5 rounded border-opaline text-nocturne focus:ring-wisteria"
+                />
+                <div>
+                  <span className="font-bold text-xs text-nocturne block">
+                    Matching Examination Announcements
+                  </span>
+                  <span className="text-[11px] text-wisteria block">
+                    Receive instant alerts when official vacancies matching your qualification ({profileData.educationLevel}) and age are gazetted.
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-starlight border border-opaline/70 hover:border-aurora transition-colors">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={alertPrefs.alertDeadlineReminders}
+                  onChange={(e) =>
+                    setAlertPrefs({ ...alertPrefs, alertDeadlineReminders: e.target.checked })
+                  }
+                  className="mt-0.5 rounded border-opaline text-nocturne focus:ring-wisteria"
+                />
+                <div>
+                  <span className="font-bold text-xs text-nocturne block">
+                    Closing-Soon Deadline Reminders
+                  </span>
+                  <span className="text-[11px] text-wisteria block">
+                    Automated reminders 7 days and 48 hours prior to official online registration cut-offs for saved exams.
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-starlight border border-opaline/70 hover:border-aurora transition-colors">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={alertPrefs.alertCorrigendum}
+                  onChange={(e) =>
+                    setAlertPrefs({ ...alertPrefs, alertCorrigendum: e.target.checked })
+                  }
+                  className="mt-0.5 rounded border-opaline text-nocturne focus:ring-wisteria"
+                />
+                <div>
+                  <span className="font-bold text-xs text-nocturne block">
+                    Corrigenda & Vacancy Revision Watchdog
+                  </span>
+                  <span className="text-[11px] text-wisteria block">
+                    Urgent alerts when official corrigendums modify deadlines, vacancy allocations, or eligibility relaxation criteria.
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-starlight border border-opaline/70 hover:border-aurora transition-colors">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={alertPrefs.alertExamUpdates}
+                  onChange={(e) =>
+                    setAlertPrefs({ ...alertPrefs, alertExamUpdates: e.target.checked })
+                  }
+                  className="mt-0.5 rounded border-opaline text-nocturne focus:ring-wisteria"
+                />
+                <div>
+                  <span className="font-bold text-xs text-nocturne block">
+                    Admit Card & Schedule Announcements
+                  </span>
+                  <span className="text-[11px] text-wisteria block">
+                    Instant alerts when hall tickets, exam city slips, or CBT dates are officially published by commissions.
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-opaline/20 border border-opaline/60">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={alertPrefs.emailNotificationOptIn}
+                  onChange={(e) =>
+                    setAlertPrefs({ ...alertPrefs, emailNotificationOptIn: e.target.checked })
+                  }
+                  className="mt-0.5 rounded border-opaline text-nocturne focus:ring-wisteria"
+                />
+                <div>
+                  <span className="font-bold text-xs text-nocturne block">
+                    Email Digest & Urgent Dispatch
+                  </span>
+                  <span className="text-[11px] text-wisteria block">
+                    Send verified high-impact alerts directly to <strong className="text-nocturne">{profileData.email}</strong>.
+                  </span>
+                </div>
+              </label>
+            </div>
           </div>
         </Card>
 

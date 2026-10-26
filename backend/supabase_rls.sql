@@ -65,7 +65,39 @@ CREATE POLICY "Students can manage own daily tasks"
     ON daily_study_tasks FOR ALL
     USING (auth.uid()::text = student_id);
 
--- 6. Public Reference Tables (Read-only for public/authenticated, write for admin/service_role)
+-- 6. Personalized Student Alerts (Part 3)
+ALTER TABLE student_alerts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Students can view own alerts"
+    ON student_alerts FOR SELECT
+    USING (auth.uid()::text = student_id OR auth.jwt()->'app_metadata'->>'role' = 'admin');
+
+CREATE POLICY "Students can update own alerts"
+    ON student_alerts FOR UPDATE
+    USING (auth.uid()::text = student_id)
+    WITH CHECK (auth.uid()::text = student_id);
+
+CREATE POLICY "Students can delete own alerts"
+    ON student_alerts FOR DELETE
+    USING (auth.uid()::text = student_id);
+
+-- 7. Official Source Registry & Review Queue (Part 3)
+ALTER TABLE official_sources ENABLE ROW LEVEL SECURITY;
+ALTER TABLE extraction_review_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read official_sources"
+    ON official_sources FOR SELECT
+    USING (true);
+
+CREATE POLICY "Admins manage official_sources"
+    ON official_sources FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+CREATE POLICY "Admins manage extraction_review_items"
+    ON extraction_review_items FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+-- 8. Public Reference Tables (Read-only for public/authenticated, write for admin/service_role)
 ALTER TABLE government_exams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE exam_authorities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE exam_categories ENABLE ROW LEVEL SECURITY;
@@ -80,7 +112,6 @@ ALTER TABLE age_criteria ENABLE ROW LEVEL SECURITY;
 ALTER TABLE age_relaxation_rules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE community_domicile_rules ENABLE ROW LEVEL SECURITY;
 
--- Allow public read access to active government examinations & notices
 CREATE POLICY "Public read government_exams" ON government_exams FOR SELECT USING (true);
 CREATE POLICY "Public read exam_authorities" ON exam_authorities FOR SELECT USING (true);
 CREATE POLICY "Public read exam_categories" ON exam_categories FOR SELECT USING (true);
@@ -95,7 +126,7 @@ CREATE POLICY "Public read age_criteria" ON age_criteria FOR SELECT USING (true)
 CREATE POLICY "Public read age_relaxation_rules" ON age_relaxation_rules FOR SELECT USING (true);
 CREATE POLICY "Public read community_domicile_rules" ON community_domicile_rules FOR SELECT USING (true);
 
--- 7. Audit Logs: Admin read-only, service_role write
+-- 9. Audit Logs: Admin read-only, service_role write
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Admins can view audit logs"

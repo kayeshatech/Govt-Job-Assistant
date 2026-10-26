@@ -14,6 +14,8 @@ interface CalendarEvent {
   type: 'Deadline' | 'Exam Day' | 'Admit Card' | 'Result';
   daysLeft: number;
   officialPortal: string;
+  isVerified?: boolean;
+  corrigendumNote?: string;
 }
 
 export const ExamCalendarPage: React.FC = () => {
@@ -31,6 +33,7 @@ export const ExamCalendarPage: React.FC = () => {
       type: 'Deadline',
       daysLeft: 9,
       officialPortal: 'https://upsconline.nic.in',
+      isVerified: true,
     },
     {
       id: 'cal-02',
@@ -41,6 +44,19 @@ export const ExamCalendarPage: React.FC = () => {
       type: 'Deadline',
       daysLeft: 16,
       officialPortal: 'https://cetonline.karnataka.gov.in',
+      isVerified: true,
+    },
+    {
+      id: 'cal-ssc-cgl-corrigendum',
+      title: 'SSC CGL 2026 Extended Registration Deadline (Corrigendum-I)',
+      examCode: 'SSC-CGL',
+      conductingBody: 'Staff Selection Commission',
+      date: '2026-03-25',
+      type: 'Deadline',
+      daysLeft: 29,
+      officialPortal: 'https://ssc.gov.in',
+      isVerified: true,
+      corrigendumNote: 'Deadline extended from 15-03-2026 per Corrigendum Notice F.No. 3/1/2026-P&P-I (+1,250 CBDT posts)',
     },
     {
       id: 'cal-03',
@@ -51,6 +67,7 @@ export const ExamCalendarPage: React.FC = () => {
       type: 'Deadline',
       daysLeft: 45,
       officialPortal: 'https://isro.gov.in',
+      isVerified: true,
     },
     {
       id: 'cal-04',
@@ -207,6 +224,24 @@ export const ExamCalendarPage: React.FC = () => {
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-nocturne">{event.title}</h3>
                   <p className="text-xs text-wisteria">{event.conductingBody}</p>
+
+                  {event.corrigendumNote && (
+                    <div className="mt-2 p-2 rounded-lg bg-opaline/30 border border-opaline/70 text-[11px] font-mono text-nocturne">
+                      <strong className="text-wisteria">Corrigendum Notice:</strong> {event.corrigendumNote}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 mt-1.5">
+                    {event.isVerified ? (
+                      <span className="text-[10px] font-bold text-nocturne bg-opaline/40 px-2 py-0.5 rounded border border-opaline/60">
+                        ✓ Watchdog Verified Commission Deadline
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-wisteria bg-starlight px-2 py-0.5 rounded border border-opaline/80">
+                        ⚠ Tentative Schedule (Pending Gazetted Release)
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 

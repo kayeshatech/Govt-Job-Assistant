@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Filter, RefreshCw, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Bell, Filter, RefreshCw, ShieldCheck, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { notificationService } from '../api/notificationService';
 import { RecruitmentNotification } from '../types/notification';
 import { NotificationCard } from '../components/notification/NotificationCard';
@@ -7,6 +8,7 @@ import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { Skeleton } from '../components/feedback/Skeleton';
 import { EmptyState } from '../components/feedback/EmptyState';
+import { ROUTES } from '../config/routes';
 
 export const RecruitmentNotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<RecruitmentNotification[]>([]);
@@ -59,6 +61,15 @@ export const RecruitmentNotificationsPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link to={ROUTES.ADMIN_REVIEW}>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<ShieldCheck className="w-3.5 h-3.5 text-wisteria" />}
+            >
+              Source Registry & Review Queue
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"
@@ -68,6 +79,19 @@ export const RecruitmentNotificationsPage: React.FC = () => {
             Refresh Feed
           </Button>
         </div>
+      </div>
+
+      {/* Watchdog Integrity Banner */}
+      <div className="p-4 rounded-xl bg-opaline/20 border border-opaline/60 flex items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start sm:items-center gap-3">
+          <ShieldCheck className="w-5 h-5 text-nocturne shrink-0 mt-0.5 sm:mt-0" />
+          <p className="text-eclipse/90">
+            <strong>Official Source Watchdog:</strong> All notices are ingested on an automated schedule from verified commission portals (UPSC, SSC, ISRO, KPSC). High-impact corrigendums and vacancy revisions require dual-factor validation and human operator approval before authoritative publication.
+          </p>
+        </div>
+        <span className="hidden md:inline-flex px-2.5 py-1 rounded bg-starlight font-mono text-[10px] text-wisteria border border-opaline/70 whitespace-nowrap">
+          Deterministic SHA-256 Verified
+        </span>
       </div>
 
       {/* Filter Tabs */}

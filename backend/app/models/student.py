@@ -6,6 +6,7 @@ from app.models.base import UUIDModel
 
 if TYPE_CHECKING:
     from app.models.exam import GovernmentExam
+    from app.models.alert import StudentAlert
 
 class StudentProfile(UUIDModel):
     """Student Profile linked 1-to-1 with Supabase Auth verified UUID."""
@@ -41,6 +42,9 @@ class StudentProfile(UUIDModel):
     study_plans: Mapped[List["StudyPlan"]] = relationship(
         "StudyPlan", back_populates="student", cascade="all, delete-orphan"
     )
+    alerts: Mapped[List["StudentAlert"]] = relationship(
+        "StudentAlert", back_populates="student", cascade="all, delete-orphan"
+    )
 
 class StudentPreference(UUIDModel):
     """Student examination preferences & target sectors."""
@@ -50,6 +54,10 @@ class StudentPreference(UUIDModel):
     target_categories: Mapped[Optional[dict]] = mapped_column(JSON, default=list)  # ["Civil Services", "Engineering & PSU"]
     target_exam_codes: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
     email_notification_opt_in: Mapped[bool] = mapped_column(Boolean, default=True)
+    alert_new_exams: Mapped[bool] = mapped_column(Boolean, default=True)
+    alert_deadline_reminders: Mapped[bool] = mapped_column(Boolean, default=True)
+    alert_exam_updates: Mapped[bool] = mapped_column(Boolean, default=True)
+    alert_corrigendum: Mapped[bool] = mapped_column(Boolean, default=True)
 
     student: Mapped["StudentProfile"] = relationship("StudentProfile", back_populates="preferences")
 

@@ -179,3 +179,75 @@ The backend is configured for deployment to [Render](https://render.com) via `re
    - `SUPABASE_JWT_SECRET`: Supabase JWT secret from API settings.
    - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (kept strictly secure on the server).
    - `CORS_ORIGINS`: Allowed frontend origins (e.g., `["https://govexa.vercel.app"]`).
+
+---
+
+## 8. Part 3: Official Source Watchdog & Recruitment Monitoring Pipeline
+
+### 8.1 Watchdog Architecture & Pipeline
+```
+Official Source Discovery (Registry)
+→ Fetch Permitted HTML / PDF via Rate-Limited Client (Politeness & Backoff)
+→ SHA-256 Hash Generation & Duplicate Elimination
+→ Safe PDF & Text Processing (pypdf with Control-Char Sanitization)
+→ Anti-Prompt-Injection LLM Adapter (Demarcated System Framing & Regex Fallback)
+→ Change Detection (NEW_NOTICE, CORRIGENDUM, DEADLINE_EXTENSION, VACANCY_REVISION)
+→ High-Impact Staging & Automated / Manual Approval Rules
+→ Versioned Database Updates (NotificationVersion)
+→ Personalized Student In-App & Email Alerts Dispatch
+```
+
+### 8.2 Background Worker Execution (Render Background Worker / Cron)
+Monitoring tasks are **never** executed inside synchronous FastAPI request handlers. A dedicated standalone worker CLI is provided in [`app.worker`](file:///d:/web%20projects/major%20project/Govt-Job-Assistant/backend/app/worker.py):
+
+```bash
+# 1. Single-pass scheduled execution (Suitable for Render Cron Jobs):
+python -m app.worker --run-once
+
+# 2. Continuous daemon execution (Suitable for Render Background Worker):
+python -m app.worker --daemon --interval 3600
+
+# 3. Dry-run execution (Crawl and extract without mutating database):
+python -m app.worker --dry-run
+```
+
+### 8.3 PDF Extraction & Anti-Prompt-Injection Defense
+- **Safe Extraction:** Uses `pypdf` with size caps (`SCRAPER_MAX_PDF_SIZE_MB=15`) and control character sanitization.
+- **Anti-Prompt-Injection:** Extracted document text is encapsulated within strict XML boundaries (`<untrusted_document_content>`). The LLM is instructed to ignore any instructions inside the document and extract solely factual recruitment schema fields. If the LLM provider is unavailable, high-precision deterministic regex fallback extracts dates, vacancies, and advertisement numbers without hallucinations.
+
+### 8.4 High-Impact Change Governance
+- **Corrigenda & Fluctuations:** High-impact revisions (deadline changes, vacancy fluctuations > 10%, qualification alterations) are flagged as `HIGH_IMPACT` and staged in `extraction_review_items` with status `PENDING_REVIEW`.
+- **Operator Review Queue:** Admins can inspect diffs, approve notices to publish to active feeds, or reject false matches via `/admin/review-queue`.
+
+### 8.5 Personalized Alerts & Email Adapter
+- In-app alerts backed by PostgreSQL table `student_alerts`.
+- Real-time notification feed in frontend Navbar with unread badges.
+- Configurable email dispatch adapter (`app.services.alert_service.EmailDeliveryAdapter`) with deduplication against duplicate dispatches.
+- Aspirants can customize alert categories (New Exams, Deadlines, Corrigenda, Admit Cards) in their Profile settings.
+
+### 8.6 Part 3 Environment Variables
+Add these to your `.env` or Render environment:
+```env
+# Gemini LLM Provider (Optional - Deterministic Regex parser active as fallback)
+GEMINI_API_KEY=""
+GEMINI_MODEL="gemini-1.5-flash"
+
+# Document Storage & Watchdog Limits
+SUPABASE_STORAGE_BUCKET="official-documents"
+SCRAPER_USER_AGENT="Govexa-Watchdog/1.0 (+https://govexa.org/bot; watchdog@govexa.org)"
+SCRAPER_MAX_PDF_SIZE_MB=15
+SCRAPER_RATE_LIMIT_DELAY_SECONDS=2.0
+
+# Approval Automation Thresholds
+AUTO_APPROVE_CONFIDENCE_THRESHOLD=0.92
+AUTO_APPROVE_HIGH_IMPACT_ALLOWED=false
+
+# Email Notification Provider (mock, sendgrid, or resend)
+EMAIL_PROVIDER="mock"
+```
+
+### 8.7 Complete Test Suite Execution
+```bash
+pytest -v
+# Result: 29 passed, 0 failures
+```

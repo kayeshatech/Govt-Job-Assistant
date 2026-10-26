@@ -41,17 +41,17 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 18 | Official government website monitoring | [intelligence.html](./intelligence.html), monitored portals table | Requires backend/external service |
-| 19 | New exam/recruitment detection | [intelligence.html](./intelligence.html), sample extraction feed | Requires backend/external service |
-| 20 | New post/role detection | [intelligence.html](./intelligence.html), sample recruitment feed | Requires backend/external service |
-| 21 | Notification detection | [notifications.html](./notifications.html), sample notification feed | Requires backend/external service |
-| 22 | Notification/PDF extraction | [intelligence.html](./intelligence.html), extraction tab; [workspace.html](./workspace.html#documents), PDF selector | Requires backend/external service |
-| 23 | Exam information extraction | [intelligence.html](./intelligence.html), extracted sample fields | Requires backend/external service |
-| 24 | Notification change detection | [intelligence.html](./intelligence.html), sample corrigendum diff view | Requires backend/external service |
-| 25 | Official source verification | [intelligence.html](./intelligence.html), source labels/links | Requires backend/external service |
-| 26 | Exam database auto-update | [intelligence.html](./intelligence.html), sample audit log | Requires backend/external service |
-| 27 | Update history | [intelligence.html](./intelligence.html), audit-log tab | Simulated/demo — static sample records |
-| 28 | Personalized alerts for new/updated exams | [notifications.html](./notifications.html), subscription control | Requires backend/external service |
+| 18 | Official government website monitoring | `/admin/review-queue`, `OfficialSource` registry, `app.services.scraper_service`, `app.worker` | **Implemented** — Official source registry, domain whitelisting, rate limiting, and scheduled watchdog worker |
+| 19 | New exam/recruitment detection | `POST /api/v1/sources/{id}/crawl`, `ChangeDetector` | **Implemented** — Discovers new exam announcements, hashes documents, and stages candidates |
+| 20 | New post/role detection | `ExtractionReviewItem`, `recruitment_posts` sync | **Implemented** — Extracts post titles, category mappings, and pay matrix levels |
+| 21 | Notification detection | `/notifications`, `/admin/review-queue`, `recruitment_notifications` | **Implemented** — Watchdog crawler ingests gazetted notices and detects updates |
+| 22 | Notification/PDF extraction | `app.services.pdf_extractor`, `pypdf`, safe text & excerpt sanitization | **Implemented** — Safe multi-page PDF processing with 15MB cap and control-char stripping |
+| 23 | Exam information extraction | `app.services.llm_adapter`, `GeminiLLMAdapter` + `DeterministicRegexParser` | **Implemented** — Structured JSON schema with anti-prompt-injection system framing and regex fallback |
+| 24 | Notification change detection | `app.services.change_detector.ChangeDetector` | **Implemented** — Detects `NEW_NOTICE`, `CORRIGENDUM`, `DEADLINE_EXTENSION`, `VACANCY_REVISION`, `CANCELLATION` |
+| 25 | Official source verification | `/notifications/:id`, `OfficialSource`, SHA-256 integrity hash | **Implemented** — Cryptographic digest tracking, source domain validation, and gazetted verification badges |
+| 26 | Exam database auto-update | `POST /admin/candidates/{id}/approve`, auto-approval policy | **Implemented** — Automatic approval for low-impact changes; staged human review queue for high-impact alterations |
+| 27 | Update history | `/notifications/:id`, `NotificationVersion`, version timeline | **Implemented** — Immutable version log with previous vs new values, corrigendum diffs, and PDF downloads |
+| 28 | Personalized alerts for new/updated exams | `/profile`, Navbar alerts popover, `StudentAlert`, `EmailDeliveryAdapter` | **Implemented** — In-app alerts, email dispatch adapter, deduplication, and user category preference controls |
 
 ## MODULE D — APPLICATION ASSISTANCE
 
