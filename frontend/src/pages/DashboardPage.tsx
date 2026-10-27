@@ -16,6 +16,9 @@ import {
   AlertCircle,
   ExternalLink,
   Plus,
+  Brain,
+  ShieldCheck,
+  RotateCcw,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -25,14 +28,12 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  LineChart,
-  Line,
 } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import { useSavedExams } from '../context/SavedExamsContext';
 import { examService } from '../api/examService';
 import { notificationService } from '../api/notificationService';
-import { preparationService } from '../api/preparationService';
+import { preparationService, PerformanceSummary, ProductivityStatus } from '../api/preparationService';
 import { GovernmentExam } from '../types/exam';
 import { RecruitmentNotification } from '../types/notification';
 import { MockTestResult, DailyStudyTask } from '../types/preparation';
@@ -42,32 +43,41 @@ import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { Skeleton } from '../components/feedback/Skeleton';
 import { ExamCard } from '../components/exam/ExamCard';
+import { useToast } from '../context/ToastContext';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const { savedApplications } = useSavedExams();
+  const { showToast } = useToast();
 
   const [matchingExams, setMatchingExams] = useState<GovernmentExam[]>([]);
   const [notifications, setNotifications] = useState<RecruitmentNotification[]>([]);
   const [mockTests, setMockTests] = useState<MockTestResult[]>([]);
   const [dailyTasks, setDailyTasks] = useState<DailyStudyTask[]>([]);
+  const [performance, setPerformance] = useState<PerformanceSummary | null>(null);
+  const [productivity, setProductivity] = useState<ProductivityStatus | null>(null);
+  const [isGeneratingMistakeTest, setIsGeneratingMistakeTest] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadDashboardData = async () => {
       setIsLoading(true);
       try {
-        const [examsRes, notifsRes, mocksRes, tasksRes] = await Promise.all([
+        const [examsRes, notifsRes, mocksRes, tasksRes, perfRes, prodRes] = await Promise.all([
           examService.getExams(),
           notificationService.getNotifications(),
           preparationService.getMockTestResults(),
           preparationService.getDailyTasks(),
+          preparationService.getPerformanceSummary(),
+          preparationService.getProductivityStatus(),
         ]);
 
         setMatchingExams(examsRes.data.slice(0, 3));
         setNotifications(notifsRes.data.slice(0, 4));
         setMockTests(mocksRes.data);
         setDailyTasks(tasksRes.data);
+        setPerformance(perfRes);
+        setProductivity(prodRes);
       } catch (err) {
         console.error('Failed to load dashboard data', err);
       } finally {
@@ -86,6 +96,18 @@ export const DashboardPage: React.FC = () => {
           : t
       )
     );
+  };
+
+  const handleLaunchMistakeTest = async () => {
+    setIsGeneratingMistakeTest(true);
+    try {
+      const test = await preparationService.createMistakeBasedTest();
+      showToast('Mistake Test Created', `Loaded test "${test.title}" with ${test.total_questions} questions you previously missed.`, 'success');
+    } catch (err) {
+      showToast('Notice', 'No unresolved mistakes found in notebook to generate a test.', 'info');
+    } finally {
+      setIsGeneratingMistakeTest(false);
+    }
   };
 
   const completedTasksCount = dailyTasks.filter((t) => t.status === 'completed').length;
@@ -147,8 +169,12 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[11px] font-bold text-wisteria uppercase tracking-wider block">
               Study Streak
             </span>
-            <span className="text-2xl font-black text-nocturne mt-0.5 block">14 Days</span>
-            <span className="text-[11px] text-eclipse font-medium">Daily target: {user?.preferredDailyStudyHours || 6}h</span>
+            <span className="text-2xl font-black text-nocturne mt-0.5 block">
+              {productivity?.current_streak_days || 14} Days
+            </span>
+            <span className="text-[11px] text-eclipse font-medium">
+              Completed: {productivity?.completed_hours || 4.5}h today
+            </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-opaline/30 flex items-center justify-center text-wisteria">
             <Flame className="w-5 h-5 fill-current" />
@@ -175,8 +201,12 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[11px] font-bold text-wisteria uppercase tracking-wider block">
               Mock Accuracy
             </span>
-            <span className="text-2xl font-black text-nocturne mt-0.5 block">82.4%</span>
-            <span className="text-[11px] text-eclipse font-medium">+4.2% from last week</span>
+            <span className="text-2xl font-black text-nocturne mt-0.5 block">
+              {performance?.overall_average_accuracy || 82.4}%
+            </span>
+            <span className="text-[11px] text-eclipse font-medium">
+              {performance?.total_tests_taken || 3} tests scored
+            </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-opaline/30 flex items-center justify-center text-nocturne">
             <TrendingUp className="w-5 h-5" />
@@ -186,18 +216,89 @@ export const DashboardPage: React.FC = () => {
         <Card variant="default" className="p-4 flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-wisteria uppercase tracking-wider block">
-              Today's Plan
+              Mistake Notebook
             </span>
             <span className="text-2xl font-black text-nocturne mt-0.5 block">
-              {completedTasksCount}/{dailyTasks.length} Tasks
+              {performance?.unresolved_mistakes_count ?? 2} Saved
             </span>
-            <span className="text-[11px] text-wisteria font-medium">{taskProgress}% completed</span>
+            <span className="text-[11px] text-wisteria font-medium">Needs remediation</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-opaline/30 flex items-center justify-center text-wisteria">
-            <Clock className="w-5 h-5" />
+            <RotateCcw className="w-5 h-5" />
           </div>
         </Card>
       </div>
+
+      {/* 2.5 PERFORMANCE PERSONALIZATION & WEAK-TOPIC DIAGNOSTICS */}
+      {performance && (
+        <Card variant="default" className="p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-opaline/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-wisteria" />
+              <div>
+                <h2 className="text-sm font-bold text-nocturne">
+                  AI Performance Diagnostics & Topic Analysis
+                </h2>
+                <p className="text-xs text-eclipse/80">
+                  Derives strengths and weak areas from objective answer key scoring.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleLaunchMistakeTest}
+              disabled={isGeneratingMistakeTest}
+              leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+            >
+              {isGeneratingMistakeTest ? 'Generating Test...' : 'Practice Missed Questions'}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-starlight border border-opaline space-y-2">
+              <span className="text-xs font-bold text-wisteria uppercase flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-aurora" /> Strong Topics:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {performance.strong_topics.map((t, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs bg-white border border-opaline text-nocturne px-2.5 py-1 rounded-lg font-bold"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-starlight border border-opaline space-y-2">
+              <span className="text-xs font-bold text-wisteria uppercase flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5 text-wisteria" /> Weak / High-Error Topics:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {performance.weak_topics.map((t, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs bg-white border border-wisteria text-wisteria px-2.5 py-1 rounded-lg font-bold"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white border border-opaline/80 flex items-start gap-2 text-xs text-nocturne leading-relaxed">
+            <ShieldCheck className="w-4 h-4 text-wisteria flex-shrink-0 mt-0.5" />
+            <p>
+              <strong>AI Diagnostic Feedback: </strong>
+              {performance.ai_diagnostic_feedback}
+            </p>
+          </div>
+        </Card>
+      )}
 
       {/* 3. MAIN GRID: TODAY'S STUDY PLAN + MOCK PERFORMANCE CHART */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -269,7 +370,7 @@ export const DashboardPage: React.FC = () => {
                 <p className="text-xs text-wisteria">Recent sectional & full test trends</p>
               </div>
               <Badge variant="accent" size="sm">
-                Last 4 Simulations
+                Simulation History
               </Badge>
             </div>
 
@@ -289,7 +390,6 @@ export const DashboardPage: React.FC = () => {
                       fontSize: '12px',
                     }}
                   />
-                  {/* Bar fill strictly #6E5A88 (Wisteria) and #2A2550 (Nocturne) */}
                   <Bar dataKey="score" fill="#2A2550" radius={[4, 4, 0, 0]} name="Score" />
                   <Bar dataKey="accuracy" fill="#6E5A88" radius={[4, 4, 0, 0]} name="Accuracy %" />
                 </BarChart>

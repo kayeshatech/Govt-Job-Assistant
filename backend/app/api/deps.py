@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -26,6 +26,16 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return verify_jwt_token(credentials.credentials)
+
+def get_optional_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
+) -> Optional[AuthenticatedUser]:
+    if not credentials or not credentials.credentials:
+        return None
+    try:
+        return verify_jwt_token(credentials.credentials)
+    except Exception:
+        return None
 
 def get_current_admin(
     current_user: AuthenticatedUser = Depends(get_current_user),

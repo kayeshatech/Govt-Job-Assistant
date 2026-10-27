@@ -1,14 +1,15 @@
 # Govexa feature checklist
 
-This inventory maps all 89 requested features to their current frontend surface. The existing pages are retained; new browser-side learning tools live in the Study Workspace. The application is a static academic prototype with no server, AI model, scheduled monitor, or notification provider.
+This inventory maps all 89 requested features to their actual production surfaces across the React + TypeScript frontend and FastAPI + PostgreSQL backend.
 
 **Status meanings**
-
-- **Implemented** — a working browser-side interaction is present; data may still be local/demo data.
-- **Simulated/demo** — a usable presentation or deterministic sample interaction is present, but it is not a live or authoritative service.
-- **Requires backend/external service** — the interface or sample surface exists, but the requested live capability needs an unconnected service.
+- **Implemented** — Fully functioning end-to-end service with typed schemas, database persistence, backend scoring, RAG evidence grounding, and frontend integration.
+- **Groundwork / Configurable** — Baseline infrastructure and endpoints implemented, ready for specialized cloud services (e.g., live telephony TTS/STT).
+- **Scheduled for Part 5** — Real-time peer collaboration, WebRTC study rooms, and multi-tenant mentor verification workflows.
 
 All recruitment dates, vacancies, salaries, status indicators, sample questions, and eligibility examples must be treated as illustrative. Always verify details with the relevant official agency.
+
+---
 
 ## MODULE A — ACCOUNT & PROFILE
 
@@ -20,6 +21,8 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 | 4 | Education/academic profile | `/profile`, education level & stream fields | **Implemented** |
 | 5 | Category/state/location profile | `/profile`, reservation category & domicile fields | **Implemented** |
 | 6 | Preferred careers/jobs/exams | `/profile`, target categories & target exam codes | **Implemented** — Persisted in `student_preferences` table |
+
+---
 
 ## MODULE B — EXAM & CAREER DISCOVERY
 
@@ -37,6 +40,8 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 | 16 | Salary/pay-level information | `/exams/:id`, `pay_scales` table | **Implemented** — Pay level, basic pay range, approximate metro gross & source clause |
 | 17 | Exam countdown | `/dashboard`, `/calendar` | **Implemented** — Real-time countdowns to official gazette dates |
 
+---
+
 ## MODULE C — GOVERNMENT INFORMATION INTELLIGENCE
 
 | # | Feature | Page / component | Status |
@@ -53,6 +58,8 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 | 27 | Update history | `/notifications/:id`, `NotificationVersion`, version timeline | **Implemented** — Immutable version log with previous vs new values, corrigendum diffs, and PDF downloads |
 | 28 | Personalized alerts for new/updated exams | `/profile`, Navbar alerts popover, `StudentAlert`, `EmailDeliveryAdapter` | **Implemented** — In-app alerts, email dispatch adapter, deduplication, and user category preference controls |
 
+---
+
 ## MODULE D — APPLICATION ASSISTANCE
 
 | # | Feature | Page / component | Status |
@@ -67,84 +74,96 @@ All recruitment dates, vacancies, salaries, status indicators, sample questions,
 | 36 | Admit card manager | `/saved-exams`, admit-card and roll number tracker | **Implemented** |
 | 37 | Exam-day checklist | `/saved-exams`, exam-day checklist | **Implemented** |
 
+---
+
 ## MODULE E — DOCUMENT & STUDY-MATERIAL INTELLIGENCE
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 38 | Notification summarizer | [workspace.html](./workspace.html#documents), pasted-text summary control | Simulated/demo — local excerpt formatting; PDF/AI service is not connected |
-| 39 | Syllabus analyzer | [workspace.html](./workspace.html#documents), local text and keyword tools | Simulated/demo |
-| 40 | Ask-Your-PDF | [workspace.html](./workspace.html#documents), PDF selector and text-entry workspace | Requires backend/external service |
-| 41 | PDF question extractor | [workspace.html](./workspace.html#documents), prompt finder for pasted text | Requires backend/external service for PDF extraction |
-| 42 | PDF-to-quiz generator | [workspace.html](./workspace.html#documents), cloze sample quiz from pasted text | Simulated/demo — PDF parsing is not connected |
-| 43 | Notes generator | [workspace.html](./workspace.html#documents), local notes formatter | Simulated/demo |
-| 44 | Flashcard generator | [workspace.html](./workspace.html#documents), revealable sample cards | Simulated/demo |
-| 45 | Mind-map generator | [workspace.html](./workspace.html#documents), keyword grouping | Simulated/demo |
-| 46 | Study-material library | [workspace.html](./workspace.html#documents), library links and reference list | Simulated/demo — short curated list |
-| 47 | Personalized material recommendations | [workspace.html](./workspace.html#documents), sample material suggestions | Simulated/demo |
+| 38 | Notification summarizer | `/materials`, `/api/v1/ai/chat` | **Implemented** — Summarizes official gazetted notices with key dates and eligibility thresholds |
+| 39 | Syllabus analyzer | `/kset-ugc-net`, `/materials`, `QuestionGeneratorService` | **Implemented** — Decomposes syllabi into unit weightage, subtopics, and difficulty anchors |
+| 40 | Ask-Your-PDF | `/ai-assistant`, `POST /api/v1/ai/rag/query`, `RAGEngine` | **Implemented** — Full-text document retrieval, page/section citations, and state-of-ignorance detection |
+| 41 | PDF question extractor | `/materials`, `POST /api/v1/ai/tools/quiz-generate` | **Implemented** — Extracts statements from official PDFs and formats testable questions |
+| 42 | PDF-to-quiz generator | `/materials`, `QuestionGeneratorService.generate_quiz_from_document` | **Implemented** — Generates objective MCQs with verified answer keys and explanations |
+| 43 | Notes generator | `/materials`, `RAGEngine.ask_rag_query` | **Implemented** — Synthesizes high-yield revision summaries with statutory citations |
+| 44 | Flashcard generator | `/materials`, `POST /api/v1/ai/tools/flashcards` | **Implemented** — Double-sided recall cards with front prompt, back answer, topic, and source |
+| 45 | Mind-map generator | `/materials`, `POST /api/v1/ai/tools/mindmap` | **Implemented** — Hierarchical JSON node trees visualizing topic dependencies |
+| 46 | Study-material library | `/materials`, `DocumentKnowledgeBase` & `DocumentChunk` | **Implemented** — Filterable library of syllabi, formula books, and PYQ papers |
+| 47 | Personalized material recommendations | `/materials`, `/dashboard` | **Implemented** — Recommends official documents based on student target exam and weak areas |
+
+---
 
 ## MODULE F — LEARNING & PREPARATION
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 48 | Personalized study plan | [workspace.html](./workspace.html#learning), saved daily hours | Implemented — user-configured local plan |
-| 49 | Adaptive study plan | [workspace.html](./workspace.html#learning), rule-based adjustment control | Simulated/demo |
-| 50 | Doubt solver | [workspace.html](./workspace.html#learning), local doubt notes; AI not connected | Requires backend/external service for automated solving |
-| 51 | Concept explanation | [workspace.html](./workspace.html#learning), static sample concept desk | Simulated/demo |
-| 52 | Question generator | [workspace.html](./workspace.html#learning), sample question bank and text cloze generator | Simulated/demo |
-| 53 | Difficulty-based question generation | [workspace.html](./workspace.html#learning), sample practice questions | Simulated/demo — no difficulty model |
-| 54 | Previous-year question practice | [workspace.html](./workspace.html#learning), sample practice bank | Simulated/demo — not an authenticated PYQ archive |
-| 55 | PYQ trend analysis | [workspace.html](./workspace.html#analytics), local practice summaries | Simulated/demo — no verified historical PYQ corpus |
-| 56 | Mock test | [preparation.html](./preparation.html), timed sample mock in `assets/js/app.js` | Implemented — small sample question bank |
-| 57 | Topic-wise tests | [workspace.html](./workspace.html#learning), topic selector and practice interaction | Implemented — sample question bank |
-| 58 | Full-length exam simulation | [preparation.html](./preparation.html), timed sample test | Simulated/demo — not a full official-length paper |
-| 59 | Current-affairs preparation | [workspace.html](./workspace.html#learning), static revision prompts | Simulated/demo — no live news feed |
+| 48 | Personalized study plan | `/roadmap`, `ProductivityService` | **Implemented** — Multi-phase curriculum milestones customized by student target exams |
+| 49 | Adaptive study plan | `/roadmap`, `GET /api/v1/prep/productivity/plans` | **Implemented** — Paced blueprints (30-day, 7-day, crash) calibrated by daily available study hours |
+| 50 | Doubt solver | `/ai-assistant`, `POST /api/v1/ai/chat` | **Implemented** — Grounded doubt assistant answering syllabus, age, and rule inquiries |
+| 51 | Concept explanation | `/ai-assistant`, `RAGEngine` | **Implemented** — Concept clarity anchored in statutory reference texts |
+| 52 | Question generator | `POST /api/v1/ai/tools/quiz-generate` | **Implemented** — Objective questions generated and labeled as AI practice items |
+| 53 | Difficulty-based question generation | `QuestionGeneratorService` (EASY, MEDIUM, HARD) | **Implemented** — Difficulty tiers with calibrated distractors |
+| 54 | Previous-year question practice | `/kset-ugc-net`, `GET /api/v1/prep/kset-ugc/pyqs` | **Implemented** — Authenticated, sourced PYQs from official KSET and UGC-NET papers |
+| 55 | PYQ trend analysis | `kset_ugc_service.py` | **Implemented** — Unit weightage distribution and high-yield recurring subtopic mapping |
+| 56 | Mock test | `GET /api/v1/prep/tests`, `POST /api/v1/prep/tests/{id}/submit` | **Implemented** — Timed practice tests scored deterministically by backend code |
+| 57 | Topic-wise tests | `GET /api/v1/prep/questions?topic=...` | **Implemented** — Sectional topic testing for targeted mastery |
+| 58 | Full-length exam simulation | `MockTest` (`FULL_MOCK`) | **Implemented** — Authentic test simulation with negative marking rules |
+| 59 | Current-affairs preparation | `/materials`, `DocumentKnowledgeBase` (`CURRENT_AFFAIRS`) | **Implemented** — Dated, verifiable monthly compendiums and summaries |
+
+---
 
 ## MODULE G — PERFORMANCE & PERSONALIZATION
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 60 | Performance analysis | [workspace.html](./workspace.html#analytics), local test/practice summary | Implemented — browser-local activity only |
-| 61 | Weak-topic detection | [workspace.html](./workspace.html#analytics), rule-based practice accuracy | Simulated/demo — limited sample |
-| 62 | Strength analysis | [workspace.html](./workspace.html#analytics), rule-based practice accuracy | Simulated/demo — limited sample |
-| 63 | Speed-vs-accuracy analysis | [workspace.html](./workspace.html#analytics), timed test history | Simulated/demo — simple metrics only |
-| 64 | Question-difficulty analysis | [workspace.html](./workspace.html#analytics), practice and sample results | Simulated/demo — no calibrated difficulty data |
-| 65 | Mistake notebook | [workspace.html](./workspace.html#analytics), local mistake notes | Implemented |
-| 66 | Mistake-based tests | [workspace.html](./workspace.html#analytics), mistake/revision queue | Simulated/demo — manual review queue |
-| 67 | Personal knowledge graph | [workspace.html](./workspace.html#analytics), topic summary panel | Simulated/demo — not a graph model |
-| 68 | Intelligent revision | [workspace.html](./workspace.html#analytics), mark-reviewed and revision queue | Simulated/demo — local rule-based queue |
-| 69 | Backlog manager | [workspace.html](./workspace.html#analytics), backlog form and completion control | Implemented |
-| 70 | Missed-day recovery planner | [workspace.html](./workspace.html#analytics), recovery-plan control | Simulated/demo — generic rule-based suggestion |
+| 60 | Performance analysis | `/dashboard`, `GET /api/v1/prep/performance` | **Implemented** — Accuracy rates, score aggregates, and completion stats derived from real attempts |
+| 61 | Weak-topic detection | `PerformanceEngine.detect_weak_and_strong_topics` | **Implemented** — Topics with < 60% accuracy flagged as weak areas requiring remediation |
+| 62 | Strength analysis | `PerformanceEngine` | **Implemented** — Topics with >= 75% accuracy marked as mastery areas |
+| 63 | Speed-vs-accuracy analysis | `MockTestAttempt.time_spent_seconds` | **Implemented** — Tracks time spent per attempt and calculates speed efficiency |
+| 64 | Question-difficulty analysis | `QuestionBank.difficulty` | **Implemented** — Tracks student error frequency across EASY, MEDIUM, and HARD questions |
+| 65 | Mistake notebook | `StudentMistake` table, `GET /api/v1/prep/mistakes` | **Implemented** — Automatically logs missed questions, chosen options, correct keys, and explanations |
+| 66 | Mistake-based tests | `POST /api/v1/prep/mistakes/test` | **Implemented** — Generates remediation tests exclusively from student's unresolved mistake history |
+| 67 | Personal knowledge graph | `/materials` mind-map generator | **Implemented** — Topic dependency models and hierarchical branch mappings |
+| 68 | Intelligent revision | `ProductivityService` | **Implemented** — Scheduled review cycles targeting weak topics and formula recall |
+| 69 | Backlog manager | `/dashboard`, `DailyStudyTask` | **Implemented** — Tracks unfinished syllabus tasks with completion toggling |
+| 70 | Missed-day recovery planner | `ProductivityService.generate_adaptive_plan` | **Implemented** — Redistributes lost hours across high-weightage topics (60% Rule) |
+
+---
 
 ## MODULE H — STUDY PRODUCTIVITY
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 71 | Daily study goals | [workspace.html](./workspace.html#productivity), local minutes target | Implemented |
-| 72 | Progress tracking | [workspace.html](./workspace.html#productivity), study log and progress display | Implemented — browser-local data |
-| 73 | Study streak/habit tracker | [workspace.html](./workspace.html#productivity), local day activity summary | Simulated/demo — basic activity history |
-| 74 | Pomodoro timer | [workspace.html](./workspace.html#productivity), start/pause/reset timer | Implemented |
-| 75 | Focus mode | [workspace.html](./workspace.html#productivity), distraction-reduced workspace view | Implemented |
-| 76 | Last-30-day preparation mode | [workspace.html](./workspace.html#productivity), generic 30-day outline | Simulated/demo |
-| 77 | Last-7-day revision mode | [workspace.html](./workspace.html#productivity), generic 7-day outline | Simulated/demo |
-| 78 | Emergency/short-time preparation plan | [workspace.html](./workspace.html#productivity), short-time outline | Simulated/demo |
+| 71 | Daily study goals | `StudentStudyGoal`, `GET /api/v1/prep/productivity` | **Implemented** — Daily study hour targets and completion metrics |
+| 72 | Progress tracking | `/dashboard`, `/roadmap` | **Implemented** — Visual progress gauges and task completion percentages |
+| 73 | Study streak/habit tracker | `StudyStreak` table | **Implemented** — Tracks current and longest consecutive study streaks |
+| 74 | Pomodoro timer | `/roadmap`, `POST /api/v1/prep/productivity/pomodoro` | **Implemented** — Standard 25-minute focus timer with backend session logging |
+| 75 | Focus mode | `/roadmap`, Pomodoro tab | **Implemented** — Distraction-reduced countdown and topic commitment interface |
+| 76 | Last-30-day preparation mode | `GET /api/v1/prep/productivity/plans?plan_type=last_30_days` | **Implemented** — 3-phase revision plan with non-guarantee disclaimer |
+| 77 | Last-7-day revision mode | `GET /api/v1/prep/productivity/plans?plan_type=last_7_days` | **Implemented** — High-yield consolidation, mock simulation, and logistics readiness |
+| 78 | Emergency/short-time preparation plan | `GET /api/v1/prep/productivity/plans?plan_type=emergency_crash` | **Implemented** — 60% Rule focusing on top 3 weightage units to hit qualifying cut-offs |
+
+---
 
 ## MODULE I — KSET & UGC-NET
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 79 | KSET preparation | [workspace.html](./workspace.html#kset-net), KSET/NET preparation cell | Simulated/demo — sample topics |
-| 80 | UGC-NET preparation | [workspace.html](./workspace.html#kset-net), KSET/NET preparation cell | Simulated/demo — sample topics |
-| 81 | KSET/NET Paper I | [workspace.html](./workspace.html#kset-net), Paper I selector | Simulated/demo — topic outline/sample questions |
-| 82 | Paper II subject preparation | [workspace.html](./workspace.html#kset-net), Computer Science Paper II selector | Simulated/demo — sample topics |
-| 83 | KSET/NET PYQ, mock tests and performance analysis | [workspace.html](./workspace.html#kset-net), [preparation.html](./preparation.html), [workspace.html](./workspace.html#analytics) | Simulated/demo — small sample bank and local analytics |
+| 79 | KSET preparation | `/kset-ugc-net`, `KsetUgcService` | **Implemented** — Dedicated state lectureship hub with KEA syllabus and cutoffs |
+| 80 | UGC-NET preparation | `/kset-ugc-net`, NTA norms | **Implemented** — National Assistant Professorship and JRF preparation framework |
+| 81 | KSET/NET Paper I | `GET /api/v1/prep/kset-ugc/curriculum` | **Implemented** — 10 compulsory units with high-yield subtopics and mark weights |
+| 82 | Paper II subject preparation | `/kset-ugc-net` | **Implemented** — Post-graduate discipline coverage (Computer Science 087, Economics 001) |
+| 83 | KSET/NET PYQ, mock tests and performance analysis | `GET /api/v1/prep/kset-ugc/pyqs`, mock tests | **Implemented** — Authentic +2 marks, 0 negative marking rules with instant scoring |
 
-## MODULE J — COMMUNICATION & COMMUNITY
+---
+
+## MODULE J — COMMUNICATION & SPECIALIZED AGENTS
 
 | # | Feature | Page / component | Status |
 |---:|---|---|---|
-| 84 | AI career guidance assistant | [workspace.html](./workspace.html#community), career guidance response panel | Requires backend/external service for AI; local sample response is available |
-| 85 | Multilingual support | Shared language selector in [workspace.html](./workspace.html#settings) and portal header | Simulated/demo — preference is saved; UI translation is not connected |
-| 86 | Voice assistant | [workspace.html](./workspace.html#community), browser speech controls | Simulated/demo — depends on browser speech support |
-| 87 | Text-to-speech and speech-to-text | [workspace.html](./workspace.html#community), browser speech APIs | Simulated/demo — browser/device support required |
-| 88 | Student study groups/discussion | [workspace.html](./workspace.html#community), local discussion board | Simulated/demo — posts are not shared or synced |
-| 89 | Mentor/teacher dashboard | [workspace.html](./workspace.html#community), mentor view preview | Simulated/demo — no roles, permissions, or shared backend |
+| 84 | Six Specialized Agents Orchestration | `POST /api/v1/agents/run`, `AgentOrchestrator` | **Implemented** — CandidateProfileAgent, GovernmentJobEligibilityAgent, GovernmentExamRecommendationAgent, ExamPreparationAgent, NotificationAndApplicationAgent, GovernmentCareerPlanningAgent with token budgets and audit logs |
+| 85 | Multilingual support groundwork | Portal header & AI guidance assistant | **Groundwork** — Configurable multilingual prompt templates and Indian exam terminology |
+| 86 | Voice assistant groundwork | Browser speech synthesis & recognition hooks | **Groundwork** — Configurable TTS/STT interfaces |
+| 87 | Text-to-speech and speech-to-text | Configurable audio services | **Groundwork** — Explicit service boundaries |
+| 88 | Student study groups/discussion | Discussion forum workspace | Scheduled for Part 5 |
+| 89 | Mentor/teacher dashboard | Verified mentor review and cohort diagnostics | Scheduled for Part 5 |

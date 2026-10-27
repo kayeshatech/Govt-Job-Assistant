@@ -10,6 +10,9 @@ from app.api.v1.endpoints import (
     admin,
     sources,
     alerts,
+    ai,
+    prep,
+    agents,
 )
 
 api_router = APIRouter()
@@ -19,10 +22,13 @@ def health_check():
     return {
         "status": "online",
         "service": "Govexa Core API",
-        "version": "3.0.0",
+        "version": "4.0.0",
         "database": "Supabase PostgreSQL / SQLite fallback",
         "auth_provider": "Supabase Auth (JWT)",
         "watchdog_status": "active",
+        "llm_provider": "Gemini / Deterministic Fallback",
+        "rag_status": "enabled",
+        "specialized_agents": 6,
     }
 
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication & Profile"])
@@ -34,3 +40,6 @@ api_router.include_router(reminders.router, prefix="/reminders", tags=["Deadline
 api_router.include_router(admin.router, prefix="/admin", tags=["Administrative Review Workflow"])
 api_router.include_router(sources.router, prefix="/sources", tags=["Official Source Registry"])
 api_router.include_router(alerts.router, prefix="/alerts", tags=["Personalized Alerts"])
+api_router.include_router(ai.router, prefix="/ai", tags=["AI Intelligence & RAG"])
+api_router.include_router(prep.router, prefix="/prep", tags=["Exam Preparation & Testing"])
+api_router.include_router(agents.router, prefix="/agents", tags=["Specialized Agent Orchestration"])

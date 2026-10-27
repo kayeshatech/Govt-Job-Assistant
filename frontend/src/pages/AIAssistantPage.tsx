@@ -1,36 +1,50 @@
 import React, { useState } from 'react';
-import { Sparkles, Send, Bot, User, HelpCircle, ShieldCheck, BookOpen } from 'lucide-react';
+import { Sparkles, Send, Bot, User, HelpCircle, ShieldCheck, BookOpen, FileText, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
+import { aiService, ChatMessageResponse, RAGQueryResponse } from '../api/aiService';
 
 interface ChatMessage {
   id: string;
   sender: 'ai' | 'user';
   text: string;
+  citations?: string[];
+  provider?: string;
+  isSupported?: boolean;
   timestamp: string;
 }
 
 export const AIAssistantPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'chat' | 'ask_pdf'>('chat');
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'msg-01',
       sender: 'ai',
       text: 'Namaste! I am Govexa AI, your dedicated Indian Government Examination preparation and eligibility advisor. Ask me anything about UPSC, SSC, UGC-NET/KSET, ISRO, Banking syllabi, statutory age relaxations, or timetable strategies.',
+      citations: ['Official Commission Recruitment Gazette Reference'],
+      provider: 'govexa_ai',
+      isSupported: true,
       timestamp: 'Just now',
     },
   ]);
   const [inputQuery, setInputQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
+  // Ask-Your-PDF state
+  const [pdfQuery, setPdfQuery] = useState('');
+  const [pdfExamCode, setPdfExamCode] = useState('UPSC-CSE');
+  const [ragResult, setRagResult] = useState<RAGQueryResponse | null>(null);
+  const [isRagSearching, setIsRagSearching] = useState(false);
+
   const promptSuggestions = [
     'What is the age limit and relaxation for OBC in UPSC CSE 2026?',
-    'What is the syllabus overlap between SSC CGL and IBPS PO?',
+    'What is the negative marking penalty in UPSC CSE Prelims?',
     'How is KSET Paper 1 Teaching Aptitude structured?',
-    'Can engineering students take ISRO Scientist SC without GATE?',
+    'What is the syllabus overlap between SSC CGL and IBPS PO?',
   ];
 
-  const handleSendMessage = (queryText: string) => {
+  const handleSendMessage = async (queryText: string) => {
     if (!queryText.trim()) return;
 
     const userMsg: ChatMessage = {
@@ -44,47 +58,55 @@ export const AIAssistantPage: React.FC = () => {
     setInputQuery('');
     setIsTyping(true);
 
-    // Contextual responses based on Indian Government exam domains
-    setTimeout(() => {
-      let reply = '';
-      const q = queryText.toLowerCase();
-
-      if (q.includes('age') && (q.includes('upsc') || q.includes('obc'))) {
-        reply =
-          'For UPSC Civil Services Examination (CSE) 2026, the standard General UR age limit is 21 to 32 years (as of 1st August 2026). For OBC-NCL candidates, a statutory 3-year relaxation applies, raising the upper age ceiling to 35 years. Additionally, OBC candidates are permitted 9 attempts (compared to 6 for General UR).';
-      } else if (q.includes('ssc') && q.includes('ibps') || q.includes('overlap')) {
-        reply =
-          'SSC CGL and IBPS PO have roughly 65% syllabus commonality. Quantitative Aptitude (Arithmetic) and English Comprehension overlap heavily. The key differences: SSC CGL includes Advanced Mathematics (Geometry, Trigonometry, Algebra) and Static General Awareness, whereas IBPS PO focuses on Banking Awareness, High-Level Reasoning Puzzles, and Data Interpretation under strict sectional 20-minute timers.';
-      } else if (q.includes('kset') || q.includes('paper 1') || q.includes('ugc')) {
-        reply =
-          'KSET and UGC-NET Paper 1 consists of 50 compulsory objective questions (100 Marks) spanning 10 units: Teaching Aptitude, Research Aptitude, Reading Comprehension, Communication, Mathematical Reasoning, Logical Reasoning, Data Interpretation, ICT, People & Environment, and Higher Education System. There is no negative marking.';
-      } else if (q.includes('isro') || q.includes('gate')) {
-        reply =
-          'Yes! The ISRO Centralised Recruitment Board (ICRB) conducts its own independent written test for Scientist/Engineer "SC" across Computer Science, Electronics, and Mechanical streams. You do not require a GATE score for the ICRB recruitment examination. The written test features 80 discipline-specific core engineering MCQs with -0.33 negative marking.';
-      } else {
-        reply =
-          `Regarding "${queryText}": In Indian competitive examinations, selection is governed by statutory notifications published in the Gazette of India. Candidates are evaluated based on written screening stages (CBT or descriptive papers) followed by personality interviews. Check the official Commission portal or the Govexa Eligibility Screener to verify criteria.`;
-      }
-
+    try {
+      const resp: ChatMessageResponse = await aiService.chat({ query: queryText });
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: reply,
+        text: resp.reply,
+        citations: resp.citations,
+        provider: resp.provider,
+        isSupported: true,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
-
       setMessages((prev) => [...prev, aiMsg]);
+    } catch (err) {
+      console.error('AI chat failed', err);
+      const errorMsg: ChatMessage = {
+        id: `ai-${Date.now()}`,
+        sender: 'ai',
+        text: 'The Govexa AI service encountered a temporary error. Please try again.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
       setIsTyping(false);
-    }, 800);
+    }
+  };
+
+  const handleAskPdfSearch = async () => {
+    if (!pdfQuery.trim()) return;
+    setIsRagSearching(true);
+    try {
+      const res = await aiService.queryRAG({
+        query: pdfQuery,
+        exam_code: pdfExamCode,
+      });
+      setRagResult(res);
+    } catch (err) {
+      console.error('RAG query failed', err);
+    } finally {
+      setIsRagSearching(false);
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-bold text-wisteria uppercase tracking-widest">
-            AI Advisory Engine
+            AI Advisory & RAG Engine
           </span>
           <Badge variant="active" size="sm">
             Government Exam Specialist
@@ -94,109 +116,305 @@ export const AIAssistantPage: React.FC = () => {
           Govexa AI Study & Doubt Assistant
         </h1>
         <p className="text-xs sm:text-sm text-eclipse/80 mt-1">
-          Ask syllabus questions, analyze exam overlaps, get statutory eligibility clarification, and plan weekly timetables.
+          Verified syllabus guidance, statutory age relaxation checks, and strict evidence-grounded document search.
         </p>
       </div>
 
-      {/* Suggested Prompts Strip */}
-      <div className="space-y-2">
-        <span className="text-[11px] font-bold text-wisteria uppercase tracking-wider block">
-          Suggested Inquiries:
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {promptSuggestions.map((prompt, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSendMessage(prompt)}
-              className="text-xs p-2 rounded-lg bg-starlight border border-opaline/70 hover:border-wisteria hover:bg-opaline/20 text-nocturne font-medium transition-all text-left"
-            >
-              {prompt}
-            </button>
-          ))}
-        </div>
+      {/* Tabs */}
+      <div className="flex items-center gap-2 border-b border-opaline/60 pb-2">
+        <button
+          onClick={() => setActiveTab('chat')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${
+            activeTab === 'chat'
+              ? 'bg-nocturne text-starlight'
+              : 'bg-starlight text-eclipse hover:bg-opaline/40'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            AI Interactive Guidance
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('ask_pdf')}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${
+            activeTab === 'ask_pdf'
+              ? 'bg-nocturne text-starlight'
+              : 'bg-starlight text-eclipse hover:bg-opaline/40'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <FileText className="w-3.5 h-3.5" />
+            Ask-Your-PDF (RAG Gazette Retrieval)
+          </div>
+        </button>
       </div>
 
-      {/* Chat Workspace Card */}
-      <Card variant="elevated" className="p-0 overflow-hidden flex flex-col h-[520px]">
-        {/* Messages Scroll Area */}
-        <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-starlight">
-          {messages.map((msg) => {
-            const isAi = msg.sender === 'ai';
-            return (
-              <div
-                key={msg.id}
-                className={`flex items-start gap-3 ${isAi ? '' : 'flex-row-reverse'}`}
-              >
+      {activeTab === 'chat' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main Chat Stream */}
+          <div className="lg:col-span-3 flex flex-col h-[600px] rounded-2xl bg-starlight border border-opaline/70 shadow-sm overflow-hidden">
+            {/* Messages Scroll Area */}
+            <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
+              {messages.map((msg) => (
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
-                    isAi
-                      ? 'bg-nocturne text-starlight'
-                      : 'bg-wisteria text-starlight'
-                  }`}
+                  key={msg.id}
+                  className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {isAi ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
-                </div>
+                  {msg.sender === 'ai' && (
+                    <div className="w-8 h-8 rounded-full bg-nocturne text-starlight flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Bot className="w-4 h-4" />
+                    </div>
+                  )}
 
-                <div
-                  className={`p-4 rounded-2xl max-w-lg text-xs leading-relaxed ${
-                    isAi
-                      ? 'bg-opaline/20 text-eclipse border border-opaline/60'
-                      : 'bg-nocturne text-starlight'
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap">{msg.text}</p>
-                  <span
-                    className={`block text-[10px] mt-1.5 ${
-                      isAi ? 'text-wisteria' : 'text-opaline/80'
+                  <div
+                    className={`max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed shadow-sm ${
+                      msg.sender === 'user'
+                        ? 'bg-nocturne text-starlight rounded-tr-none'
+                        : 'bg-white border border-opaline/60 text-eclipse rounded-tl-none'
                     }`}
                   >
-                    {msg.timestamp}
-                  </span>
+                    <p className="whitespace-pre-line">{msg.text}</p>
+
+                    {/* Citations if present */}
+                    {msg.citations && msg.citations.length > 0 && (
+                      <div className="mt-3 pt-2.5 border-t border-opaline/40">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-wisteria mb-1 flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3 text-aurora" /> Verified Citations:
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {msg.citations.map((c, i) => (
+                            <span
+                              key={i}
+                              className="text-[10px] bg-starlight border border-opaline text-eclipse px-2 py-0.5 rounded font-medium"
+                            >
+                              {c}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-2 flex items-center justify-between text-[10px] opacity-70">
+                      {msg.provider && (
+                        <span className="font-mono text-wisteria font-bold">
+                          provider: {msg.provider}
+                        </span>
+                      )}
+                      <span className="ml-auto">{msg.timestamp}</span>
+                    </div>
+                  </div>
+
+                  {msg.sender === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-wisteria text-starlight flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <User className="w-4 h-4" />
+                    </div>
+                  )}
                 </div>
-              </div>
-            );
-          })}
+              ))}
 
-          {isTyping && (
-            <div className="flex items-center gap-2 text-xs text-wisteria p-2">
-              <Bot className="w-4 h-4 animate-bounce" />
-              <span>Govexa AI is formulating answer from gazette guidelines...</span>
+              {isTyping && (
+                <div className="flex gap-3 items-center text-xs text-wisteria font-medium pl-11">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 rounded-full bg-wisteria animate-bounce" />
+                    <span className="w-2 h-2 rounded-full bg-wisteria animate-bounce [animation-delay:0.2s]" />
+                    <span className="w-2 h-2 rounded-full bg-wisteria animate-bounce [animation-delay:0.4s]" />
+                  </div>
+                  <span>Govexa AI is fact-checking official gazettes...</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Input Bar */}
-        <div className="p-4 bg-starlight border-t border-opaline/60">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage(inputQuery);
-            }}
-            className="flex items-center gap-2"
-          >
-            <input
-              type="text"
-              placeholder="Ask an exam question (e.g. CSAT syllabus, age relaxation, cut-off trends)..."
-              value={inputQuery}
-              onChange={(e) => setInputQuery(e.target.value)}
-              className="flex-1 text-xs p-2.5 rounded-xl bg-opaline/20 border border-opaline/80 text-eclipse placeholder:text-wisteria/70 focus:outline-none focus:ring-2 focus:ring-wisteria"
-            />
+            {/* Input Box */}
+            <div className="p-3 sm:p-4 bg-white border-t border-opaline/60">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendMessage(inputQuery);
+                }}
+                className="flex items-center gap-2"
+              >
+                <input
+                  type="text"
+                  value={inputQuery}
+                  onChange={(e) => setInputQuery(e.target.value)}
+                  placeholder="Ask any syllabus rule, age limit, negative marking, or exam strategy..."
+                  className="flex-1 text-xs sm:text-sm bg-starlight border border-opaline/80 rounded-xl px-4 py-2.5 text-eclipse placeholder-eclipse/50 focus:outline-none focus:ring-2 focus:ring-wisteria"
+                  disabled={isTyping}
+                />
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="md"
+                  disabled={!inputQuery.trim() || isTyping}
+                  rightIcon={<Send className="w-4 h-4" />}
+                >
+                  Ask
+                </Button>
+              </form>
+            </div>
+          </div>
+
+          {/* Quick Prompts Sidebar */}
+          <div className="space-y-4">
+            <Card variant="default" className="p-4 space-y-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-nocturne">
+                <HelpCircle className="w-4 h-4 text-wisteria" />
+                Frequently Verified Queries
+              </div>
+              <p className="text-[11px] text-eclipse/80">
+                Tap any prompt below to query authoritative recruitment notifications:
+              </p>
+              <div className="space-y-2">
+                {promptSuggestions.map((prompt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(prompt)}
+                    disabled={isTyping}
+                    className="w-full text-left p-2.5 rounded-xl text-xs font-medium bg-white border border-opaline/70 hover:border-wisteria text-nocturne transition-colors"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </Card>
+
+            <Card variant="default" className="p-4 space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-nocturne">
+                <ShieldCheck className="w-4 h-4 text-aurora" />
+                Evidence Grounding
+              </div>
+              <p className="text-[11px] text-eclipse/80 leading-relaxed">
+                Govexa AI is anchored in verified Gazette publications. Objective answers and age rules are derived from statutory recruitment rules, not hallucinations.
+              </p>
+            </Card>
+          </div>
+        </div>
+      ) : (
+        /* Ask-Your-PDF RAG Interface */
+        <div className="space-y-6">
+          <Card variant="default" className="p-6 space-y-4">
+            <div>
+              <h2 className="text-lg font-bold text-nocturne flex items-center gap-2">
+                <FileText className="w-5 h-5 text-wisteria" />
+                Query Official Gazettes & Uploaded Documents
+              </h2>
+              <p className="text-xs text-eclipse/80 mt-1">
+                Passages are extracted, indexed, and retrieved with page-level citations. If the official document does not support an answer, the engine states its lack of evidence rather than fabricating facts.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-[11px] font-bold text-wisteria uppercase mb-1">
+                  Question or Enquiry:
+                </label>
+                <input
+                  type="text"
+                  value={pdfQuery}
+                  onChange={(e) => setPdfQuery(e.target.value)}
+                  placeholder="e.g. What is the negative marking in Prelims? Or what is Rule 3 age limit?"
+                  className="w-full text-xs bg-starlight border border-opaline/80 rounded-xl px-3 py-2.5 text-eclipse focus:outline-none focus:ring-2 focus:ring-wisteria"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-wisteria uppercase mb-1">
+                  Exam Filter:
+                </label>
+                <select
+                  value={pdfExamCode}
+                  onChange={(e) => setPdfExamCode(e.target.value)}
+                  className="w-full text-xs font-bold rounded-xl bg-starlight border border-opaline/80 text-nocturne py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-wisteria"
+                >
+                  <option value="UPSC-CSE">UPSC Civil Services 2026</option>
+                  <option value="KSET">KSET Paper 1 Syllabus</option>
+                  <option value="UGC-NET">UGC-NET Paper 1 & 2</option>
+                  <option value="all">All Official Sources</option>
+                </select>
+              </div>
+            </div>
+
             <Button
-              type="submit"
               variant="primary"
               size="md"
-              disabled={!inputQuery.trim() || isTyping}
-              leftIcon={<Send className="w-3.5 h-3.5" />}
+              onClick={handleAskPdfSearch}
+              disabled={!pdfQuery.trim() || isRagSearching}
+              rightIcon={<Sparkles className="w-4 h-4" />}
             >
-              Ask
+              {isRagSearching ? 'Retrieving Passages...' : 'Execute Evidence Search'}
             </Button>
-          </form>
+          </Card>
 
-          <p className="text-[10px] text-wisteria text-center mt-2">
-            AI Prototype Assistant. Always cross-verify critical dates with official Commission notifications.
-          </p>
+          {ragResult && (
+            <Card variant="default" className="p-6 space-y-4">
+              <div className="flex items-center justify-between border-b border-opaline/60 pb-3">
+                <div className="flex items-center gap-2">
+                  {ragResult.is_supported_by_evidence ? (
+                    <Badge variant="active" size="md">
+                      <CheckCircle2 className="w-3.5 h-3.5 inline mr-1" />
+                      Supported by Official Gazette
+                    </Badge>
+                  ) : (
+                    <Badge variant="accent" size="md">
+                      <AlertTriangle className="w-3.5 h-3.5 inline mr-1" />
+                      Unsupported / State of Ignorance
+                    </Badge>
+                  )}
+                  <span className="text-xs font-mono text-wisteria">
+                    Latency: {ragResult.latency_ms}ms
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-nocturne">
+                  Confidence: {Math.round(ragResult.confidence_score * 100)}%
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-starlight border border-opaline/60">
+                <p className="text-xs font-bold text-wisteria uppercase tracking-wider mb-1">
+                  Fact-Checked Synthesis:
+                </p>
+                <p className="text-sm text-nocturne leading-relaxed whitespace-pre-line font-medium">
+                  {ragResult.answer}
+                </p>
+              </div>
+
+              {ragResult.citations.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-bold text-nocturne uppercase tracking-wider flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-wisteria" />
+                    Source Passages & Provenance:
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {ragResult.citations.map((c) => (
+                      <div
+                        key={c.citation_id}
+                        className="p-3 rounded-xl bg-white border border-opaline/80 space-y-1.5 text-xs shadow-sm"
+                      >
+                        <div className="flex items-center justify-between font-bold text-nocturne">
+                          <span>
+                            [{c.citation_id}] {c.document_title}
+                          </span>
+                          <span className="text-[10px] text-wisteria bg-opaline/30 px-1.5 py-0.5 rounded">
+                            Page {c.page_number}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-eclipse/80 italic font-serif">
+                          "{c.excerpt}"
+                        </p>
+                        <p className="text-[10px] text-eclipse/60 font-mono">
+                          Section: {c.section_heading}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          )}
         </div>
-      </Card>
+      )}
     </div>
   );
 };

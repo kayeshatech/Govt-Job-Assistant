@@ -32,6 +32,17 @@ from app.models.student import (
 from app.models.audit import AuditLog
 from app.models.monitoring import OfficialSource, ExtractionReviewItem
 from app.models.alert import StudentAlert
+from app.models.rag import DocumentKnowledgeBase, DocumentChunk
+from app.models.preparation import (
+    QuestionBank,
+    MockTest,
+    MockTestAttempt,
+    StudentMistake,
+    StudentStudyGoal,
+    PomodoroSession,
+    StudyStreak,
+)
+from app.models.orchestration import AgentExecutionAudit
 
 __all__ = [
     "Base",
@@ -59,4 +70,14 @@ __all__ = [
     "OfficialSource",
     "ExtractionReviewItem",
     "StudentAlert",
+    "DocumentKnowledgeBase",
+    "DocumentChunk",
+    "QuestionBank",
+    "MockTest",
+    "MockTestAttempt",
+    "StudentMistake",
+    "StudentStudyGoal",
+    "PomodoroSession",
+    "StudyStreak",
+    "AgentExecutionAudit",
 ]

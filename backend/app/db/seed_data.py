@@ -21,6 +21,8 @@ from app.models.notification import (
     NotificationSource,
 )
 from app.models.monitoring import OfficialSource
+from app.models.rag import DocumentKnowledgeBase, DocumentChunk
+from app.models.preparation import QuestionBank, MockTest
 from app.models.student import (
     StudentProfile,
     StudentPreference,
@@ -679,6 +681,248 @@ def seed_database(db: Session) -> None:
             ).first()
             if not existing_src:
                 db.add(OfficialSource(**s_data))
+
+        # 9. Part 4: RAG Knowledge Base & Official Document Chunks
+        rag_doc_data = [
+            {
+                "id": "rag-doc-upsc-cse-2026",
+                "title": "UPSC Civil Services Examination 2026 Official Gazette Rules",
+                "doc_type": "OFFICIAL_NOTIFICATION",
+                "authority_code": "UPSC",
+                "exam_code": "UPSC-CSE",
+                "version_label": "2026.1",
+                "content_hash": "b8a924f74d023b1820984cfb92d6e3827189a0cb98f420489912c018247df901",
+                "source_reference": "Gazette of India Extraordinary Part I Section 1 (05/2026-CSP)",
+                "total_pages": 4,
+                "chunks": [
+                    {
+                        "index": 0,
+                        "page": 1,
+                        "heading": "Rule 3: Age Limits & Cut-off Dates",
+                        "content": "A candidate must have attained the age of 21 years and must not have attained the age of 32 years on the 1st of August, 2026. The upper age limit will be relaxable up to a maximum of 3 years in the case of candidates belonging to Other Backward Classes (OBC-NCL), up to 5 years for Scheduled Castes (SC) and Scheduled Tribes (ST), and up to 10 years for Persons with Benchmark Disabilities (PwBD).",
+                    },
+                    {
+                        "index": 1,
+                        "page": 2,
+                        "heading": "Rule 4: Minimum Educational Qualifications",
+                        "content": "The candidate must hold a Bachelor's degree of any of Universities incorporated by an Act of the Central or State Legislature in India or other educational institutions established by an Act of Parliament. Candidates appearing at their degree examination are also eligible to apply for the Preliminary Examination.",
+                    },
+                    {
+                        "index": 2,
+                        "page": 3,
+                        "heading": "Rule 6: Scheme of Examination & Negative Marking",
+                        "content": "The Civil Services Examination comprises two successive stages: (i) Civil Services (Preliminary) Examination (Objective type) for the selection of candidates for Main Examination; and (ii) Civil Services (Main) Examination (Written and Interview). For wrong answers in Objective GS Paper 1, one-third (0.66 marks) of the marks assigned to that question will be deducted as negative marking.",
+                    },
+                ],
+            },
+            {
+                "id": "rag-doc-kset-ugc-2026",
+                "title": "KSET / UGC-NET Paper 1 General Aptitude Curriculum & Regulations",
+                "doc_type": "OFFICIAL_SYLLABUS",
+                "authority_code": "KEA",
+                "exam_code": "UGC-NET",
+                "version_label": "2026.1",
+                "content_hash": "c9284fa920381029384759283749203847592837495029384759283749502938",
+                "source_reference": "UGC Regulations on Minimum Qualifications for Appointment of Teachers (2018)",
+                "total_pages": 3,
+                "chunks": [
+                    {
+                        "index": 0,
+                        "page": 1,
+                        "heading": "Unit 1: Teaching Aptitude & CBCS Norms",
+                        "content": "Teaching aptitude evaluates understanding of teaching concepts, objectives, memory, understanding and reflective levels of instruction. The Choice Based Credit System (CBCS) in higher education emphasizes student-centric multidisciplinary credit mobility and continuous diagnostic assessment.",
+                    },
+                    {
+                        "index": 1,
+                        "page": 2,
+                        "heading": "Unit 2: Research Ethics & Thesis Methodology",
+                        "content": "Research aptitude encompasses experimental, descriptive, historical, qualitative and quantitative research designs. Research ethics prohibits plagiarism, fabrication, and falsification. Standard academic referencing styles include APA, MLA, and Chicago citation manuals.",
+                    },
+                    {
+                        "index": 2,
+                        "page": 3,
+                        "heading": "Unit 6 & 8: Indian Logic (Pramanas) and Digital Higher Education",
+                        "content": "Indian Logic (Nyaya philosophy) identifies 6 valid Pramanas (means of knowledge): Pratyaksha (perception), Anumana (inference), Upamana (comparison), Shabda (verbal testimony), Arthapatti (postulation), and Anupalabddhi (non-perception). Digital public educational infrastructure includes Swayam, Swayam Prabha, and the National Digital Library.",
+                    },
+                ],
+            },
+        ]
+
+        for doc_item in rag_doc_data:
+            existing_doc = db.query(DocumentKnowledgeBase).filter(
+                DocumentKnowledgeBase.id == doc_item["id"]
+            ).first()
+            if not existing_doc:
+                new_doc = DocumentKnowledgeBase(
+                    id=doc_item["id"],
+                    title=doc_item["title"],
+                    doc_type=doc_item["doc_type"],
+                    authority_code=doc_item["authority_code"],
+                    exam_code=doc_item["exam_code"],
+                    version_label=doc_item["version_label"],
+                    content_hash=doc_item["content_hash"],
+                    source_reference=doc_item["source_reference"],
+                    total_pages=doc_item["total_pages"],
+                    is_verified_source=True,
+                )
+                db.add(new_doc)
+                db.flush()
+
+                for c in doc_item["chunks"]:
+                    db.add(
+                        DocumentChunk(
+                            document_id=new_doc.id,
+                            chunk_index=c["index"],
+                            content=c["content"],
+                            page_number=c["page"],
+                            section_heading=c["heading"],
+                            token_count=len(c["content"].split()),
+                        )
+                    )
+
+        # 10. Part 4: Verified Question Bank (UPSC, UGC-NET/KSET, SSC)
+        qb_data = [
+            {
+                "id": "qb-ugc-01",
+                "exam_code": "UGC-NET",
+                "paper_type": "PAPER_1",
+                "subject": "General Aptitude",
+                "topic": "Teaching Aptitude",
+                "question_text": "Which level of teaching involves highest cognitive interaction, critical problem-solving, and independent insight development?",
+                "options": [
+                    "Memory Level (Herbartian)",
+                    "Understanding Level (Morrison)",
+                    "Reflective Level (Hunt)",
+                    "Autonomous Development Level",
+                ],
+                "correct_option_index": 2,
+                "explanation": "Reflective level of teaching (developed by Hunt) represents the highest cognitive level where learners identify and formulate problems, generate hypotheses, and critically analyze solutions.",
+                "difficulty": "MEDIUM",
+                "question_source": "OFFICIAL_PYQ",
+                "pyq_year": 2024,
+                "source_citation": "UGC-NET June 2024 Shift 1 Question Paper",
+            },
+            {
+                "id": "qb-ugc-02",
+                "exam_code": "UGC-NET",
+                "paper_type": "PAPER_1",
+                "subject": "General Aptitude",
+                "topic": "Research Aptitude",
+                "question_text": "In scientific research, which approach holds that genuine knowledge is exclusively derived through sensory experience and positive verification?",
+                "options": [
+                    "Positivism",
+                    "Post-Positivism",
+                    "Phenomenology",
+                    "Critical Hermeneutics",
+                ],
+                "correct_option_index": 0,
+                "explanation": "Positivism asserts that authentic knowledge is verifiable through direct sensory observation and quantitative empirical proofs.",
+                "difficulty": "MEDIUM",
+                "question_source": "OFFICIAL_PYQ",
+                "pyq_year": 2023,
+                "source_citation": "UGC-NET December 2023 Paper 1",
+            },
+            {
+                "id": "qb-ugc-03",
+                "exam_code": "KSET",
+                "paper_type": "PAPER_1",
+                "subject": "General Aptitude",
+                "topic": "Logical Reasoning",
+                "question_text": "In classical Indian Logic (Nyaya), which valid means of knowledge (Pramana) denotes cognition through similarity and comparative observation?",
+                "options": [
+                    "Pratyaksha (Perception)",
+                    "Anumana (Inference)",
+                    "Upamana (Comparison)",
+                    "Arthapatti (Postulation)",
+                ],
+                "correct_option_index": 2,
+                "explanation": "Upamana is knowledge derived from the relation between a word and its denotation based on similarity (e.g. recognizing a wild cow after being told it resembles a domestic cow).",
+                "difficulty": "HARD",
+                "question_source": "OFFICIAL_PYQ",
+                "pyq_year": 2023,
+                "source_citation": "KSET 2023 Official Paper 1",
+            },
+            {
+                "id": "qb-upsc-01",
+                "exam_code": "UPSC-CSE",
+                "paper_type": "PRELIMS_GS",
+                "subject": "Indian Polity & Governance",
+                "topic": "Constitutional Framework",
+                "question_text": "Under Article 324 of the Constitution of India, the superintendence, direction, and control of elections to which of the following is vested in the Election Commission?",
+                "options": [
+                    "Parliament, State Legislatures, and the offices of President & Vice-President",
+                    "Panchayats and Municipalities exclusively",
+                    "State Legislative Councils only",
+                    "District Planning Committees",
+                ],
+                "correct_option_index": 0,
+                "explanation": "Article 324 vests the superintendence of elections to Parliament, State Legislatures, and the President/Vice-President in the ECI. Panchayats/Municipalities are conducted by State Election Commissions under Article 243K.",
+                "difficulty": "MEDIUM",
+                "question_source": "OFFICIAL_PYQ",
+                "pyq_year": 2023,
+                "source_citation": "UPSC Civil Services (Preliminary) Examination 2023 GS Paper 1",
+            },
+            {
+                "id": "qb-ssc-01",
+                "exam_code": "SSC-CGL",
+                "paper_type": "TIER_1",
+                "subject": "Quantitative Aptitude",
+                "topic": "Percentages & Ratio",
+                "question_text": "If the price of sugar increases by 25%, by what percentage must a household reduce its consumption so that the total expenditure remains unchanged?",
+                "options": [
+                    "15%",
+                    "20%",
+                    "25%",
+                    "30%",
+                ],
+                "correct_option_index": 1,
+                "explanation": "Required reduction = [R / (100 + R)] * 100 = [25 / 125] * 100 = 20%.",
+                "difficulty": "EASY",
+                "question_source": "OFFICIAL_PYQ",
+                "pyq_year": 2023,
+                "source_citation": "SSC CGL 2023 Tier-I Official Question Paper",
+            },
+        ]
+
+        for qb_item in qb_data:
+            existing_qb = db.query(QuestionBank).filter(QuestionBank.id == qb_item["id"]).first()
+            if not existing_qb:
+                db.add(QuestionBank(**qb_item))
+
+        # 11. Part 4: Standardized Mock Tests
+        mock_data = [
+            {
+                "id": "mock-kset-paper1-full",
+                "title": "KSET / UGC-NET Paper 1 Standardized Full-Length Simulation 2026",
+                "exam_code": "UGC-NET",
+                "test_type": "FULL_LENGTH",
+                "total_questions": 3,
+                "duration_minutes": 60,
+                "positive_marks_per_q": 2.0,
+                "negative_marks_per_q": 0.0,
+                "question_ids": ["qb-ugc-01", "qb-ugc-02", "qb-ugc-03"],
+                "instructions": "All questions carry 2 marks. There is NO negative marking for incorrect responses.",
+                "is_published": True,
+            },
+            {
+                "id": "mock-upsc-prelims-gs",
+                "title": "UPSC CSE Prelims General Studies Diagnostic Mini Test",
+                "exam_code": "UPSC-CSE",
+                "test_type": "TOPIC_WISE",
+                "total_questions": 1,
+                "duration_minutes": 15,
+                "positive_marks_per_q": 2.0,
+                "negative_marks_per_q": 0.66,
+                "question_ids": ["qb-upsc-01"],
+                "instructions": "Standard UPSC pattern. Each question carries 2 marks with 0.66 negative marking.",
+                "is_published": True,
+            },
+        ]
+
+        for m_item in mock_data:
+            existing_mock = db.query(MockTest).filter(MockTest.id == m_item["id"]).first()
+            if not existing_mock:
+                db.add(MockTest(**m_item))
 
         db.commit()
 

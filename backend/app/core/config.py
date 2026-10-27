@@ -64,6 +64,19 @@ class Settings(BaseSettings):
     AUTO_APPROVE_CONFIDENCE_THRESHOLD: float = 0.92
     AUTO_APPROVE_HIGH_IMPACT_ALLOWED: bool = False  # High impact changes require review
 
+    # ==========================================
+    # Part 4: LLM, RAG & Agent Orchestration Config
+    # ==========================================
+    GEMINI_EMBEDDING_MODEL: str = "text-embedding-004"
+    LLM_TIMEOUT_SECONDS: int = 30
+    LLM_MAX_RETRIES: int = 3
+    RAG_MAX_CHUNKS_PER_QUERY: int = 5
+    RAG_CHUNK_SIZE_TOKENS: int = 400
+    RAG_CHUNK_OVERLAP_TOKENS: int = 80
+    AGENT_MAX_EXECUTION_STEPS: int = 5
+    AGENT_DEFAULT_TOKEN_BUDGET: int = 4000
+    KSET_UGC_NET_DEFAULT_EXAM_CODE: str = "UGC-NET-PAPER1"
+
     model_config = SettingsConfigDict(
         case_sensitive=True,
         env_file=".env",

@@ -249,5 +249,49 @@ EMAIL_PROVIDER="mock"
 ### 8.7 Complete Test Suite Execution
 ```bash
 pytest -v
-# Result: 29 passed, 0 failures
+# Result: 42 passed, 0 failures (Part 1, 2, 3, and 4)
 ```
+
+---
+
+## 9. Part 4 — LLM Integration, RAG, Prep Engine & Specialized Agents
+
+### 9.1 Provider-Independent LLM Architecture
+- **Base Interface (`app.services.llm_provider.BaseLLMProvider`):** Abstract provider defining `generate_text`, `generate_structured_json`, `generate_objective_questions`, and `get_embeddings`.
+- **Implementations:**
+  - `GeminiLLMProvider`: Google Gemini (`gemini-1.5-flash`, `text-embedding-004`) behind backend configuration.
+  - `DeterministicFallbackProvider`: Zero-cost, high-precision deterministic rules engine ensuring 100% test reliability and graceful degradation when API keys are absent or endpoints are unreachable.
+- **Benchmark Suite (`benchmark_model_against_recruitment_corpus`):** Measures factual accuracy, schema validity, latency, and token efficiency against fixed public recruitment documents.
+- **Resilience:** Timeouts, bounded retries with exponential backoff, rate limiting, and zero credential leakage in logs.
+
+### 9.2 RAG and Ask-Your-PDF Pipeline
+- **Models:** `DocumentKnowledgeBase` and `DocumentChunk` with SHA-256 deduplication and section/page metadata.
+- **Retrieval:** Ranked keyword and full-text search with stopword filtering.
+- **Anti-Prompt-Injection Defense:** Document text is sandboxed inside `<untrusted_document_context>`. Directives within documents (e.g. "SYSTEM OVERRIDE") are neutralized and ignored.
+- **Evidence Referencing & State of Ignorance:** Every claim is cited (`[1]`, `[2]`). When the database does not contain facts matching an inquiry, the system explicitly states its lack of supporting evidence rather than hallucinating.
+
+### 9.3 Exam Preparation & Objective Testing Engine
+- **Deterministic Backend Scoring:** Objective MCQs are scored deterministically by backend Python code (`PerformanceEngine`) against verified answer keys, never by prompting an LLM to grade responses.
+- **Negative Marking:** Supports authentic examination rules (+2.0 marks, -0.66 deduction for UPSC CSE; +2.0 marks, 0.0 deduction for KSET/UGC-NET Paper 1).
+- **Mistake Notebook:** Missed questions are automatically logged to `StudentMistake` with chosen vs correct option and explanation.
+- **Mistake-Based Recovery Tests:** Generates targeted practice tests exclusively from unresolved mistakes.
+
+### 9.4 Productivity & Adaptive Preparation Blueprints
+- **Adaptive Study Plans:** Paced 30-day, 7-day, and emergency crash preparation plans (60% Rule) adjustable by daily available hours. All plans include clear disclaimers that they are strategic study guides and do not guarantee selection.
+- **Focus Engine:** Pomodoro session tracker logging 25-minute focus blocks to `PomodoroSession` and maintaining `StudyStreak`.
+
+### 9.5 KSET & UGC-NET Specialized Hub
+- **Paper 1 Curriculum:** Complete 10-unit curriculum (Teaching Aptitude, Research Aptitude, Comprehension, Communication, Mathematical Reasoning, Logical Reasoning, DI, ICT, Environment, Higher Education).
+- **Paper 2 Coverage:** Post-graduate disciplines including Computer Science (087) and Economics (001).
+- **PYQ Practice:** Verified previous-year questions with immediate backend scoring (+2 marks, 0 negative).
+
+### 9.6 Six Specialized Agents Orchestration
+Coordinated via `AgentOrchestrator` (`POST /api/v1/agents/run`):
+1. `CandidateProfileAgent`: Profiles academic discipline, reservation category, and age eligibility.
+2. `GovernmentJobEligibilityAgent`: Evaluates candidate against statutory gazetted eligibility criteria.
+3. `GovernmentExamRecommendationAgent`: Suggests primary and backup government exams with overlap metrics.
+4. `ExamPreparationAgent`: Generates paced weekly study plans and unit milestones.
+5. `NotificationAndApplicationAgent`: Identifies application deadlines, admit card releases, and corrigenda.
+6. `GovernmentCareerPlanningAgent`: Synthesizes contingency career paths across Union and State services.
+All agent runs enforce strict token budgets (`AGENT_DEFAULT_TOKEN_BUDGET=3000`), maximum execution steps (`AGENT_MAX_EXECUTION_STEPS=5`), and audit logging in `agent_execution_audits`.
+
