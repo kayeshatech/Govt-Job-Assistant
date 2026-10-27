@@ -1,20 +1,80 @@
 import os
-from typing import List, Optional
+import json
+from typing import List, Optional, Union, Any
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Govexa Government Exam Intelligence API"
-    VERSION: str = "3.0.0"
+    VERSION: str = "5.0.0"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
     
-    # CORS
-    CORS_ORIGINS: List[str] = [
+    # CORS (Supports list, comma-separated string, JSON string, or empty string)
+    CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "https://govexa.vercel.app",
+        "https://govt-job-assistant.vercel.app",
     ]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Any) -> List[str]:
+        default_origins = [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            "https://govexa.vercel.app",
+            "https://govt-job-assistant.vercel.app",
+        ]
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return default_origins
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        result = []
+                        for item in parsed:
+                            clean = str(item).strip().rstrip("/")
+                            if clean:
+                                result.append(clean)
+                        return result or default_origins
+                except Exception:
+                    pass
+            # Also handle single quotes: "['https://...']"
+            if v.startswith("['") or v.startswith('["'):
+                cleaned = v.replace("'", '"')
+                try:
+                    parsed = json.loads(cleaned)
+                    if isinstance(parsed, list):
+                        result = []
+                        for item in parsed:
+                            clean = str(item).strip().rstrip("/")
+                            if clean:
+                                result.append(clean)
+                        return result or default_origins
+                except Exception:
+                    pass
+            # Split comma-separated string: "https://foo.com, https://bar.com"
+            raw_items = [origin.strip() for origin in v.split(",") if origin.strip()]
+            result = []
+            for item in raw_items:
+                clean = item.rstrip("/")
+                if clean:
+                    result.append(clean)
+            return result or default_origins
+        elif isinstance(v, (list, tuple, set)):
+            result = []
+            for item in v:
+                clean = str(item).strip().rstrip("/")
+                if clean:
+                    result.append(clean)
+            return result or default_origins
+        return default_origins
     
     # Database (Supabase PostgreSQL in production, SQLite fallback in local test/dev)
     DATABASE_URL: str = "sqlite:///./govexa.db"
@@ -27,7 +87,26 @@ class Settings(BaseSettings):
     SUPABASE_JWT_ALGORITHM: str = "HS256"
 
     # Admin verification token / override for testing
-    ADMIN_EMAILS: List[str] = ["admin@govexa.gov.in", "officer@govexa.gov.in"]
+    ADMIN_EMAILS: Union[List[str], str] = ["admin@govexa.gov.in", "officer@govexa.gov.in"]
+
+    @field_validator("ADMIN_EMAILS", mode="before")
+    @classmethod
+    def assemble_admin_emails(cls, v: Any) -> List[str]:
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return ["admin@govexa.gov.in"]
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed if str(item).strip()]
+                except Exception:
+                    pass
+            return [email.strip() for email in v.split(",") if email.strip()]
+        elif isinstance(v, (list, tuple, set)):
+            return [str(item).strip() for item in v if str(item).strip()]
+        return ["admin@govexa.gov.in"]
 
     # ==========================================
     # Part 3: AI & LLM Provider Configuration
