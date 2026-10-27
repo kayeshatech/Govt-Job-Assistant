@@ -78,6 +78,18 @@ class Settings(BaseSettings):
     
     # Database (Supabase PostgreSQL in production, SQLite fallback in local test/dev)
     DATABASE_URL: str = "sqlite:///./govexa.db"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def fix_database_url(cls, v: Any) -> str:
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return "sqlite:///./govexa.db"
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql://", 1)
+            return v
+        return "sqlite:///./govexa.db"
     
     # Supabase Configuration
     SUPABASE_URL: Optional[str] = "https://your-project.supabase.co"
