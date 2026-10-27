@@ -115,3 +115,49 @@ def verify_session(
         profile=profile_resp,
     )
     return StandardApiResponse(data=session_data, message="Authenticated claims verified successfully")
+
+@router.delete("/account", response_model=StandardApiResponse[dict])
+def delete_student_account(
+    db: Session = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    profile: StudentProfile = Depends(get_or_create_student_profile),
+):
+    """
+    DPDP Act 2023 & GDPR Compliant Account Deletion:
+    Permanently deletes all student personal data, preferences, alerts,
+    saved applications, test attempts, mistake logs, and study streaks.
+    """
+    from app.models.alert import StudentAlert
+    from app.models.student import SavedExam, StudentReminder, StudyPlan, DailyStudyTask
+    from app.models.preparation import MockTestAttempt, StudentMistake, StudentStudyGoal, PomodoroSession, StudyStreak
+
+    student_id = profile.id
+
+    # 1. Delete student preferences & alerts
+    if profile.preferences:
+        db.delete(profile.preferences)
+    db.query(StudentAlert).filter(StudentAlert.student_id == student_id).delete(synchronize_session=False)
+
+    # 2. Delete application tracker & reminders
+    db.query(SavedExam).filter(SavedExam.student_id == student_id).delete(synchronize_session=False)
+    db.query(StudentReminder).filter(StudentReminder.student_id == student_id).delete(synchronize_session=False)
+
+    # 3. Delete study plans & tasks
+    db.query(DailyStudyTask).filter(DailyStudyTask.student_id == student_id).delete(synchronize_session=False)
+    db.query(StudyPlan).filter(StudyPlan.student_id == student_id).delete(synchronize_session=False)
+
+    # 4. Delete test attempts, mistakes, and productivity logs
+    db.query(MockTestAttempt).filter(MockTestAttempt.student_id == student_id).delete(synchronize_session=False)
+    db.query(StudentMistake).filter(StudentMistake.student_id == student_id).delete(synchronize_session=False)
+    db.query(StudentStudyGoal).filter(StudentStudyGoal.student_id == student_id).delete(synchronize_session=False)
+    db.query(PomodoroSession).filter(PomodoroSession.student_id == student_id).delete(synchronize_session=False)
+    db.query(StudyStreak).filter(StudyStreak.student_id == student_id).delete(synchronize_session=False)
+
+    # 5. Delete profile record
+    db.delete(profile)
+    db.commit()
+
+    return StandardApiResponse(
+        data={"deleted_student_id": student_id, "status": "PURGED"},
+        message="All student data and account records permanently purged in compliance with DPDP standards.",
+    )

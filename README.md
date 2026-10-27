@@ -1,60 +1,26 @@
-# Govexa — AI Government Exam Career Guidance & Preparation System
+# Govexa — AI Government Exam Career Guidance & Preparation Platform
 
-> **Full-Stack Monorepo Architecture**  
-> An intelligent discovery, statutory eligibility screening, official notification watchdog, and personalized preparation roadmap platform dedicated exclusively to Indian Public Sector, Central, and State Government examinations.
+> **Production Full-Stack Architecture (Parts 1–5 Complete)**  
+> An intelligent discovery, statutory eligibility screening, official recruitment notification watchdog, retrieval-augmented document study, and personalized preparation platform dedicated exclusively to Indian Public Sector, Central, and State Government examinations.
 
 ---
 
-## 1. Project Directory Structure
+## 1. Project Overview & Technology Stack
 
-```
-Govt-Job-Assistant/
-├── frontend/                     # React 18 + Vite 6 + TypeScript + Tailwind CSS
-│   ├── src/
-│   │   ├── api/                  # Typed API services with dual sync & fixture fallback
-│   │   ├── components/           # Reusable UI, Layout, Cards, Feedback
-│   │   ├── config/               # Centralized brand tokens and routes
-│   │   ├── context/              # AuthContext, ToastContext, SavedExamsContext
-│   │   ├── fixtures/             # Curated Indian Government exam datasets
-│   │   ├── pages/                # 19 fully navigable frontend pages
-│   │   ├── types/                # Strict TypeScript domain interfaces
-│   │   ├── App.tsx               # Root routing
-│   │   ├── index.css             # 6-color palette variables
-│   │   └── main.tsx
-│   ├── package.json
-│   ├── vite.config.ts
-│   ├── tailwind.config.js        # Strict 6-color theme tokens
-│   ├── tsconfig.json
-│   ├── .env.example
-│   └── index.html
-│
-├── backend/                      # Python FastAPI + Supabase PostgreSQL
-│   ├── alembic/                  # Database migration versions
-│   ├── app/
-│   │   ├── api/                  # Dependencies, v1 routers & endpoints
-│   │   ├── core/                 # Config, database engine, Supabase JWT verification
-│   │   ├── db/                   # Seed fixtures (UPSC, SSC, ISRO, KPSC, etc.)
-│   │   ├── models/               # 16 normalized SQLAlchemy 2.x domain tables
-│   │   ├── schemas/              # Pydantic v2 validation models
-│   │   ├── services/             # Deterministic eligibility rules engine
-│   │   └── main.py               # FastAPI application with CORS & auto-seed
-│   ├── tests/                    # Pytest test suite (21 unit & integration tests)
-│   ├── supabase_rls.sql          # Supabase Row-Level Security policies
-│   ├── render.yaml               # Render cloud deployment blueprint
-│   ├── requirements.txt          # Python dependencies
-│   ├── .env.example
-│   └── README.md
-│
-├── .gitignore
-├── FEATURES_CHECKLIST.md
-└── README.md                     # Root project documentation
-```
+| Layer | Technology | Deployment Platform |
+|---|---|---|
+| **Frontend** | React 18, Vite 6, TypeScript, Tailwind CSS, Lucide React, Recharts, Axios | **Vercel** (`frontend/vercel.json`) |
+| **Backend API** | Python 3.11, FastAPI, Pydantic v2, SQLAlchemy 2.x, Alembic, HTTPX | **Render Web Service** (`render.yaml`) |
+| **Background Worker** | Python Async Watchdog, PyPDF2, OCR Extractor, Semantic Change Detector | **Render Worker** (`render.yaml`) |
+| **Database & Storage** | PostgreSQL 15+ (Transaction Pooler :6543), Row Level Security (RLS), Supabase Storage | **Supabase** (`supabase_rls.sql`) |
+| **Authentication** | Supabase Auth (GoTrue), HMAC-SHA256 JWT Claim Verification, DPDP Act 2023 Erasure | **Supabase Auth** |
+| **Artificial Intelligence** | Multi-Agent Orchestrator (6 Agents), RAG Engine, Gemini 1.5 Flash / Embeddings, Deterministic Scoring | **Google Gemini API / Provider Fallback** |
 
 ---
 
 ## 2. Mandatory Six-Color Design System
 
-The application strictly enforces the approved six-color palette across all components:
+The application strictly enforces the approved six-color palette across all components without ad-hoc colors or gradients:
 
 | Color Name | Hex Code | Role in Interface | Tailwind Token |
 | :--- | :--- | :--- | :--- |
@@ -67,45 +33,85 @@ The application strictly enforces the approved six-color palette across all comp
 
 ---
 
-## 3. Quick Start
+## 3. Comprehensive Documentation Sitemap
 
-### 1. Backend (FastAPI + Supabase PostgreSQL)
+Detailed documentation is available in the [`docs/`](./docs) directory:
+
+- [Feature Traceability Matrix (`docs/traceability_matrix.md`)](./docs/traceability_matrix.md): Complete traceability across all 89 specification items.
+- [System Architecture (`docs/architecture.md`)](./docs/architecture.md): 3-tier architecture, multi-agent orchestration, and watchdog ingestion pipeline.
+- [Database Schema & ER Diagram (`docs/database_schema.md`)](./docs/database_schema.md): Normalized relational models, indexes, and Mermaid ER diagram.
+- [Deployment Guide (`docs/deployment_guide.md`)](./docs/deployment_guide.md): Step-by-step production setup for Vercel, Render, and Supabase.
+- [Security & Privacy Audit (`docs/security_and_privacy.md`)](./docs/security_and_privacy.md): SSRF defense, RLS policies, anti-prompt injection, and DPDP Act 2023 erasure.
+
+---
+
+## 4. 20 Fully Navigable Frontend Pages
+
+1. **Landing Portal** (`/`): Hero showcase, features overview, examination categories, search preview.
+2. **Student Login** (`/login`): Secure email authentication.
+3. **Student Registration** (`/register`): Aspirant sign-up.
+4. **Password Recovery** (`/forgot-password`): Password reset request.
+5. **Onboarding Wizard** (`/onboarding`): Multi-step educational stream and domicile setup.
+6. **Main Workspace Dashboard** (`/dashboard`): Study habit streaks, countdown desk widget, weak-topic analytics.
+7. **Exam Discovery** (`/exams`): Multi-criteria filtering, search, and comparison matrix.
+8. **Exam Detail View** (`/exams/:id`): Stage breakdowns, 7th CPC salary, syllabus checklist.
+9. **Eligibility Screener** (`/eligibility`): Instant statutory eligibility evaluations.
+10. **Recruitment Notifications** (`/notifications`): Live gazette updates and post summaries.
+11. **Notification Detail** (`/notifications/:id`): Official PDF download and corrigendum history.
+12. **Exam Calendar** (`/calendar`): Color-coded timeline with live countdown timers.
+13. **Saved Applications Tracker** (`/saved-exams`): Kanban application pipeline and reminders.
+14. **Preparation Roadmap** (`/roadmap`): Multi-week syllabus milestone planner.
+15. **Study Material Library** (`/materials`): PDF uploads, mock test simulations, Pomodoro timer.
+16. **Student Profile & Settings** (`/profile`): Domicile management and DPDP Act account erasure.
+17. **AI Study Assistant** (`/ai-assistant`): Multilingual chat (English, Hindi, Kannada), STT/TTS voice assistance, Ask-Your-PDF RAG.
+18. **KSET / UGC-NET Dedicated Hub** (`/kset-ugc-net`): Paper 1 all-unit breakdown, PYQs, zero-negative marking tests.
+19. **Community Study Circles & Mentors** (`/community`): Peer discussion circles and faculty doubt resolution dashboard.
+20. **Admin Review Queue** (`/admin/review-queue`): Gazette change detection and source registry management.
+
+---
+
+## 5. Quick Start: Local Development
+
+### 1. Backend (FastAPI + SQLite / PostgreSQL)
 
 ```bash
 cd backend
+
+# Create and activate virtual environment
 python -m venv .venv
+source .venv/bin/activate       # On Windows: .venv\Scripts\activate
 
-# Activate on Windows:
-.venv\Scripts\activate
-# Activate on Linux / macOS:
-source .venv/bin/activate
-
-# Install dependencies:
+# Install dependencies
 pip install -r requirements.txt
 
-# Run migrations:
+# Run migrations & seed authoritative data
 alembic upgrade head
+python -m app.db.seed_data
 
-# Start API server:
+# Start FastAPI server
 uvicorn app.main:app --reload --port 8000
 ```
-- API Endpoint: `http://localhost:8000/api/v1`
-- Swagger Interactive Docs: `http://localhost:8000/api/v1/docs`
+- API Base: `http://localhost:8000/api/v1`
+- Swagger Docs: `http://localhost:8000/api/v1/docs`
 - Health Check: `http://localhost:8000/api/v1/health`
+- Operational Metrics: `http://localhost:8000/api/v1/metrics`
 
-### 2. Run Backend Tests (Pytest)
+### 2. Run Automated Pytest Suite
 
 ```bash
 cd backend
 pytest -v
 ```
-All 21 test suites execute in under 1 second against an in-memory SQLite database, validating:
-- Authentication & Supabase HS256 JWT claim verification
-- Student data isolation & cross-student 403 authorization checks
-- Deterministic eligibility screening (exact cut-off age calculations, OBC/SC/ST/PwD statutory relaxations, degree hierarchy matching, stream whitelisting, percentage thresholds)
-- Examination search, level filtering, pagination, and syllabus overlap analysis.
+All **51 test suites** pass in ~8 seconds, validating:
+- SSRF domain whitelisting and loopback/cloud metadata blocking
+- DPDP Act 2023 / GDPR complete cascade account erasure
+- Peer study circles, message threads, and anti-XSS HTML sanitization
+- Verified mentor profiles and faculty evaluation dashboard
+- Deterministic objective test scoring and negative marking calculations
+- RAG Ask-Your-PDF retrieval relevance and State of Ignorance guardrails
+- 6-agent orchestration audits and LLM failure fallbacks
 
-### 3. Frontend (React + TypeScript + Vite)
+### 3. Frontend (React + Vite + TypeScript)
 
 ```bash
 cd frontend
@@ -119,40 +125,12 @@ To build the production bundle:
 cd frontend
 npm run build
 ```
+Builds cleanly with zero TypeScript or compilation errors.
 
 ---
 
-## 4. Key Architectural Implementations in Part 2
+## 6. Production Deployment Overview
 
-1. **Normalized Database Schema (16 Domain Models):**
-   - Student profiles & target preferences.
-   - Issuing authorities (UPSC, SSC, ISRO, NTA, KPSC) & examination categories.
-   - Government examinations, exam stages, syllabus topics, and pay scale records.
-   - Educational qualifications, age criteria, community relaxations, domicile quotas.
-   - Official recruitment notices, posts, versions, corrigenda, and verification sources.
-   - Saved examinations and isolated application tracking pipelines.
-   - Student reminders, study plans, daily tasks, and administrative audit logs.
-
-2. **Supabase Auth & Security:**
-   - Cryptographically verified Supabase JWT claims (HS256).
-   - Strict student row ownership: students can never read, modify, or delete another student's applications.
-   - Supabase Row-Level Security (`supabase_rls.sql`).
-   - Zero exposure of service-role keys in frontend client code.
-
-3. **Deterministic Eligibility Engine:**
-   - Pure Python rules engine (`DeterministicEligibilityEngine`).
-   - Evaluates minimum/maximum age on the official notification's reference cut-off date.
-   - Applies statutory community relaxations (+3 OBC, +5 SC/ST, +10 PwD).
-   - Enforces degree level, technical stream whitelists, and qualifying percentage thresholds.
-   - Returns structured criterion reasons with official gazette clause references.
-   - Never overridden by LLM generation.
-
-4. **Resilient Frontend-Backend Integration:**
-   - Typed service layer (`examService`, `notificationService`, `eligibilityService`, `studentService`).
-   - Maps FastAPI snake_case schemas cleanly to frontend camelCase TypeScript models.
-   - Dual-sync and fallback fixture mode (`VITE_ENABLE_MOCK_FALLBACK=true`): enables offline development, mock demonstrations, and real-time backend synchronization when connected.
-
-5. **Cloud Deployment Ready:**
-   - `backend/render.yaml` turnkey Render blueprint.
-   - Alembic migration scripts (`0001_initial_schema.py`).
-   - Complete `.env.example` templates for both frontend and backend.
+- **Frontend**: Configured for Vercel with single-page application (SPA) rewrites and security headers (`frontend/vercel.json`).
+- **Backend API & Watchdog**: Configured for Render with automated build, worker daemon, and health check (`render.yaml`).
+- **Database & Row Level Security**: Configured for Supabase PostgreSQL with transaction connection pooler (`backend/supabase_rls.sql`).

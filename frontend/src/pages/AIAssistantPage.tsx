@@ -1,5 +1,22 @@
-import React, { useState } from 'react';
-import { Sparkles, Send, Bot, User, HelpCircle, ShieldCheck, BookOpen, FileText, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  Sparkles,
+  Send,
+  Bot,
+  User,
+  HelpCircle,
+  ShieldCheck,
+  BookOpen,
+  FileText,
+  CheckCircle2,
+  AlertTriangle,
+  Layers,
+  Volume2,
+  VolumeX,
+  Mic,
+  MicOff,
+  Languages,
+} from 'lucide-react';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
@@ -17,6 +34,10 @@ interface ChatMessage {
 
 export const AIAssistantPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'ask_pdf'>('chat');
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'hi' | 'kn'>('en');
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'msg-01',
@@ -36,6 +57,70 @@ export const AIAssistantPage: React.FC = () => {
   const [pdfExamCode, setPdfExamCode] = useState('UPSC-CSE');
   const [ragResult, setRagResult] = useState<RAGQueryResponse | null>(null);
   const [isRagSearching, setIsRagSearching] = useState(false);
+
+  // Text-To-Speech (Feature 87)
+  const handleSpeak = (msgId: string, text: string) => {
+    if (!('speechSynthesis' in window)) {
+      alert('Speech synthesis is not supported in this browser.');
+      return;
+    }
+
+    if (currentlySpeakingId === msgId) {
+      window.speechSynthesis.cancel();
+      setCurrentlySpeakingId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (selectedLanguage === 'hi') utterance.lang = 'hi-IN';
+    else if (selectedLanguage === 'kn') utterance.lang = 'kn-IN';
+    else utterance.lang = 'en-IN';
+
+    utterance.onend = () => setCurrentlySpeakingId(null);
+    utterance.onerror = () => setCurrentlySpeakingId(null);
+
+    setCurrentlySpeakingId(msgId);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Speech-To-Text (Feature 86)
+  const toggleVoiceRecognition = () => {
+    const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('Speech Recognition is not supported by your current browser.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = selectedLanguage === 'hi' ? 'hi-IN' : selectedLanguage === 'kn' ? 'kn-IN' : 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (activeTab === 'chat') {
+          setInputQuery((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        } else {
+          setPdfQuery((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        }
+      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+
+      recognition.start();
+    } catch (err) {
+      console.error('Speech recognition error:', err);
+      setIsListening(false);
+    }
+  };
 
   const promptSuggestions = [
     'What is the age limit and relaxation for OBC in UPSC CSE 2026?',
@@ -59,7 +144,14 @@ export const AIAssistantPage: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const resp: ChatMessageResponse = await aiService.chat({ query: queryText });
+      let finalQuery = queryText;
+      if (selectedLanguage === 'hi') {
+        finalQuery += ' (कृपया उत्तर और स्पष्टीकरण हिन्दी / Hindi में दें)';
+      } else if (selectedLanguage === 'kn') {
+        finalQuery += ' (ದಯವಿಟ್ಟು ವಿವರಣೆಯನ್ನು ಕನ್ನಡ / Kannada ಭಾಷೆಯಲ್ಲಿ ನೀಡಿ)';
+      }
+
+      const resp: ChatMessageResponse = await aiService.chat({ query: finalQuery });
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
@@ -120,35 +212,75 @@ export const AIAssistantPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-opaline/60 pb-2">
-        <button
-          onClick={() => setActiveTab('chat')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${
-            activeTab === 'chat'
-              ? 'bg-nocturne text-starlight'
-              : 'bg-starlight text-eclipse hover:bg-opaline/40'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Interactive Guidance
-          </div>
-        </button>
+      {/* Tabs and Multilingual Controls (Feature 85) */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-opaline/60 pb-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('chat')}
+            className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${
+              activeTab === 'chat'
+                ? 'bg-nocturne text-starlight'
+                : 'bg-starlight text-eclipse hover:bg-opaline/40'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI Interactive Guidance
+            </div>
+          </button>
 
-        <button
-          onClick={() => setActiveTab('ask_pdf')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${
-            activeTab === 'ask_pdf'
-              ? 'bg-nocturne text-starlight'
-              : 'bg-starlight text-eclipse hover:bg-opaline/40'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <FileText className="w-3.5 h-3.5" />
-            Ask-Your-PDF (RAG Gazette Retrieval)
-          </div>
-        </button>
+          <button
+            onClick={() => setActiveTab('ask_pdf')}
+            className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${
+              activeTab === 'ask_pdf'
+                ? 'bg-nocturne text-starlight'
+                : 'bg-starlight text-eclipse hover:bg-opaline/40'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5" />
+              Ask-Your-PDF (RAG Gazette Retrieval)
+            </div>
+          </button>
+        </div>
+
+        {/* Language Selector (Feature 85) */}
+        <div className="flex items-center gap-1.5 self-end sm:self-auto bg-white border border-opaline rounded-lg p-1">
+          <Languages className="w-3.5 h-3.5 text-wisteria ml-1.5" />
+          <button
+            type="button"
+            onClick={() => setSelectedLanguage('en')}
+            className={`px-2 py-1 text-[11px] font-semibold rounded ${
+              selectedLanguage === 'en'
+                ? 'bg-nocturne text-starlight'
+                : 'text-eclipse hover:bg-starlight'
+            }`}
+          >
+            English
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedLanguage('hi')}
+            className={`px-2 py-1 text-[11px] font-semibold rounded ${
+              selectedLanguage === 'hi'
+                ? 'bg-nocturne text-starlight'
+                : 'text-eclipse hover:bg-starlight'
+            }`}
+          >
+            हिन्दी
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedLanguage('kn')}
+            className={`px-2 py-1 text-[11px] font-semibold rounded ${
+              selectedLanguage === 'kn'
+                ? 'bg-nocturne text-starlight'
+                : 'text-eclipse hover:bg-starlight'
+            }`}
+          >
+            ಕನ್ನಡ
+          </button>
+        </div>
       </div>
 
       {activeTab === 'chat' ? (
@@ -197,11 +329,33 @@ export const AIAssistantPage: React.FC = () => {
                     )}
 
                     <div className="mt-2 flex items-center justify-between text-[10px] opacity-70">
-                      {msg.provider && (
-                        <span className="font-mono text-wisteria font-bold">
-                          provider: {msg.provider}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {msg.provider && (
+                          <span className="font-mono text-wisteria font-bold">
+                            provider: {msg.provider}
+                          </span>
+                        )}
+                        {msg.sender === 'ai' && (
+                          <button
+                            type="button"
+                            onClick={() => handleSpeak(msg.id, msg.text)}
+                            className="inline-flex items-center gap-1 rounded bg-starlight px-2 py-0.5 font-semibold text-wisteria hover:bg-opaline/50 transition-colors"
+                            title="Listen to response (TTS)"
+                          >
+                            {currentlySpeakingId === msg.id ? (
+                              <>
+                                <VolumeX className="w-3 h-3 text-red-500 animate-pulse" />
+                                <span>Stop</span>
+                              </>
+                            ) : (
+                              <>
+                                <Volume2 className="w-3 h-3" />
+                                <span>Listen</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
                       <span className="ml-auto">{msg.timestamp}</span>
                     </div>
                   </div>
@@ -239,10 +393,30 @@ export const AIAssistantPage: React.FC = () => {
                   type="text"
                   value={inputQuery}
                   onChange={(e) => setInputQuery(e.target.value)}
-                  placeholder="Ask any syllabus rule, age limit, negative marking, or exam strategy..."
+                  placeholder={
+                    isListening
+                      ? 'Listening to your voice query...'
+                      : selectedLanguage === 'hi'
+                      ? 'हिन्दी में सरकारी परीक्षा के बारे में पूछें...'
+                      : selectedLanguage === 'kn'
+                      ? 'ಕನ್ನಡದಲ್ಲಿ ಪರೀಕ್ಷೆಯ ಬಗ್ಗೆ ಪ್ರಶ್ನಿಸಿ...'
+                      : 'Ask any syllabus rule, age limit, negative marking, or exam strategy...'
+                  }
                   className="flex-1 text-xs sm:text-sm bg-starlight border border-opaline/80 rounded-xl px-4 py-2.5 text-eclipse placeholder-eclipse/50 focus:outline-none focus:ring-2 focus:ring-wisteria"
                   disabled={isTyping}
                 />
+                <button
+                  type="button"
+                  onClick={toggleVoiceRecognition}
+                  className={`p-2.5 rounded-xl border transition-colors ${
+                    isListening
+                      ? 'bg-red-500 text-white border-red-600 animate-pulse'
+                      : 'bg-starlight text-wisteria border-opaline/80 hover:bg-opaline/40'
+                  }`}
+                  title={isListening ? 'Listening... Click to stop' : 'Voice Input (STT)'}
+                >
+                  {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </button>
                 <Button
                   type="submit"
                   variant="primary"

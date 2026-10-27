@@ -26,6 +26,7 @@ import { StudyMaterialLibraryPage } from './pages/StudyMaterialLibraryPage';
 import { StudentProfilePage } from './pages/StudentProfilePage';
 import { AIAssistantPage } from './pages/AIAssistantPage';
 import { KsetUgcNetLandingPage } from './pages/KsetUgcNetLandingPage';
+import { CommunityHubPage } from './pages/CommunityHubPage';
 import { AdminReviewPage } from './pages/AdminReviewPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -123,7 +124,17 @@ export const App: React.FC = () => {
                 {/* 13. KSET / UGC-NET Specialized Hub */}
                 <Route path={ROUTES.KSET_UGC_NET} element={<KsetUgcNetLandingPage />} />
 
-                {/* 14. Admin Source Watchdog & Review Queue (Protected) */}
+                {/* 14. Peer Study Circles & Faculty Hub (Protected) */}
+                <Route
+                  path={ROUTES.COMMUNITY}
+                  element={
+                    <ProtectedRoute>
+                      <CommunityHubPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* 15. Admin Source Watchdog & Review Queue (Protected) */}
                 <Route
                   path={ROUTES.ADMIN_REVIEW}
                   element={

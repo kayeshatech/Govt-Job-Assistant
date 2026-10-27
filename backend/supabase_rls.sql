@@ -132,3 +132,64 @@ ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can view audit logs"
     ON audit_logs FOR SELECT
     USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+-- 10. RAG Knowledge Bases and Chunks (Part 4)
+ALTER TABLE document_knowledge_bases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE document_chunks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read document_knowledge_bases" ON document_knowledge_bases FOR SELECT USING (true);
+CREATE POLICY "Admins manage document_knowledge_bases" ON document_knowledge_bases FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+CREATE POLICY "Public read document_chunks" ON document_chunks FOR SELECT USING (true);
+CREATE POLICY "Admins manage document_chunks" ON document_chunks FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+-- 11. Question Bank & Standardized Mock Tests (Part 4)
+ALTER TABLE question_bank ENABLE ROW LEVEL SECURITY;
+ALTER TABLE mock_tests ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read question_bank" ON question_bank FOR SELECT USING (true);
+CREATE POLICY "Admins manage question_bank" ON question_bank FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+CREATE POLICY "Public read mock_tests" ON mock_tests FOR SELECT USING (true);
+CREATE POLICY "Admins manage mock_tests" ON mock_tests FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+-- 12. Student Practice Attempts, Mistakes, Goals, Pomodoro, and Streaks (Part 4)
+ALTER TABLE mock_test_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_mistakes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_study_goals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pomodoro_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE study_streaks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Students manage own mock test attempts" ON mock_test_attempts FOR ALL USING (auth.uid()::text = student_id);
+CREATE POLICY "Students manage own mistakes" ON student_mistakes FOR ALL USING (auth.uid()::text = student_id);
+CREATE POLICY "Students manage own goals" ON student_study_goals FOR ALL USING (auth.uid()::text = student_id);
+CREATE POLICY "Students manage own pomodoro sessions" ON pomodoro_sessions FOR ALL USING (auth.uid()::text = student_id);
+CREATE POLICY "Students manage own streaks" ON study_streaks FOR ALL USING (auth.uid()::text = student_id);
+
+-- 13. Agent Execution Audits (Part 4)
+ALTER TABLE agent_execution_audits ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins view agent execution audits" ON agent_execution_audits FOR SELECT
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+
+-- 14. Collaborative Study Groups (Part 5 - Feature 88)
+ALTER TABLE study_groups ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read study_groups" ON study_groups FOR SELECT USING (true);
+CREATE POLICY "Authenticated users create study_groups" ON study_groups FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Group creators manage study_groups" ON study_groups FOR UPDATE USING (auth.uid()::text = created_by OR auth.jwt()->'app_metadata'->>'role' = 'admin');
+
+-- 15. Group Discussion Messages (Part 5 - Feature 88 & 89)
+ALTER TABLE group_discussion_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read group_discussion_messages" ON group_discussion_messages FOR SELECT USING (true);
+CREATE POLICY "Authenticated users insert messages" ON group_discussion_messages FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+CREATE POLICY "Message owners or mentors edit messages" ON group_discussion_messages FOR UPDATE USING (auth.uid()::text = user_id OR auth.jwt()->'app_metadata'->>'role' = 'admin');
+
+-- 16. Mentor Profiles (Part 5 - Feature 89)
+ALTER TABLE mentor_profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read mentor_profiles" ON mentor_profiles FOR SELECT USING (true);
+CREATE POLICY "Admins manage mentor_profiles" ON mentor_profiles FOR ALL
+    USING (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->>'role' = 'service_role');
+

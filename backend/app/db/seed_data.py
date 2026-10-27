@@ -30,6 +30,11 @@ from app.models.student import (
     StudyPlan,
     DailyStudyTask,
 )
+from app.models.community import (
+    StudyGroup,
+    GroupDiscussionMessage,
+    MentorProfile,
+)
 
 def seed_database(db: Session) -> None:
     """Populates authoritative, normalized Indian Government examination and notification records."""
@@ -923,6 +928,103 @@ def seed_database(db: Session) -> None:
             existing_mock = db.query(MockTest).filter(MockTest.id == m_item["id"]).first()
             if not existing_mock:
                 db.add(MockTest(**m_item))
+
+        # 12. Part 5: Verified Mentors (Feature 89)
+        mentor_data = [
+            {
+                "id": "mentor-prof-deshmukh",
+                "user_id": "user-mentor-anand-01",
+                "full_name": "Prof. Anand Deshmukh",
+                "designation": "Former KPSC Member & UPSC Evaluator",
+                "specialization": "Public Administration & Indian Polity",
+                "institution": "National Institute of Public Policy, Bengaluru",
+                "is_verified": True,
+                "total_answers_resolved": 142,
+                "rating": 4.95,
+            },
+            {
+                "id": "mentor-dr-sneha",
+                "user_id": "user-mentor-sneha-02",
+                "full_name": "Dr. Sneha Rao",
+                "designation": "Assistant Professor & UGC-NET Qualified Senior Fellow",
+                "specialization": "Higher Education System & Research Aptitude",
+                "institution": "Bangalore University",
+                "is_verified": True,
+                "total_answers_resolved": 89,
+                "rating": 4.88,
+            },
+        ]
+
+        for mentor_item in mentor_data:
+            existing_mentor = db.query(MentorProfile).filter(MentorProfile.id == mentor_item["id"]).first()
+            if not existing_mentor:
+                db.add(MentorProfile(**mentor_item))
+
+        # 13. Part 5: Collaborative Study Groups (Feature 88)
+        group_data = [
+            {
+                "id": "grp-upsc-mains-gs",
+                "name": "UPSC Civil Services 2026 GS Mains Circle",
+                "exam_code": "UPSC-CSE",
+                "description": "Collaborative peer group focused on General Studies Paper 1-4 syllabus milestones, daily answer reviews, and official gazette tracking.",
+                "category": "Peer Discussion & Answer Review",
+                "member_count": 28,
+                "is_active": True,
+                "created_by": "system-cohort-lead",
+            },
+            {
+                "id": "grp-kset-paper1-hub",
+                "name": "KSET & UGC-NET Paper 1 Mastery Collective",
+                "exam_code": "UGC-NET",
+                "description": "Dedicated study group solving Teaching Aptitude, ICT, Higher Education System, and Data Interpretation PYQs with verified faculty insights.",
+                "category": "PYQ & Faculty Discussion",
+                "member_count": 45,
+                "is_active": True,
+                "created_by": "system-cohort-lead",
+            },
+            {
+                "id": "grp-ssc-quant-reasoning",
+                "name": "SSC CGL 2026 Tier-I Speed & Accuracy Sprint",
+                "exam_code": "SSC-CGL",
+                "description": "Timed problem solving, shortcut tricks for Quantitative Aptitude, and English Comprehension discussions.",
+                "category": "Speed Drills",
+                "member_count": 62,
+                "is_active": True,
+                "created_by": "system-cohort-lead",
+            },
+        ]
+
+        for grp_item in group_data:
+            existing_grp = db.query(StudyGroup).filter(StudyGroup.id == grp_item["id"]).first()
+            if not existing_grp:
+                db.add(StudyGroup(**grp_item))
+
+        # 14. Part 5: Discussion Messages (Features 88 & 89)
+        msg_data = [
+            {
+                "id": "msg-kset-01",
+                "group_id": "grp-kset-paper1-hub",
+                "user_id": "student-demo-rajesh",
+                "author_name": "Rajesh Kumar",
+                "content": "For UGC-NET / KSET Paper 1, which NEP 2020 structural reforms are most frequently asked in the Higher Education section?",
+                "is_verified_mentor_answer": False,
+                "likes_count": 5,
+            },
+            {
+                "id": "msg-kset-02",
+                "group_id": "grp-kset-paper1-hub",
+                "user_id": "user-mentor-sneha-02",
+                "author_name": "Dr. Sneha Rao (Verified Mentor)",
+                "content": "Focus on the 5+3+3+4 school-to-college transition framework, the 4-year undergraduate degree with multiple entry/exit options, and the establishment of HECI (Higher Education Commission of India) with its four verticals (NHERC, NAC, HEGC, GEC). Review UGC Regulations 2023 Gazette notifications.",
+                "is_verified_mentor_answer": True,
+                "likes_count": 19,
+            },
+        ]
+
+        for msg_item in msg_data:
+            existing_msg = db.query(GroupDiscussionMessage).filter(GroupDiscussionMessage.id == msg_item["id"]).first()
+            if not existing_msg:
+                db.add(GroupDiscussionMessage(**msg_item))
 
         db.commit()
 

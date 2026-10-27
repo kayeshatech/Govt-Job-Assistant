@@ -43,6 +43,7 @@ from app.models.preparation import (
     StudyStreak,
 )
 from app.models.orchestration import AgentExecutionAudit
+from app.models.community import StudyGroup, GroupDiscussionMessage, MentorProfile
 
 __all__ = [
     "Base",
@@ -80,4 +81,7 @@ __all__ = [
     "PomodoroSession",
     "StudyStreak",
     "AgentExecutionAudit",
+    "StudyGroup",
+    "GroupDiscussionMessage",
+    "MentorProfile",
 ]

@@ -22,6 +22,7 @@ export const ROUTES = {
   PROFILE: '/profile',
   AI_ASSISTANT: '/ai-assistant',
   KSET_UGC_NET: '/kset-ugc-net',
+  COMMUNITY: '/community',
   ADMIN_REVIEW: '/admin/review-queue',
   NOT_FOUND: '/404',
 } as const;
@@ -45,4 +46,5 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { label: 'Saved & Tracker', path: ROUTES.SAVED_EXAMS, iconName: 'Bookmark' },
   { label: 'AI Assistant', path: ROUTES.AI_ASSISTANT, iconName: 'Sparkles', badge: 'AI' },
   { label: 'KSET / UGC-NET Hub', path: ROUTES.KSET_UGC_NET, iconName: 'GraduationCap' },
+  { label: 'Community & Mentors', path: ROUTES.COMMUNITY, iconName: 'Users', badge: 'Peer' },
 ];

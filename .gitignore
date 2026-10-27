@@ -33,6 +33,8 @@ frontend/.env
 !.env.example
 !frontend/.env.example
 !backend/.env.example
+!frontend/.env.production.example
+!backend/.env.production.example
 
 # Editor / System
 .vscode/*

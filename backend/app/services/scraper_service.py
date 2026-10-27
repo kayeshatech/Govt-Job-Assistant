@@ -27,11 +27,50 @@ class ScraperService:
     """
 
     @staticmethod
-    def is_permitted_url(target_url: str, permitted_domain: str) -> bool:
-        """Enforces domain whitelist security to prevent SSRF and unauthorized scraping."""
+    def is_permitted_url(target_url: str, permitted_domain: Optional[str] = None) -> bool:
+        """
+        Enforces domain whitelist security and comprehensive SSRF defense.
+        Rejects non-HTTP schemes, loopback, cloud metadata (169.254.169.254),
+        and RFC 1918 private subnets.
+        """
+        import ipaddress
+        import socket
+
         try:
             parsed = urlparse(target_url)
-            return permitted_domain.lower() in parsed.netloc.lower()
+            if parsed.scheme.lower() not in ("http", "https"):
+                return False
+
+            hostname = parsed.hostname
+            if not hostname:
+                return False
+            hostname_lower = hostname.lower()
+
+            # Reject known loopback/cloud metadata hostnames
+            blocked_hostnames = {
+                "localhost", "127.0.0.1", "::1", "0.0.0.0",
+                "metadata.google.internal", "instance-data",
+            }
+            if hostname_lower in blocked_hostnames:
+                return False
+
+            # Check if hostname is an explicit IP address
+            try:
+                ip = ipaddress.ip_address(hostname_lower)
+                if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
+                    return False
+            except ValueError:
+                # Not an IP literal, it's a domain name
+                pass
+
+            # If permitted_domain is specified, enforce domain whitelist match
+            if permitted_domain:
+                perm = permitted_domain.lower().strip()
+                if hostname_lower == perm or hostname_lower.endswith("." + perm):
+                    return True
+                return perm in hostname_lower
+
+            return True
         except Exception:
             return False
 
