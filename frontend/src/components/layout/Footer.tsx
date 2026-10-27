@@ -1,10 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Mail, Phone, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Mail, Phone, ExternalLink, Activity } from 'lucide-react';
 import { APP_CONFIG } from '../../config/brand';
 import { ROUTES } from '../../config/routes';
+import apiClient from '../../api/client';
 
 export const Footer: React.FC = () => {
+  const [health, setHealth] = useState<{
+    status: string;
+    dbStatus: string;
+    latency?: number;
+    provider?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    apiClient
+      .get('/health')
+      .then((res) => {
+        if (isMounted && res.data) {
+          setHealth({
+            status: res.data.status || 'online',
+            dbStatus: res.data.database?.status || 'connected',
+            latency: res.data.database?.latency_ms ?? 0,
+            provider: res.data.database?.provider || 'Supabase PostgreSQL',
+          });
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setHealth({
+            status: 'offline',
+            dbStatus: 'disconnected',
+            latency: 0,
+          });
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   return (
     <footer className="bg-eclipse text-starlight border-t border-wisteria/40 pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -144,9 +179,33 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Copyright & Version */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-opaline/80 pt-4 border-t border-wisteria/30 gap-2">
+        {/* Copyright, Live System Health & Version */}
+        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-opaline/80 pt-4 border-t border-wisteria/30 gap-3">
           <p>© {new Date().getFullYear()} {APP_CONFIG.name}. All rights reserved.</p>
+
+          {/* Live System Health Pill */}
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-nocturne border border-wisteria/40 text-[11px] font-medium shadow-sm">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                health?.status === 'online'
+                  ? 'bg-emerald-400 animate-pulse'
+                  : health?.status === 'offline'
+                  ? 'bg-rose-400'
+                  : 'bg-amber-400 animate-pulse'
+              }`}
+            />
+            <span className="text-starlight font-semibold">
+              {health ? (health.status === 'online' ? 'API Online' : 'API Offline') : 'Checking API...'}
+            </span>
+            <span className="text-wisteria/60">•</span>
+            <span className={health?.dbStatus === 'connected' ? 'text-aurora' : 'text-rose-400'}>
+              Database:{' '}
+              {health?.dbStatus === 'connected'
+                ? `Connected (${health.latency || 0}ms)`
+                : health?.dbStatus || 'Checking...'}
+            </span>
+          </div>
+
           <p className="font-mono text-[11px]">{APP_CONFIG.version}</p>
         </div>
       </div>
