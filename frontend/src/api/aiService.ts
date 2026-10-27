@@ -215,4 +215,20 @@ export const aiService = {
     const res = await apiClient.get('/ai/benchmark');
     return res.data.benchmark;
   },
+
+  /**
+   * Diagnostic check for Gemini API key and active model connectivity
+   */
+  async getStatus(): Promise<any> {
+    try {
+      const res = await apiClient.get('/ai/status');
+      return res.data;
+    } catch (err) {
+      console.warn('[AI Service] Status check fallback:', err);
+      return {
+        gemini_configured: false,
+        live_ping: { status: 'OFFLINE' },
+      };
+    }
+  },
 };

@@ -57,6 +57,11 @@ export const AIAssistantPage: React.FC = () => {
   const [pdfExamCode, setPdfExamCode] = useState('UPSC-CSE');
   const [ragResult, setRagResult] = useState<RAGQueryResponse | null>(null);
   const [isRagSearching, setIsRagSearching] = useState(false);
+  const [aiStatus, setAiStatus] = useState<any>(null);
+
+  useEffect(() => {
+    aiService.getStatus().then((data) => setAiStatus(data));
+  }, []);
 
   // Text-To-Speech (Feature 87)
   const handleSpeak = (msgId: string, text: string) => {
@@ -287,6 +292,42 @@ export const AIAssistantPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Chat Stream */}
           <div className="lg:col-span-3 flex flex-col h-[600px] rounded-2xl bg-starlight border border-opaline/70 shadow-sm overflow-hidden">
+            {/* Live Model Connectivity Banner */}
+            <div className="px-4 py-2 border-b border-opaline/70 bg-white/90 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    aiStatus?.live_ping?.status === 'CONNECTED_AND_RECEIVING_DATA'
+                      ? 'bg-emerald-400 animate-pulse'
+                      : aiStatus?.gemini_configured
+                      ? 'bg-amber-400'
+                      : 'bg-wisteria'
+                  }`}
+                />
+                <span className="font-semibold text-nocturne flex items-center gap-1.5">
+                  {aiStatus?.live_ping?.status === 'CONNECTED_AND_RECEIVING_DATA' ? (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Google Gemini 1.5 Flash Connected & Live</span>
+                    </>
+                  ) : aiStatus?.gemini_configured ? (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Gemini Key Configured</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-3.5 h-3.5 text-wisteria" />
+                      <span>Verified Official Gazette Knowledge Base Active</span>
+                    </>
+                  )}
+                </span>
+              </div>
+              <div className="text-[11px] text-opaline font-mono">
+                {aiStatus?.gemini_key_preview ? `Key: ${aiStatus.gemini_key_preview}` : 'Fallback Mode'}
+              </div>
+            </div>
+
             {/* Messages Scroll Area */}
             <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
               {messages.map((msg) => (
@@ -331,8 +372,24 @@ export const AIAssistantPage: React.FC = () => {
                     <div className="mt-2 flex items-center justify-between text-[10px] opacity-70">
                       <div className="flex items-center gap-2">
                         {msg.provider && (
-                          <span className="font-mono text-wisteria font-bold">
-                            provider: {msg.provider}
+                          <span
+                            className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                              msg.provider.toLowerCase().includes('gemini')
+                                ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
+                                : 'bg-wisteria/10 text-wisteria border border-wisteria/20'
+                            }`}
+                          >
+                            {msg.provider.toLowerCase().includes('gemini') ? (
+                              <>
+                                <Sparkles className="w-2.5 h-2.5 text-indigo-600" />
+                                <span>Gemini 1.5 Flash</span>
+                              </>
+                            ) : (
+                              <>
+                                <ShieldCheck className="w-2.5 h-2.5 text-wisteria" />
+                                <span>Gazette Engine</span>
+                              </>
+                            )}
                           </span>
                         )}
                         {msg.sender === 'ai' && (
