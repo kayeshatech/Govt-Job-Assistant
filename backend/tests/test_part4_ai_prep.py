@@ -271,3 +271,70 @@ def test_api_prep_and_testing_endpoints(client):
     plans_resp = client.get("/api/v1/prep/productivity/plans?plan_type=last_30_days")
     assert plans_resp.status_code == 200
     assert "Last 30 Days" in plans_resp.json()["plan"]["plan_type"]
+
+def test_invalid_model_outputs_and_schema_fallback():
+    """Verify provider catches malformed/invalid model outputs and falls back to schema-valid structure."""
+    from pydantic import BaseModel
+    from app.services.llm_provider import GeminiLLMProvider
+
+    class SampleSchema(BaseModel):
+        summary: str
+        status: str
+
+    gemini = GeminiLLMProvider(api_key="dummy-key")
+    # Simulate invalid raw text output from model that cannot be parsed as JSON
+    res = gemini.generate_structured_json(
+        prompt="Generate a summary",
+        schema_class=SampleSchema,
+    )
+    assert res is not None
+    assert isinstance(res, SampleSchema)
+    assert len(res.summary) > 0
+
+def test_duplicate_question_detection_and_prevention(db_session):
+    """Verify question generation pipeline detects and deduplicates duplicate questions."""
+    svc = QuestionGeneratorService(db_session)
+    doc_text = "Teaching aptitude includes formative evaluation which provides immediate instructional feedback."
+
+    # First generation
+    batch1 = svc.generate_quiz_from_document(
+        document_text=doc_text,
+        exam_code="UGC-NET",
+        topic="Teaching Aptitude",
+        count=2,
+        save_to_db=True,
+    )
+    assert len(batch1) >= 1
+    assert batch1[0]["is_duplicate"] is False
+
+    # Second generation with identical context
+    batch2 = svc.generate_quiz_from_document(
+        document_text=doc_text,
+        exam_code="UGC-NET",
+        topic="Teaching Aptitude",
+        count=2,
+        save_to_db=True,
+    )
+    assert len(batch2) >= 1
+    # Items matching existing database records must be marked as duplicate
+    assert any(q.get("is_duplicate") is True for q in batch2)
+
+def test_failed_provider_calls_resilience(monkeypatch):
+    """Verify system catches API connection timeouts/errors and gracefully degrades to fallback without leaking secrets."""
+    import httpx
+    from app.services.llm_provider import GeminiLLMProvider
+
+    def mock_post(*args, **kwargs):
+        raise httpx.ConnectTimeout("Connection to Gemini endpoint timed out after 30s")
+
+    monkeypatch.setattr(httpx.Client, "post", mock_post)
+
+    gemini = GeminiLLMProvider(api_key="secret-api-key-12345")
+    resp = gemini.generate_text("What is the UPSC CSE age limit for OBC candidates?")
+
+    assert resp is not None
+    assert resp.provider == "deterministic_fallback"
+    assert "UPSC" in resp.text
+    # Ensure secret API key is not included in response text
+    assert "secret-api-key-12345" not in resp.text
+

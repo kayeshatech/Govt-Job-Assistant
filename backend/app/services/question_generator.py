@@ -40,7 +40,38 @@ class QuestionGeneratorService:
         )
 
         saved_records = []
+        seen_texts = set()
         for q in raw_questions:
+            norm_q = q.question_text.strip().lower()
+            if norm_q in seen_texts:
+                continue
+            seen_texts.add(norm_q)
+
+            # Check if this exact question already exists in the database
+            existing_db = self.db.query(QuestionBank).filter(
+                QuestionBank.exam_code == exam_code,
+                QuestionBank.question_text == q.question_text,
+            ).first() if save_to_db else None
+
+            if existing_db:
+                item_data = {
+                    "id": existing_db.id,
+                    "exam_code": existing_db.exam_code,
+                    "paper_type": existing_db.paper_type,
+                    "subject": existing_db.subject,
+                    "topic": existing_db.topic,
+                    "question_text": existing_db.question_text,
+                    "options": existing_db.options,
+                    "correct_option_index": existing_db.correct_option_index,
+                    "explanation": existing_db.explanation,
+                    "difficulty": existing_db.difficulty,
+                    "question_source": existing_db.question_source,
+                    "source_citation": existing_db.source_citation,
+                    "is_duplicate": True,
+                }
+                saved_records.append(item_data)
+                continue
+
             item_data = {
                 "id": str(uuid.uuid4()),
                 "exam_code": exam_code,
@@ -54,6 +85,7 @@ class QuestionGeneratorService:
                 "difficulty": q.difficulty,
                 "question_source": "AI_GENERATED_PRACTICE",
                 "source_citation": q.source_citation or f"Govexa AI Study Generator ({topic})",
+                "is_duplicate": False,
             }
 
             if save_to_db:
