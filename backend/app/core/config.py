@@ -124,7 +124,7 @@ class Settings(BaseSettings):
     # Part 3: AI & LLM Provider Configuration
     # ==========================================
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-2.0-flash"
     LLM_PROVIDER: str = "gemini"  # "gemini" | "synthetic_fallback"
 
     # ==========================================

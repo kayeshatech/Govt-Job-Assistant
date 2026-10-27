@@ -136,6 +136,7 @@ def benchmark_active_llm():
 def get_ai_and_gemini_status():
     """
     Diagnostic endpoint to test and verify Google Gemini API key connectivity and model status.
+    Automatically queries ModelService.ListModels to detect active models for this key.
     """
     has_key = bool(settings.GEMINI_API_KEY and settings.GEMINI_API_KEY.strip())
     masked_key = None
@@ -145,58 +146,100 @@ def get_ai_and_gemini_status():
 
     live_test: Dict[str, Any] = {
         "status": "NOT_CONFIGURED",
-        "message": "GEMINI_API_KEY environment variable is not configured in Render. Set GEMINI_API_KEY in Render Dashboard -> Environment.",
+        "message": "GEMINI_API_KEY environment variable is not configured in Render.",
     }
+    available_models: List[str] = []
 
     if has_key:
         api_key = settings.GEMINI_API_KEY.strip()
-        model_name = settings.GEMINI_MODEL or "gemini-1.5-flash"
-        test_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
-        payload = {
-            "contents": [{"parts": [{"text": "Reply with only: OK"}]}],
-            "generationConfig": {"maxOutputTokens": 10, "temperature": 0.0},
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
         }
-        start = time.time()
+
+        # Step 1: Query ListModels to see what models this key has access to
         try:
             with httpx.Client(timeout=10.0) as client:
-                res = client.post(test_url, json=payload)
-                latency = int((time.time() - start) * 1000)
-                if res.status_code == 200:
-                    data = res.json()
-                    candidates = data.get("candidates", [])
-                    reply_text = ""
-                    if candidates:
-                        parts = candidates[0].get("content", {}).get("parts", [])
-                        reply_text = parts[0].get("text", "").strip() if parts else ""
-                    live_test = {
-                        "status": "CONNECTED_AND_RECEIVING_DATA",
-                        "http_code": 200,
-                        "latency_ms": latency,
-                        "model": model_name,
-                        "gemini_test_reply": reply_text or "OK",
-                        "message": "Google Gemini API key is valid, active, and returning data successfully!",
-                    }
-                else:
-                    live_test = {
-                        "status": "API_ERROR",
-                        "http_code": res.status_code,
-                        "latency_ms": latency,
-                        "model": model_name,
-                        "error_details": res.json() if "application/json" in res.headers.get("content-type", "") else res.text[:300],
-                        "message": f"Google Gemini API returned HTTP {res.status_code}. Verify the API key in Google AI Studio.",
-                    }
+                models_res = client.get(
+                    f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}",
+                    headers=headers,
+                )
+                if models_res.status_code == 200:
+                    models_data = models_res.json().get("models", [])
+                    available_models = [
+                        m["name"].replace("models/", "")
+                        for m in models_data
+                        if "generateContent" in m.get("supportedGenerationMethods", [])
+                    ]
         except Exception as e:
-            live_test = {
-                "status": "CONNECTION_FAILED",
-                "error": str(e),
-                "message": "Could not reach Google Generative Language API endpoint.",
+            available_models = []
+
+        # Step 2: Try models in priority order
+        candidates = [settings.GEMINI_MODEL, "gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-2.5-flash", "gemini-pro"]
+        if available_models:
+            candidates = [m for m in available_models if "flash" in m] + available_models + candidates
+
+        # Deduplicate while preserving order
+        seen = set()
+        models_to_test = []
+        for m in candidates:
+            if m and m not in seen:
+                seen.add(m)
+                models_to_test.append(m)
+
+        for model_name in models_to_test[:5]:
+            test_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+            payload = {
+                "contents": [{"parts": [{"text": "Reply with only: OK"}]}],
+                "generationConfig": {"maxOutputTokens": 10, "temperature": 0.0},
             }
+            start = time.time()
+            try:
+                with httpx.Client(timeout=10.0) as client:
+                    res = client.post(test_url, json=payload, headers=headers)
+                    latency = int((time.time() - start) * 1000)
+                    if res.status_code == 200:
+                        data = res.json()
+                        candidates_list = data.get("candidates", [])
+                        reply_text = ""
+                        if candidates_list:
+                            parts = candidates_list[0].get("content", {}).get("parts", [])
+                            reply_text = parts[0].get("text", "").strip() if parts else ""
+                        live_test = {
+                            "status": "CONNECTED_AND_RECEIVING_DATA",
+                            "http_code": 200,
+                            "latency_ms": latency,
+                            "working_model": model_name,
+                            "gemini_test_reply": reply_text or "OK",
+                            "message": f"Google Gemini is connected and returning data successfully using model '{model_name}'!",
+                        }
+                        break
+                    elif res.status_code == 404:
+                        continue  # Try next model
+                    else:
+                        live_test = {
+                            "status": "API_ERROR",
+                            "http_code": res.status_code,
+                            "latency_ms": latency,
+                            "model": model_name,
+                            "error_details": res.json() if "application/json" in res.headers.get("content-type", "") else res.text[:300],
+                            "message": f"Google Gemini API returned HTTP {res.status_code} for model '{model_name}'.",
+                        }
+                        break
+            except Exception as e:
+                live_test = {
+                    "status": "CONNECTION_FAILED",
+                    "error": str(e),
+                    "message": "Could not reach Google Generative Language API endpoint.",
+                }
+                break
 
     return {
         "gemini_configured": has_key,
         "gemini_key_preview": masked_key,
         "configured_model": settings.GEMINI_MODEL,
         "llm_provider_mode": settings.LLM_PROVIDER,
+        "available_models_for_key": available_models[:10],
         "live_ping": live_test,
     }
 

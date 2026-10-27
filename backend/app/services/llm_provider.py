@@ -340,11 +340,18 @@ class GeminiLLMProvider(BaseLLMProvider):
     sanitized logging, and rate limiting backoff.
     """
 
-    def __init__(self, api_key: str, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str, model_name: str = "gemini-2.0-flash"):
         self.api_key = api_key
-        self.model_name = model_name
+        self.model_name = model_name or "gemini-2.0-flash"
         self.base_url = "https://generativelanguage.googleapis.com/v1beta"
         self.fallback = DeterministicFallbackProvider()
+        self.candidate_models = [
+            self.model_name,
+            "gemini-2.0-flash",
+            "gemini-1.5-flash-latest",
+            "gemini-2.5-flash",
+            "gemini-pro",
+        ]
 
     def generate_text(
         self,
@@ -353,7 +360,10 @@ class GeminiLLMProvider(BaseLLMProvider):
         temperature: float = 0.2,
         max_tokens: int = 2048,
     ) -> LLMResponse:
-        url = f"{self.base_url}/models/{self.model_name}:generateContent?key={self.api_key}"
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.api_key,
+        }
         payload: Dict[str, Any] = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {
@@ -365,39 +375,49 @@ class GeminiLLMProvider(BaseLLMProvider):
             payload["systemInstruction"] = {"parts": [{"text": system_instruction}]}
 
         start_time = time.time()
-        for attempt in range(settings.LLM_MAX_RETRIES):
-            try:
-                with httpx.Client(timeout=settings.LLM_TIMEOUT_SECONDS) as client:
-                    resp = client.post(url, json=payload)
-                    if resp.status_code == 200:
-                        data = resp.json()
-                        candidates = data.get("candidates", [])
-                        if candidates:
-                            content = candidates[0].get("content", {})
-                            parts = content.get("parts", [])
-                            text = parts[0].get("text", "") if parts else ""
-                            usage = data.get("usageMetadata", {})
-                            prompt_tokens = usage.get("promptTokenCount", len(prompt.split()))
-                            comp_tokens = usage.get("candidatesTokenCount", len(text.split()))
-                            latency = int((time.time() - start_time) * 1000)
-                            return LLMResponse(
-                                text=text,
-                                tokens_prompt=prompt_tokens,
-                                tokens_completion=comp_tokens,
-                                total_tokens=prompt_tokens + comp_tokens,
-                                latency_ms=latency,
-                                provider="gemini",
-                                model=self.model_name,
-                            )
-                    elif resp.status_code == 429:
-                        time.sleep(1.5 * (attempt + 1))
-                        continue
-                    else:
-                        logger.warning(f"Gemini API returned status {resp.status_code}: {resp.text[:200]}")
-                        break
-            except Exception as e:
-                logger.warning(f"Gemini request attempt {attempt + 1} failed: {e}")
-                time.sleep(1.0 * (attempt + 1))
+        # Try configured model, and on 404 cycle through candidate models
+        models_to_try = [self.model_name] + [m for m in self.candidate_models if m != self.model_name]
+
+        for model_to_use in models_to_try:
+            url = f"{self.base_url}/models/{model_to_use}:generateContent?key={self.api_key}"
+            for attempt in range(2):
+                try:
+                    with httpx.Client(timeout=settings.LLM_TIMEOUT_SECONDS) as client:
+                        resp = client.post(url, json=payload, headers=headers)
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            candidates = data.get("candidates", [])
+                            if candidates:
+                                content = candidates[0].get("content", {})
+                                parts = content.get("parts", [])
+                                text = parts[0].get("text", "") if parts else ""
+                                usage = data.get("usageMetadata", {})
+                                prompt_tokens = usage.get("promptTokenCount", len(prompt.split()))
+                                comp_tokens = usage.get("candidatesTokenCount", len(text.split()))
+                                latency = int((time.time() - start_time) * 1000)
+                                self.model_name = model_to_use
+                                return LLMResponse(
+                                    text=text,
+                                    tokens_prompt=prompt_tokens,
+                                    tokens_completion=comp_tokens,
+                                    total_tokens=prompt_tokens + comp_tokens,
+                                    latency_ms=latency,
+                                    provider="gemini",
+                                    model=model_to_use,
+                                )
+                        elif resp.status_code == 429:
+                            time.sleep(1.0 * (attempt + 1))
+                            continue
+                        elif resp.status_code == 404:
+                            # Model not supported or deprecated; try next candidate model
+                            logger.info(f"Model {model_to_use} returned 404, trying next candidate model...")
+                            break
+                        else:
+                            logger.warning(f"Gemini API returned status {resp.status_code}: {resp.text[:200]}")
+                            break
+                except Exception as e:
+                    logger.warning(f"Gemini request for model {model_to_use} failed: {e}")
+                    time.sleep(0.5)
 
         # Fallback if cloud request fails
         logger.info("Falling back to deterministic rule engine")
